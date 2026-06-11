@@ -392,8 +392,8 @@ export function Tablero3D({ celdas, herramienta, onCelda }: Props) {
         camera={{ position: [6.5, 8.5, 9.5], fov: 38 }}
         onPointerMissed={() => setHovered(null)}
       >
-        <color attach="background" args={['#14161d']} />
-        <fog attach="fog" args={['#14161d', 17, 32]} />
+        <color attach="background" args={['#11141d']} />
+        <fog attach="fog" args={['#11141d', 17, 32]} />
         <ambientLight intensity={0.75} />
         <hemisphereLight args={['#aab8d4', '#4a4438', 0.55]} />
         <directionalLight

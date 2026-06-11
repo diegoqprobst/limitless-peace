@@ -1,0 +1,64 @@
+/* ─────────────────────────────────────────────────────────────
+   Limitless Peace — color tokens
+   "Papel oscuro, tinta cálida" — dark paper, warm ink.
+   The amber accent is the negotiator's candle light.
+   Base names are kept in Spanish, exactly as in the game source
+   (src/styles.css); English semantic aliases follow.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Base palette (verbatim from the game) ── */
+  --fondo: #14161d;            /* page: dark paper */
+  --fondo-tarjeta: #1d2029;    /* card surface */
+  --fondo-elevado: #262a36;    /* raised surface: options, inputs, chips */
+  --tinta: #e8e4d9;            /* warm ink — primary text */
+  --tinta-suave: #a8a496;      /* soft ink — secondary text */
+  --acento: #e8b04b;           /* amber: the negotiator's candle */
+  --acento-suave: #c4953f;     /* amber, hover/pressed */
+  --paz: #7fb585;              /* peace green — success */
+  --peligro: #d4756b;          /* danger — warm red, never neon */
+  --borde: #353a49;            /* hairline border */
+
+  /* ── The four indicators ── */
+  --confianza: #6ba3c7;        /* Trust — blue */
+  --seguridad: #7fb585;        /* Security — green */
+  --justicia: #b48ec9;         /* Justice — violet */
+  --legitimidad: #e8b04b;      /* Legitimacy — amber */
+
+  /* ── Ending-specific ── */
+  --acuerdo-en-riesgo: #d4a76b; /* "agreement at risk" ending title */
+
+  /* ── Accent tints (translucent ambers used throughout) ── */
+  --acento-tinte-05: rgba(232, 176, 75, 0.05);  /* eco-historico bg */
+  --acento-tinte-06: rgba(232, 176, 75, 0.06);  /* quote bg */
+  --acento-tinte-07: rgba(232, 176, 75, 0.07);  /* option hover, reflection box */
+  --acento-tinte-08: rgba(232, 176, 75, 0.08);  /* active phase bg */
+  --acento-tinte-12: rgba(232, 176, 75, 0.12);  /* codex chip bg, active palette item */
+  --acento-borde-25: rgba(232, 176, 75, 0.25);  /* eco-historico border */
+  --acento-borde-30: rgba(232, 176, 75, 0.3);   /* reflection box border */
+  --acento-borde-45: rgba(232, 176, 75, 0.45);  /* discovered codex item border */
+
+  /* ── Danger tints ── */
+  --peligro-tinte-10: rgba(212, 117, 107, 0.1); /* alert chip bg */
+  --peligro-borde-40: rgba(212, 117, 107, 0.4); /* alert chip border */
+  --alerta-texto: #e8a06b;                      /* alert chip text */
+  --paz-borde-40: rgba(127, 181, 133, 0.4);     /* completed phase border */
+
+  /* ── Overlays & page glow ── */
+  --velo-modal: rgba(10, 12, 18, 0.8);          /* modal scrim */
+  --fondo-brillo: #1a1e2a;                      /* top radial glow center */
+
+  /* ── English semantic aliases ── */
+  --surface-page: var(--fondo);
+  --surface-card: var(--fondo-tarjeta);
+  --surface-raised: var(--fondo-elevado);
+  --text-body: var(--tinta);
+  --text-muted: var(--tinta-suave);
+  --accent: var(--acento);
+  --accent-hover: var(--acento-suave);
+  --on-accent: var(--fondo);   /* dark text on amber buttons */
+  --success: var(--paz);
+  --danger: var(--peligro);
+  --border-default: var(--borde);
+  --scrim: var(--velo-modal);
+}

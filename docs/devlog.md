@@ -220,3 +220,28 @@ por eso el motor ahora tiene test propio (mejor ingeniería, de todos modos).
 **También:** `docs/prompt-diseno-ui.md` — prompt listo para que Diego genere la identidad
 visual con Claude (3 direcciones de arte → tokens CSS → tipografía → componentes → logo),
 con restricción explícita de no parecerse al emblema protegido del Movimiento.
+
+## 2026-06-11 · Identidad visual "Vela y Tinta" (handoff de Claude Design)
+
+**Flujo:** Diego generó el design system en claude.ai/design a partir del repo público
+(usando `docs/prompt-diseno-ui.md`), eligió la dirección **"A · Vela y Tinta"** entre las
+tres exploradas (B "Amanecer en el Valle", C "Archivo de la Paz") y exportó el handoff.
+Se implementó aquí lo que la dirección define:
+
+- **Paleta refinada:** fondo más profundo (`#11141d`), superficies `#1b1f2a`/`#252a38`,
+  tinta más cálida (`#ece7d8`), ámbar más luminoso (`#ecb24f`, hover `#d9a13f`),
+  borde `#363c4d`. Tintes translúcidos actualizados al nuevo ámbar.
+- **Tipografía editorial (Google Fonts):** Newsreader 500 para los momentos display
+  (títulos de juego, nodos, finales, historias) + Source Serif 4 para toda la lectura.
+  Georgia queda como fallback.
+- **Halos de vela:** glow ámbar en el botón principal, hover de opciones, título del
+  juego, jardín y barra de legitimidad (tokens `--halo-*`). "Todo lo importante ocurre
+  alrededor de la vela."
+- **Grano de papel:** textura sutil (SVG feTurbulence, opacidad 0.045) sobre la escena.
+- **Fondo:** brillo radial reposicionado (50% -10%) con `--fondo-brillo: #1c2030`;
+  el tablero 3D ajustado al nuevo fondo.
+- Tokens de referencia del design system guardados en `docs/design-system/` (colores,
+  tipografía, espaciado, base + la exploración de direcciones).
+
+**Verificación:** build limpio; en navegador, menú y pantalla de inicio muestran
+Newsreader con halo, Source Serif 4 en lectura, nueva paleta y grano.

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Limitless Peace — Direcciones de arte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Serif:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #1c1d21; color: #e8e4d9; font-family: Georgia, serif; }
+  .lienzo { min-height: 100vh; padding: 48px 40px 64px; }
+  .centrado { max-width: 1720px; margin: 0 auto; }
+  .tableros { display: flex; gap: 36px; align-items: flex-start; flex-wrap: wrap; }
+  .tablero { width: 520px; display: flex; flex-direction: column; gap: 10px; }
+  .tablero-etiqueta { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #c9c5b8; letter-spacing: 0.06em; }
+  .insignia { background: #e8b04b; color: #14161d; font-size: 11px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 3px 10px; }
+  .marco { border-radius: 12px; padding: 28px 28px 32px; display: flex; flex-direction: column; gap: 22px; }
+  .seccion-label { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; }
+  .paleta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { width: 52px; }
+  .chip-color { height: 40px; border-radius: 7px; }
+  .chip p { margin: 4px 0 0; font-size: 9px; line-height: 1.35; }
+  .emocion { margin: 0; font-size: 13px; font-style: italic; }
+  .concepto { margin: 0 0 8px; font-size: 14px; line-height: 1.65; }
+  .barras { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+  .barra-cab { display: flex; justify-content: space-between; font-size: 10px; }
+  .pista { height: 6px; border-radius: 999px; margin-top: 4px; }
+  .relleno { height: 100%; border-radius: 999px; }
+  .opciones { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .opcion { text-align: left; border-radius: 10px; padding: 11px 14px; font-size: 13px; line-height: 1.5; cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease; }
+  .principal { display: block; margin: 18px auto 0; border: none; border-radius: 10px; padding: 10px 26px; font-size: 13.5px; font-weight: bold; cursor: pointer; transition: background 0.15s ease; }
+
+  /* ── A: Vela y Tinta ── */
+  .a-marco { background: #11141d; background-image: radial-gradient(ellipse at 50% -10%, #1c2030 0%, #11141d 60%); border: 1px solid #363c4d; }
+  .a-display { font-family: 'Newsreader', Georgia, serif; font-weight: 500; }
+  .a-lectura { font-family: 'Source Serif 4', Georgia, serif; }
+  .a-opcion { background: #252a38; color: #ece7d8; border: 1px solid #363c4d; font-family: 'Source Serif 4', Georgia, serif; }
+  .a-opcion:hover { border-color: #ecb24f; background: rgba(236, 178, 79, 0.07); box-shadow: 0 0 14px rgba(236, 178, 79, 0.12); }
+  .a-principal { background: #ecb24f; color: #11141d; font-family: 'Source Serif 4', Georgia, serif; box-shadow: 0 0 22px rgba(236, 178, 79, 0.3); }
+  .a-principal:hover { background: #d9a13f; }
+  .a-divisor { border-top: 1px solid #2b3040; padding-top: 16px; }
+
+  /* ── B: Amanecer en el Valle ── */
+  .b-marco { background: linear-gradient(180deg, #0e161d 0%, #13222a 55%, #1d3030 86%, #2c4136 100%); border: 1px solid #2c3d3d; }
+  .b-display { font-family: 'Bricolage Grotesque', sans-serif; }
+  .b-lectura { font-family: 'Atkinson Hyperlegible', sans-serif; }
+  .b-opcion { background: #223036; color: #eaefe4; border: 1px solid #2c3d3d; border-radius: 12px; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 12.5px; }
+  .b-opcion:hover { border-color: #5d9c64; background: rgba(93, 156, 100, 0.1); }
+  .b-principal { background: #e3aa4f; color: #101a1e; border-radius: 999px; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 13px; }
+  .b-principal:hover { background: #d09a42; }
+  .b-divisor { border-top: 1px solid #24383a; padding-top: 16px; }
+
+  /* ── C: Archivo de la Paz ── */
+  .c-marco { background: #131217; border: 1px solid #3b3742; }
+  .c-display { font-family: 'IBM Plex Serif', Georgia, serif; font-weight: 500; }
+  .c-lectura { font-family: 'IBM Plex Serif', Georgia, serif; }
+  .c-mono { font-family: 'IBM Plex Mono', monospace; }
+  .c-opcion { background: #2a262f; color: #e9e2cf; border: 1px solid #3b3742; border-radius: 8px; font-family: 'IBM Plex Serif', Georgia, serif; font-size: 12.5px; }
+  .c-opcion:hover { border-color: #d9a441; background: rgba(217, 164, 65, 0.07); }
+  .c-principal { background: #d9a441; color: #131217; border-radius: 8px; font-family: 'IBM Plex Serif', Georgia, serif; font-size: 13px; }
+  .c-principal:hover { background: #c4923a; }
+  .c-divisor { border-top: 1px solid #2c2832; padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="lienzo">
+
+  <div class="centrado" style="margin-bottom: 36px;">
+    <p style="margin: 0; text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px; color: #a8a496;">Limitless Peace · Identidad visual · Punto 1 de 6</p>
+    <h1 style="margin: 6px 0 10px; font-weight: normal; font-size: 34px; color: #e8b04b;">Tres direcciones de arte</h1>
+    <p style="margin: 0; max-width: 760px; font-size: 15px; line-height: 1.6; color: #c9c5b8;">Cada tablero muestra el concepto, la paleta (mismas variables de <strong>styles.css</strong>), la pareja tipográfica de Google Fonts y la misma tarjeta de decisión maquetada en esa dirección. Elige una y desarrollo el resto del sistema: color completo con contraste AA, escala tipográfica, componentes clave, logo y microinteracciones.</p>
+  </div>
+
+  <div class="centrado tableros">
+
+    <!-- ════════ A — VELA Y TINTA ════════ -->
+    <div class="tablero" data-screen-label="A — Vela y Tinta">
+      <div class="tablero-etiqueta"><span>A · Vela y Tinta — evolución de la base actual</span><span class="insignia">Recomendada</span></div>
+      <div class="marco a-marco">
+        <div>
+          <h2 class="a-display" style="margin: 0 0 10px; font-size: 30px; color: #ecb24f; text-shadow: 0 0 28px rgba(236, 178, 79, 0.35);">Vela y Tinta</h2>
+          <p class="concepto a-lectura" style="color: #c8c3b4;">La noche del negociador: papel oscuro, tinta cálida y una sola fuente de luz. Conserva la base actual y la profundiza: la luz ámbar gana halos suaves en los momentos clave, las superficies ganan grano de papel, y Georgia cede el lugar a una serif editorial con verdadero carácter. Todo lo importante ocurre alrededor de la vela: decisiones, ecos históricos y llamas del jardín comparten el mismo lenguaje de luz. Sobria en pantalla, cinematográfica en cámara: el glow ámbar sobre azul-noche se ve precioso en un video de 3 minutos.</p>
+          <p class="emocion" style="color: #aaa493;">Emoción: intimidad, gravedad serena, esperanza que resiste.</p>
+        </div>
+        <div>
+          <p class="seccion-label" style="color: #aaa493;">Paleta (mismas variables)</p>
+          <div class="paleta" style="color: #aaa493;">
+            <div class="chip"><div class="chip-color" style="background: #11141d; border: 1px solid #363c4d;"></div><p>--fondo<br />#11141d</p></div>
+            <div class="chip"><div class="chip-color" style="background: #1b1f2a; border: 1px solid #363c4d;"></div><p>--tarjeta<br />#1b1f2a</p></div>
+            <div class="chip"><div class="chip-color" style="background: #252a38; border: 1px solid #363c4d;"></div><p>--elevado<br />#252a38</p></div>
+            <div class="chip"><div class="chip-color" style="background: #ece7d8;"></div><p>--tinta<br />#ece7d8</p></div>
+            <div class="chip"><div class="chip-color" style="background: #ecb24f; box-shadow: 0 0 16px rgba(236, 178, 79, 0.4);"></div><p>--acento<br />#ecb24f</p></div>
+            <div class="chip"><div class="chip-color" style="background: #7fb585;"></div><p>--paz<br />#7fb585</p></div>
+            <div class="chip"><div class="chip-color" style="background: #d4756b;"></div><p>--peligro<br />#d4756b</p></div>
+            <div class="chip"><div class="chip-color" style="background: #363c4d;"></div><p>--borde<br />#363c4d</p></div>
+          </div>
+        </div>
+        <div class="a-divisor">
+          <p class="seccion-label" style="color: #aaa493;">Tipografía — Newsreader + Source Serif 4</p>
+          <p class="a-display" style="margin: 0 0 6px; font-size: 26px; line-height: 1.2; color: #ece7d8;">El camino de Miravalle</p>
+          <p class="a-lectura" style="margin: 0; font-size: 14px; line-height: 1.65; color: #c8c3b4;">Tras una década de estancamiento militar, ambas partes han aceptado en secreto explorar una salida negociada. Cada decisión está inspirada en dilemas reales.</p>
+        </div>
+        <div class="a-divisor">
+          <p class="seccion-label" style="color: #aaa493; margin-bottom: 10px;">En contexto</p>
+          <div style="background: #1b1f2a; border: 1px solid #363c4d; border-radius: 10px; padding: 20px 22px;">
+            <p style="margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; color: #ecb24f;">Fase 2 · Negociación sustantiva</p>
+            <h3 class="a-display" style="margin: 2px 0 8px; font-size: 21px; color: #ece7d8;">El dilema de la justicia</h3>
+            <p class="a-lectura" style="margin: 0 0 14px; font-size: 13.5px; line-height: 1.6; color: #c8c3b4;">El FIM dice: «no negociamos para ir a la cárcel». Las víctimas dicen: «no hay paz sin justicia».</p>
+            <div class="opciones">
+              <button class="opcion a-opcion">Tribunal especial: amnistía solo para delitos políticos; los crímenes graves se juzgan con penas restaurativas.</button>
+              <button class="opcion a-opcion">Amnistía general e incondicional: «borrón y cuenta nueva» para cerrar la guerra rápido.</button>
+            </div>
+            <div class="barras">
+              <div><div class="barra-cab"><span style="color: #aaa493; text-transform: uppercase; letter-spacing: 0.08em;">Confianza</span><span style="color: #ece7d8; font-weight: bold;">35</span></div><div class="pista" style="background: #11141d;"><div class="relleno" style="width: 35%; background: #6ba3c7;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #aaa493; text-transform: uppercase; letter-spacing: 0.08em;">Seguridad</span><span style="color: #ece7d8; font-weight: bold;">40</span></div><div class="pista" style="background: #11141d;"><div class="relleno" style="width: 40%; background: #7fb585;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #aaa493; text-transform: uppercase; letter-spacing: 0.08em;">Justicia</span><span style="color: #ece7d8; font-weight: bold;">30</span></div><div class="pista" style="background: #11141d;"><div class="relleno" style="width: 30%; background: #b48ec9;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #aaa493; text-transform: uppercase; letter-spacing: 0.08em;">Legitimidad</span><span style="color: #ece7d8; font-weight: bold;">45</span></div><div class="pista" style="background: #11141d;"><div class="relleno" style="width: 45%; background: #ecb24f; box-shadow: 0 0 8px rgba(236, 178, 79, 0.5);"></div></div></div>
+            </div>
+            <button class="principal a-principal">Continuar →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ B — AMANECER EN EL VALLE ════════ -->
+    <div class="tablero" data-screen-label="B — Amanecer en el Valle">
+      <div class="tablero-etiqueta"><span>B · Amanecer en el Valle — la hora azul</span></div>
+      <div class="marco b-marco">
+        <div>
+          <h2 class="b-display" style="margin: 0 0 10px; font-weight: 700; font-size: 28px; color: #e3aa4f;">Amanecer en el Valle</h2>
+          <p class="concepto b-lectura" style="color: #c4cfc0;">La interfaz vive en la hora azul: la noche sigue ahí, pero el horizonte ya se calienta. La paleta sale directamente del tablero 3D — tierras, río, brotes — para que UI y mundo low-poly sean una sola cosa, como en Terra Nil. El verde-vida actúa de segundo acento: lo que se restaura, brota también en la interfaz. Tipografía humanista y ultra-accesible (Atkinson Hyperlegible, del Braille Institute — una historia que suma ante la IFRC). La más luminosa de las tres: la paz como amanecer, no como noche.</p>
+          <p class="emocion" style="color: #9cab9a;">Emoción: renovación, el día después, vida que vuelve.</p>
+        </div>
+        <div>
+          <p class="seccion-label" style="color: #9cab9a;">Paleta (mismas variables)</p>
+          <div class="paleta" style="color: #9cab9a;">
+            <div class="chip"><div class="chip-color" style="background: #101a1e; border: 1px solid #2c3d3d;"></div><p>--fondo<br />#101a1e</p></div>
+            <div class="chip"><div class="chip-color" style="background: #182428; border: 1px solid #2c3d3d;"></div><p>--tarjeta<br />#182428</p></div>
+            <div class="chip"><div class="chip-color" style="background: #223036; border: 1px solid #2c3d3d;"></div><p>--elevado<br />#223036</p></div>
+            <div class="chip"><div class="chip-color" style="background: #eaefe4;"></div><p>--tinta<br />#eaefe4</p></div>
+            <div class="chip"><div class="chip-color" style="background: #e3aa4f;"></div><p>--acento<br />#e3aa4f</p></div>
+            <div class="chip"><div class="chip-color" style="background: #5d9c64;"></div><p>--paz<br />#5d9c64</p></div>
+            <div class="chip"><div class="chip-color" style="background: #c97b62;"></div><p>--peligro<br />#c97b62</p></div>
+            <div class="chip"><div class="chip-color" style="background: #6fa8c9;"></div><p>--confianza<br />#6fa8c9</p></div>
+          </div>
+        </div>
+        <div class="b-divisor">
+          <p class="seccion-label" style="color: #9cab9a;">Tipografía — Bricolage Grotesque + Atkinson Hyperlegible</p>
+          <p class="b-display" style="margin: 0 0 6px; font-weight: 700; font-size: 25px; line-height: 1.2; color: #eaefe4;">El camino de Miravalle</p>
+          <p class="b-lectura" style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #c4cfc0;">Tras una década de estancamiento militar, ambas partes han aceptado en secreto explorar una salida negociada. Cada decisión está inspirada en dilemas reales.</p>
+        </div>
+        <div class="b-divisor">
+          <p class="seccion-label" style="color: #9cab9a; margin-bottom: 10px;">En contexto</p>
+          <div style="background: #182428; border: 1px solid #2c3d3d; border-radius: 14px; padding: 20px 22px;">
+            <p class="b-lectura" style="margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; color: #e3aa4f;">Fase 2 · Negociación sustantiva</p>
+            <h3 class="b-display" style="margin: 2px 0 8px; font-weight: 500; font-size: 20px; color: #eaefe4;">El dilema de la justicia</h3>
+            <p class="b-lectura" style="margin: 0 0 14px; font-size: 13px; line-height: 1.55; color: #c4cfc0;">El FIM dice: «no negociamos para ir a la cárcel». Las víctimas dicen: «no hay paz sin justicia».</p>
+            <div class="opciones">
+              <button class="opcion b-opcion">Tribunal especial: amnistía solo para delitos políticos; los crímenes graves se juzgan con penas restaurativas.</button>
+              <button class="opcion b-opcion">Amnistía general e incondicional: «borrón y cuenta nueva» para cerrar la guerra rápido.</button>
+            </div>
+            <div class="barras b-lectura">
+              <div><div class="barra-cab"><span style="color: #9cab9a; text-transform: uppercase; letter-spacing: 0.08em;">Confianza</span><span style="color: #eaefe4; font-weight: bold;">35</span></div><div class="pista" style="background: #101a1e; height: 7px;"><div class="relleno" style="width: 35%; background: #6fa8c9;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #9cab9a; text-transform: uppercase; letter-spacing: 0.08em;">Seguridad</span><span style="color: #eaefe4; font-weight: bold;">40</span></div><div class="pista" style="background: #101a1e; height: 7px;"><div class="relleno" style="width: 40%; background: #5d9c64;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #9cab9a; text-transform: uppercase; letter-spacing: 0.08em;">Justicia</span><span style="color: #eaefe4; font-weight: bold;">30</span></div><div class="pista" style="background: #101a1e; height: 7px;"><div class="relleno" style="width: 30%; background: #b48ec9;"></div></div></div>
+              <div><div class="barra-cab"><span style="color: #9cab9a; text-transform: uppercase; letter-spacing: 0.08em;">Legitimidad</span><span style="color: #eaefe4; font-weight: bold;">45</span></div><div class="pista" style="background: #101a1e; height: 7px;"><div class="relleno" style="width: 45%; background: #e3aa4f;"></div></div></div>
+            </div>
+            <button class="principal b-principal">Continuar →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ C — ARCHIVO DE LA PAZ ════════ -->
+    <div class="tablero" data-screen-label="C — Archivo de la Paz">
+      <div class="tablero-etiqueta"><span>C · Archivo de la Paz — verdad documental</span></div>
+      <div class="marco c-marco">
+        <div>
+          <h2 class="c-display" style="margin: 0 0 10px; font-size: 28px; color: #d9a441;">Archivo de la Paz</h2>
+          <p class="concepto c-lectura" style="color: #c6c0ae;">El proceso de paz como archivo vivo: cada decisión es un expediente, cada eco histórico una ficha documental con fecha y fuente. Fichas de papel cálido sobre un escritorio nocturno, pestañas de legajo, metadatos en monoespaciada — La Habana 2012, Belfast 1998, Ciudad de Guatemala 1996. La estética dice lo que el contenido sostiene: «esto pasó de verdad». Gravedad intelectual que impresiona a un jurado; el riesgo a cuidar es no enfriar la calidez humana del juego.</p>
+          <p class="emocion" style="color: #a59f8c;">Emoción: memoria, evidencia, respeto por los hechos.</p>
+        </div>
+        <div>
+          <p class="seccion-label" style="color: #a59f8c;">Paleta (mismas variables)</p>
+          <div class="paleta" style="color: #a59f8c;">
+            <div class="chip"><div class="chip-color" style="background: #131217; border: 1px solid #3b3742;"></div><p>--fondo<br />#131217</p></div>
+            <div class="chip"><div class="chip-color" style="background: #1f1c23; border: 1px solid #3b3742;"></div><p>--tarjeta<br />#1f1c23</p></div>
+            <div class="chip"><div class="chip-color" style="background: #2a262f; border: 1px solid #3b3742;"></div><p>--elevado<br />#2a262f</p></div>
+            <div class="chip"><div class="chip-color" style="background: #e9e2cf;"></div><p>--tinta<br />#e9e2cf</p></div>
+            <div class="chip"><div class="chip-color" style="background: #d9a441;"></div><p>--acento<br />#d9a441</p></div>
+            <div class="chip"><div class="chip-color" style="background: #7fae87;"></div><p>--paz<br />#7fae87</p></div>
+            <div class="chip"><div class="chip-color" style="background: #c47465;"></div><p>--peligro<br />#c47465</p></div>
+            <div class="chip"><div class="chip-color" style="background: #3b3742;"></div><p>--borde<br />#3b3742</p></div>
+          </div>
+        </div>
+        <div class="c-divisor">
+          <p class="seccion-label" style="color: #a59f8c;">Tipografía — IBM Plex Serif + IBM Plex Mono</p>
+          <p class="c-display" style="margin: 0 0 6px; font-size: 25px; line-height: 1.2; color: #e9e2cf;">El camino de Miravalle</p>
+          <p class="c-lectura" style="margin: 0 0 6px; font-size: 13.5px; line-height: 1.6; color: #c6c0ae;">Tras una década de estancamiento militar, ambas partes han aceptado en secreto explorar una salida negociada.</p>
+          <p class="c-mono" style="margin: 0; font-size: 10.5px; color: #a59f8c; letter-spacing: 0.04em;">FUENTE: ACUERDO GENERAL · LA HABANA, 2012</p>
+        </div>
+        <div class="c-divisor">
+          <p class="seccion-label" style="color: #a59f8c; margin-bottom: 10px;">En contexto</p>
+          <div>
+            <div class="c-mono" style="display: inline-block; background: #2a262f; border: 1px solid #3b3742; border-bottom: none; border-radius: 7px 7px 0 0; padding: 4px 14px; font-size: 9.5px; color: #d9a441; letter-spacing: 0.08em;">EXP. 02-04 · JUSTICIA</div>
+            <div style="background: #1f1c23; border: 1px solid #3b3742; border-radius: 0 10px 10px 10px; padding: 20px 22px;">
+              <h3 class="c-display" style="margin: 0 0 8px; font-size: 20px; color: #e9e2cf;">El dilema de la justicia</h3>
+              <p class="c-lectura" style="margin: 0 0 14px; font-size: 13px; line-height: 1.6; color: #c6c0ae;">El FIM dice: «no negociamos para ir a la cárcel». Las víctimas dicen: «no hay paz sin justicia».</p>
+              <div class="opciones">
+                <button class="opcion c-opcion">Tribunal especial: amnistía solo para delitos políticos; los crímenes graves se juzgan con penas restaurativas.</button>
+                <button class="opcion c-opcion">Amnistía general e incondicional: «borrón y cuenta nueva» para cerrar la guerra rápido.</button>
+              </div>
+              <div class="barras c-mono">
+                <div><div class="barra-cab" style="font-size: 9.5px;"><span style="color: #a59f8c;">CONFIANZA</span><span style="color: #e9e2cf;">35</span></div><div class="pista" style="background: #131217; border-radius: 2px;"><div class="relleno" style="width: 35%; background: #6ba3c7; border-radius: 2px;"></div></div></div>
+                <div><div class="barra-cab" style="font-size: 9.5px;"><span style="color: #a59f8c;">SEGURIDAD</span><span style="color: #e9e2cf;">40</span></div><div class="pista" style="background: #131217; border-radius: 2px;"><div class="relleno" style="width: 40%; background: #7fae87; border-radius: 2px;"></div></div></div>
+                <div><div class="barra-cab" style="font-size: 9.5px;"><span style="color: #a59f8c;">JUSTICIA</span><span style="color: #e9e2cf;">30</span></div><div class="pista" style="background: #131217; border-radius: 2px;"><div class="relleno" style="width: 30%; background: #b48ec9; border-radius: 2px;"></div></div></div>
+                <div><div class="barra-cab" style="font-size: 9.5px;"><span style="color: #a59f8c;">LEGITIMIDAD</span><span style="color: #e9e2cf;">45</span></div><div class="pista" style="background: #131217; border-radius: 2px;"><div class="relleno" style="width: 45%; background: #d9a441; border-radius: 2px;"></div></div></div>
+              </div>
+              <button class="principal c-principal">Continuar →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="centrado" style="margin-top: 36px; background: rgba(232, 176, 75, 0.07); border: 1px solid rgba(232, 176, 75, 0.3); border-radius: 10px; padding: 20px 24px;">
+    <p style="margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; color: #e8b04b;">Recomendación: A · Vela y Tinta</p>
+    <p style="margin: 0; font-size: 14px; line-height: 1.65; color: #c9c5b8; max-width: 980px;">Para un jurado internacional y un video de 3 minutos, A es la apuesta más segura y la más cinematográfica: el glow ámbar sobre azul-noche lee de inmediato como «luz que resiste en la oscuridad» — la metáfora exacta del juego — y se proyecta bien en talleres con luz ambiente. El 3D existente ya usa el ámbar #e8b04b como luz cálida, así que la integración es directa (B obligaría a retocar la paleta del tablero; C arriesga frialdad con contenido sensible). Y conserva la inversión actual: mismas variables, evolución sin refactor. Si quieres diferenciarte más del «indie oscuro» típico, B es la alternativa valiente: la única de las tres que se siente como un amanecer.</p>
+  </div>
+
+</div>
+</body>
+</html>

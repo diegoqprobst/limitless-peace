@@ -1,0 +1,43 @@
+/* ─────────────────────────────────────────────────────────────
+   Limitless Peace — global base styles + keyframes
+   Mirrors the body treatment in the game's src/styles.css.
+   ───────────────────────────────────────────────────────────── */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  background-image: radial-gradient(ellipse at top, var(--fondo-brillo) 0%, var(--fondo) 60%);
+  color: var(--tinta);
+  font-family: var(--font-serif);
+  font-size: var(--font-base-size);
+  line-height: var(--leading-body);
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Screen / modal entrance: fade in + gentle 8px rise */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Critical-state pulse (low indicator bars, alert chips) */
+@keyframes pulso {
+  50% {
+    opacity: 0.55;
+  }
+}

@@ -2,22 +2,33 @@
    Limitless Peace — estética indie: papel oscuro, tinta cálida.
    ───────────────────────────────────────────────────────────── */
 
+/* Dirección de arte "Vela y Tinta" (design system, jun 2026):
+   papel oscuro más profundo, ámbar más luminoso, halos de vela,
+   tipografía editorial Newsreader + Source Serif 4. */
 :root {
-  --fondo: #14161d;
-  --fondo-tarjeta: #1d2029;
-  --fondo-elevado: #262a36;
-  --tinta: #e8e4d9;
-  --tinta-suave: #a8a496;
-  --acento: #e8b04b; /* ámbar: la luz de la vela del negociador */
-  --acento-suave: #c4953f;
+  --fondo: #11141d;
+  --fondo-tarjeta: #1b1f2a;
+  --fondo-elevado: #252a38;
+  --fondo-brillo: #1c2030;
+  --tinta: #ece7d8;
+  --tinta-suave: #aaa493;
+  --acento: #ecb24f; /* ámbar: la luz de la vela del negociador */
+  --acento-suave: #d9a13f;
   --paz: #7fb585;
   --peligro: #d4756b;
   --confianza: #6ba3c7;
   --seguridad: #7fb585;
   --justicia: #b48ec9;
-  --legitimidad: #e8b04b;
-  --borde: #353a49;
+  --legitimidad: #ecb24f;
+  --borde: #363c4d;
   --radio: 10px;
+  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-lectura: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  /* halos de vela: la luz ámbar gana presencia en los momentos clave */
+  --halo-boton: 0 0 22px rgba(236, 178, 79, 0.3);
+  --halo-opcion: 0 0 14px rgba(236, 178, 79, 0.12);
+  --halo-titulo: 0 0 28px rgba(236, 178, 79, 0.35);
+  --halo-barra: 0 0 8px rgba(236, 178, 79, 0.5);
   font-size: 16px;
 }
 
@@ -28,11 +39,22 @@
 body {
   margin: 0;
   background: var(--fondo);
-  background-image: radial-gradient(ellipse at top, #1a1e2a 0%, var(--fondo) 60%);
+  background-image: radial-gradient(ellipse at 50% -10%, var(--fondo-brillo) 0%, var(--fondo) 60%);
   color: var(--tinta);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-lectura);
   line-height: 1.6;
   min-height: 100vh;
+}
+
+/* Grano de papel: textura sutil sobre toda la escena (Vela y Tinta). */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 button {
@@ -98,7 +120,7 @@ button {
 
 .opcion-idioma.activo {
   background: var(--acento);
-  color: #14161d;
+  color: var(--fondo);
 }
 
 .boton-codex {
@@ -116,7 +138,7 @@ button {
 
 .contador-codex {
   background: var(--acento);
-  color: #14161d;
+  color: var(--fondo);
   border-radius: 999px;
   padding: 0 0.45rem;
   margin-left: 0.4rem;
@@ -197,7 +219,7 @@ button {
   display: block;
   margin: 1.5rem auto 0;
   background: var(--acento);
-  color: #14161d;
+  color: var(--fondo);
   border: none;
   border-radius: var(--radio);
   padding: 0.8rem 2rem;
@@ -256,7 +278,7 @@ button {
 .fase.activa {
   border-color: var(--acento);
   color: var(--acento);
-  background: rgba(232, 176, 75, 0.08);
+  background: rgba(236, 178, 79, 0.08);
 }
 
 .fase.completada {
@@ -402,7 +424,7 @@ button {
 
 .opcion:hover {
   border-color: var(--acento);
-  background: rgba(232, 176, 75, 0.07);
+  background: rgba(236, 178, 79, 0.07);
 }
 
 /* ── Retroalimentación ── */
@@ -430,7 +452,7 @@ button {
 }
 
 .chip-codex {
-  background: rgba(232, 176, 75, 0.12);
+  background: rgba(236, 178, 79, 0.12);
   border: 1px solid var(--acento-suave);
   color: var(--acento);
   border-radius: 999px;
@@ -567,7 +589,7 @@ button {
 
 .codex-item.descubierto {
   color: var(--tinta);
-  border-color: rgba(232, 176, 75, 0.45);
+  border-color: rgba(236, 178, 79, 0.45);
 }
 
 .codex-item:hover {
@@ -611,8 +633,8 @@ button {
 }
 
 .caja-reflexion {
-  background: rgba(232, 176, 75, 0.07);
-  border: 1px solid rgba(232, 176, 75, 0.3);
+  background: rgba(236, 178, 79, 0.07);
+  border: 1px solid rgba(236, 178, 79, 0.3);
   border-radius: var(--radio);
   padding: 0.9rem 1.1rem;
   margin-top: 1.25rem;
@@ -798,7 +820,7 @@ button {
   margin: 1.25rem 0;
   padding: 0.9rem 1.2rem;
   border-left: 3px solid var(--acento);
-  background: rgba(232, 176, 75, 0.06);
+  background: rgba(236, 178, 79, 0.06);
   font-size: 1.05rem;
   font-style: italic;
 }
@@ -852,7 +874,7 @@ button {
 }
 
 .celda-casa.poblada {
-  box-shadow: 0 0 10px rgba(232, 176, 75, 0.45);
+  box-shadow: 0 0 10px rgba(236, 178, 79, 0.45);
 }
 
 .paleta {
@@ -890,7 +912,7 @@ button {
 
 .paleta-item.activa {
   border-color: var(--acento);
-  background: rgba(232, 176, 75, 0.12);
+  background: rgba(236, 178, 79, 0.12);
 }
 
 .paleta-item.sin-fondos {
@@ -959,8 +981,8 @@ button {
 .eco-historico {
   margin-top: 1.1rem;
   padding: 0.9rem 1.1rem;
-  background: rgba(232, 176, 75, 0.05);
-  border: 1px solid rgba(232, 176, 75, 0.25);
+  background: rgba(236, 178, 79, 0.05);
+  border: 1px solid rgba(236, 178, 79, 0.25);
   border-radius: var(--radio);
 }
 
@@ -1026,4 +1048,40 @@ button {
   .tarjeta {
     padding: 1.1rem 1.2rem;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Vela y Tinta — capa de identidad (design system, jun 2026).
+   Tipografía editorial en los momentos display y halos de vela
+   en los elementos clave. El resto del sistema queda intacto.
+   ───────────────────────────────────────────────────────────── */
+
+.titulo-juego,
+.titulo-final,
+.nodo h2,
+.evento-titulo,
+.modo-nombre,
+.historia-titulo,
+.historias-titulo h1,
+.codex-detalle h3,
+.codex-cabecera h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.titulo-juego,
+.historias-titulo h1 {
+  text-shadow: var(--halo-titulo);
+}
+
+.boton-principal {
+  box-shadow: var(--halo-boton);
+}
+
+.opcion:hover {
+  box-shadow: var(--halo-opcion);
+}
+
+.barra-relleno.legitimidad {
+  box-shadow: var(--halo-barra);
 }

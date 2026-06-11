@@ -1,0 +1,41 @@
+/* ─────────────────────────────────────────────────────────────
+   Limitless Peace — typography tokens
+   One family: a warm system serif (Georgia). Headings are
+   NORMAL weight — never bold. Bold is reserved for buttons,
+   inline emphasis (<strong>) and values. Uppercase letterspaced
+   labels carry the editorial structure.
+   No webfont binaries exist: Georgia ships with macOS/Windows.
+   (Nearest Google Fonts match if needed: Gelasio.)
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-base-size: 16px;
+
+  /* ── Scale (used verbatim in the game) ── */
+  --text-overline: 0.7rem;     /* tiny uppercase labels (codex category) */
+  --text-label: 0.72rem;       /* uppercase section labels, phase names */
+  --text-overtitle: 0.78rem;   /* sobretitulo, footer */
+  --text-caption: 0.85rem;     /* chips, small UI */
+  --text-small: 0.92rem;       /* descriptions, intros */
+  --text-ui: 0.95rem;          /* option buttons, list items */
+  --text-body: 1rem;
+  --text-body-lg: 1.05rem;     /* summary, lede, primary button */
+  --text-h3: 1.4rem;           /* mode card name */
+  --text-h2: 1.5rem;           /* codex entry title, event title */
+  --text-h1: 1.6rem;           /* decision node title */
+  --text-final: 2.2rem;        /* ending title */
+  --text-display: 2.6rem;      /* game title */
+
+  /* ── Letterspacing ── */
+  --tracking-logo: 0.05em;     /* logo, language toggle */
+  --tracking-indicator: 0.08em;/* indicator names */
+  --tracking-label: 0.12em;    /* role-box headings, tags */
+  --tracking-overline: 0.14em; /* etiqueta-fase, etiqueta-retro */
+  --tracking-display: 0.18em;  /* sobretitulo over the title */
+
+  /* ── Line heights ── */
+  --leading-body: 1.6;         /* page default */
+  --leading-ui: 1.5;           /* options, descriptions */
+  --leading-prose: 1.7;        /* long story paragraphs */
+}

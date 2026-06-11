@@ -1,0 +1,44 @@
+/* ─────────────────────────────────────────────────────────────
+   Limitless Peace — spacing, radii, borders, layout, motion
+   rem-based rhythm; one corner radius for nearly everything.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Radii ── */
+  --radio: 10px;               /* THE radius: cards, buttons, options, boxes */
+  --radio-pildora: 999px;      /* pills: chips, counters, bars, tags */
+  --radio-celda: 6px;          /* small grid cells (Territory board) */
+  --radio-circulo: 50%;        /* close button */
+
+  /* ── Borders ── */
+  --borde-fino: 1px;           /* hairline on every surface */
+  --borde-acento: 3px;         /* left accent rule: feedback cards, quotes */
+
+  /* ── Spacing rhythm (as used in the game) ── */
+  --esp-1: 0.25rem;
+  --esp-2: 0.5rem;
+  --esp-3: 0.75rem;
+  --esp-4: 1rem;
+  --esp-5: 1.25rem;            /* card gaps, app gutter */
+  --esp-6: 1.5rem;             /* section gaps, card padding-y */
+  --esp-7: 1.75rem;            /* card padding-x */
+  --esp-8: 2rem;               /* screen padding-y, button padding-x */
+  --esp-9: 3rem;               /* page bottom padding */
+
+  /* ── Layout ── */
+  --ancho-app: 820px;          /* single centered column */
+  --ancho-modal: 680px;        /* codex panel */
+  --ancho-panel: 640px;        /* story panel */
+
+  /* ── Shadows (the only two in the product) ── */
+  --sombra-vela: 0 0 10px rgba(232, 176, 75, 0.45); /* amber glow (inhabited house) */
+  /* cards have NO drop shadow — they are defined by border + surface color */
+
+  /* ── Motion ── */
+  --anim-aparecer: aparecer 0.4s ease-out; /* @kind other */ /* screen enter: fade + 8px rise */
+  --anim-aparecer-rapido: aparecer 0.25s ease-out; /* @kind other */ /* modal enter */
+  --transicion-borde: border-color 0.15s ease, background 0.15s ease; /* @kind other */
+  --transicion-boton: transform 0.1s ease; /* @kind other */
+  --transicion-barra: width 0.6s ease; /* @kind other */ /* indicator bar fill */
+  --transicion-celda: background 0.5s ease; /* @kind other */
+}
