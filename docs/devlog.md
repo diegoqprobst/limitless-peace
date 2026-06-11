@@ -245,3 +245,16 @@ Se implementó aquí lo que la dirección define:
 
 **Verificación:** build limpio; en navegador, menú y pantalla de inicio muestran
 Newsreader con halo, Source Serif 4 en lectura, nueva paleta y grano.
+
+## 2026-06-11 · Despliegue público en Vercel — el juego ve la luz 🚀
+
+- **Producción:** https://limitless-peace.vercel.app (proyecto `limitless-peace`,
+  hosting gratuito, HTTPS, CDN global).
+- **CI/CD:** el proyecto quedó conectado al repo de GitHub — cada push a `main`
+  despliega producción automáticamente; cada rama genera URL de preview.
+- **Dominio propio:** `peace.diegoquinde.com` agregado al proyecto; pendiente solo
+  el registro DNS en Cloudflare (A `peace` → `76.76.21.21`, DNS only).
+- **Costo: 0.** No hay "hosting que contratar": la app es estática y Vercel la sirve
+  gratis. El presupuesto de dominio puede reservarse para un dominio de marca
+  (p. ej. limitlesspeace.org) si la candidatura lo amerita.
+- Hito del Nivel 0 de la hoja de ruta: **URL pública jugable** ✓
