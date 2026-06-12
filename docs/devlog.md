@@ -258,3 +258,9 @@ Newsreader con halo, Source Serif 4 en lectura, nueva paleta y grano.
   gratis. El presupuesto de dominio puede reservarse para un dominio de marca
   (p. ej. limitlesspeace.org) si la candidatura lo amerita.
 - Hito del Nivel 0 de la hoja de ruta: **URL pública jugable** ✓
+
+## 2026-06-12 · peace.diegoquinde.com en vivo
+
+Registro A creado en Cloudflare (DNS only), certificado emitido con `vercel certs issue`.
+**https://peace.diegoquinde.com** responde 200 con el juego. URL definitiva hasta que la
+candidatura amerite dominio propio de marca.
