@@ -94,6 +94,12 @@ export interface ContextoEvento {
   fondos: number;
   /** Hay una planta potabilizadora construida (cadena aluvión→enfermedad). */
   hayAgua: boolean;
+  /** Hay centro de distribución de alimentos (cadena retorno frágil). */
+  hayAlimentos: boolean;
+  /** Hay escuela o cancha (cadena reclutamiento juvenil). */
+  hayEducacion: boolean;
+  /** Familias retornadas hasta ahora. */
+  familias: number;
   /** Eventos ya ocurridos: permite encadenar consecuencias. */
   vistos: string[];
   /** Umbral de seguridad bajo el cual llega la incursión (según dificultad). */

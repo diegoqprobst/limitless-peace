@@ -254,11 +254,15 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
   const mes = estado.mes + 1;
   const fondos = Math.max(0, estado.fondos + ingresoMensual(nivel, estado.celdas, estado.dificultad));
 
+  const planas = estado.celdas.flat();
   const ctx: ContextoEvento = {
     mes,
     minas: contarMinas(estado.celdas),
     fondos,
-    hayAgua: estado.celdas.flat().some((c) => c.edificio === 'agua'),
+    hayAgua: planas.some((c) => c.edificio === 'agua'),
+    hayAlimentos: planas.some((c) => c.edificio === 'alimentos'),
+    hayEducacion: planas.some((c) => c.edificio === 'escuela' || c.edificio === 'cancha'),
+    familias: contarFamilias(estado.celdas).pobladas,
     vistos: estado.eventosVistos,
     umbralIncursion: DIFICULTADES[estado.dificultad].umbralIncursion,
   };

@@ -1209,3 +1209,63 @@ button {
 .barra-relleno.legitimidad {
   box-shadow: var(--halo-barra);
 }
+
+/* ── Modo Expediente ── */
+.expediente-lugar {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.expediente-progreso {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.expediente-punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde);
+}
+
+.expediente-punto.pasado {
+  background: var(--acento-suave);
+  border-color: var(--acento-suave);
+}
+
+.expediente-punto.actual {
+  background: var(--acento);
+  border-color: var(--acento);
+  box-shadow: var(--halo-barra);
+}
+
+.expediente-pregunta {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--acento);
+  margin: 0 0 0.9rem;
+}
+
+.expediente-veredicto {
+  font-weight: 700;
+  margin: 0.75rem 0;
+}
+
+.expediente-veredicto.coincide {
+  color: var(--paz);
+}
+
+.expediente-veredicto.difiere {
+  color: #d4a76b;
+}
+
+.expediente-subtitulo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 1.1rem 0 0.35rem;
+}

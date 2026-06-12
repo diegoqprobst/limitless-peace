@@ -81,5 +81,26 @@ check('derrota cuando un indicador cae a ≤10', e3.fase === 'fracaso');
 const fam = contarFamilias(e.celdas);
 check('conteo de familias coherente', fam.total === 6, `total=${fam.total}`);
 
+
+// ── Cadenas causales nuevas ──
+// Brote: lluvias vistas + sin agua + mes>=7
+let e4 = crearEstado(NIVEL_VALLE);
+e4 = { ...e4, fase: 'jugando', mes: 6, eventosVistos: ['lluvias', 'retorno-excombatientes', 'rumor-memorial', 'incursion', 'accidente-mina'], indicadores: { ...e4.indicadores, seguridad: 80 } };
+e4 = avanzarMes(e4, NIVEL_VALLE);
+check('cadena aluvión→brote se dispara sin potabilizadora', e4.eventoActivo?.id === 'brote');
+
+// Brote PREVENIDO si hay planta de agua
+let e5 = crearEstado(NIVEL_VALLE);
+e5 = { ...e5, fase: 'jugando', mes: 6, fondos: 200, herramienta: 'agua', eventosVistos: ['lluvias', 'retorno-excombatientes', 'rumor-memorial', 'incursion', 'accidente-mina'], indicadores: { ...e5.indicadores, seguridad: 80 } };
+e5 = actuar(e5, NIVEL_VALLE, 2, 2);
+e5 = avanzarMes(e5, NIVEL_VALLE);
+check('la potabilizadora PREVIENE el brote', e5.eventoActivo?.id !== 'brote', `evento=${e5.eventoActivo?.id ?? 'ninguno'}`);
+
+// Reclutamiento: sin escuela/cancha a mes>=9
+let e6 = crearEstado(NIVEL_VALLE);
+e6 = { ...e6, fase: 'jugando', mes: 8, eventosVistos: ['lluvias', 'brote', 'retorno-excombatientes', 'rumor-memorial', 'incursion', 'accidente-mina', 'retorno-fragil'], indicadores: { ...e6.indicadores, seguridad: 80 } };
+e6 = avanzarMes(e6, NIVEL_VALLE);
+check('cadena juventud→reclutamiento sin escuela ni cancha', e6.eventoActivo?.id === 'reclutamiento');
+
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);

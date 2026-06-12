@@ -323,3 +323,29 @@ enfermedades) — con análisis de gamificación sistémica.
   centro de distribución (nivel 2), y el "modo Expediente" para gamificar procesos reales:
   Irlanda del Norte como primer candidato y ETA como caso especial (final sin acuerdo;
   requiere revisión experta y la lectura pendiente de Diego). Prioridades impacto÷esfuerzo.
+
+## 2026-06-12 · Expediente Irlanda del Norte + cadenas causales completas
+
+**Contexto:** Diego compró *No digas nada* (Keefe) — el libro de los Troubles y la memoria.
+Sincronía perfecta para ejecutar las prioridades 2 y 3 del análisis sistémico.
+
+- **Cadenas causales 2 y 3 (modo Territorio):**
+  - *La canasta vacía* (familias ≥2 + sin centro de alimentos, mes 8+): el retorno sin
+    seguridad alimentaria es una visita, no un retorno.
+  - *Los que rondan a los muchachos* (sin escuela ni cancha, mes 9+): la tarde vacía es
+    el primer reclutador. Ambas PREVENIBLES construyendo a tiempo — igual que el brote.
+  - Tests del motor: 17/20 → ahora 20 verificaciones, incluida la prevención (potabilizadora
+    construida → el brote NO ocurre).
+- **Nuevo modo: 📂 El Expediente — "Irlanda del Norte: el camino al Viernes Santo".**
+  Historia real, decisión por decisión: 7 escenas fechadas (Hume–Adams 1988, el canal
+  secreto 1990-93, la precondición del desarme 1995, Sinn Féin a la mesa 1997, los presos
+  1998, los referendos, Omagh). El jugador decide ANTES de saber qué ocurrió; luego el
+  expediente "se abre": qué se decidió, qué pasó, y la lección — **incluida la escena 3,
+  donde la decisión histórica fue un error** (la precondición congeló el proceso y costó
+  Canary Wharf). Cierre con coincidencias X/7, recomendación de *No digas nada* y enlaces
+  (Acuerdo de Belfast, CAIN). Cuarta tarjeta en el menú. Arquitectura: datos puros
+  (`data/expediente-irlanda.ts`) + componente liviano; un expediente nuevo = un archivo.
+- **Verificación:** build limpio; 20/20 tests; en navegador: 4 tarjetas, escena 1 jugada,
+  veredicto "✓ Coincidiste", revelación y chips del códex funcionando.
+- **Pendiente música:** Diego compondrá el fondo (Logic/Audition/AI). Integración lista
+  para recibir un loop (toggle 🔊, apagado por defecto para talleres).

@@ -4,9 +4,15 @@ interface Props {
   onElegirMesa: () => void;
   onElegirTerritorio: () => void;
   onElegirMemoria: () => void;
+  onElegirExpediente: () => void;
 }
 
-export function MenuPrincipal({ onElegirMesa, onElegirTerritorio, onElegirMemoria }: Props) {
+export function MenuPrincipal({
+  onElegirMesa,
+  onElegirTerritorio,
+  onElegirMemoria,
+  onElegirExpediente,
+}: Props) {
   const { lang } = useLang();
   const es = lang === 'es';
 
@@ -59,6 +65,19 @@ export function MenuPrincipal({ onElegirMesa, onElegirTerritorio, onElegirMemori
           </span>
           <span className="modo-etiqueta">
             {es ? 'Historias reales · 3D' : 'True stories · 3D'}
+          </span>
+        </button>
+
+        <button className="tarjeta modo-tarjeta" onClick={onElegirExpediente}>
+          <span className="modo-emoji">📂</span>
+          <span className="modo-nombre">{es ? 'El Expediente' : 'The Case File'}</span>
+          <span className="modo-descripcion">
+            {es
+              ? 'Irlanda del Norte, 1988–1998: toma las siete decisiones reales del proceso antes de saber qué ocurrió de verdad.'
+              : 'Northern Ireland, 1988–1998: make the seven real decisions of the process before knowing what actually happened.'}
+          </span>
+          <span className="modo-etiqueta">
+            {es ? 'Historia jugable · 15 min' : 'Playable history · 15 min'}
           </span>
         </button>
       </div>

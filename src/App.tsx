@@ -10,13 +10,14 @@ import { Codex } from './components/Codex';
 import { lazy, Suspense } from 'react';
 import { MenuPrincipal } from './components/MenuPrincipal';
 import { Territorio } from './components/Territorio';
+import { Expediente } from './components/Expediente';
 
 /** El Jardín de la Memoria usa Three.js: se descarga solo al entrar. */
 const Historias = lazy(() =>
   import('./components/Historias').then((m) => ({ default: m.Historias })),
 );
 
-type Modo = 'menu' | 'mesa' | 'territorio' | 'memoria';
+type Modo = 'menu' | 'mesa' | 'territorio' | 'memoria' | 'expediente';
 
 interface RetroPendiente {
   opcion: Opcion;
@@ -198,6 +199,10 @@ function Shell() {
     );
   }
 
+  if (modo === 'expediente') {
+    return <Expediente onVolverMenu={() => setModo('menu')} />;
+  }
+
   if (modo === 'memoria') {
     return (
       <div className="app">
@@ -232,6 +237,7 @@ function Shell() {
         onElegirMesa={() => setModo('mesa')}
         onElegirTerritorio={() => setModo('territorio')}
         onElegirMemoria={() => setModo('memoria')}
+        onElegirExpediente={() => setModo('expediente')}
       />
       <footer className="pie">{ui.footer}</footer>
     </div>

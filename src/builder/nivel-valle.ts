@@ -300,5 +300,71 @@ export const NIVEL_VALLE: NivelTerritorio = {
         },
       ],
     },
+    {
+      // Cadena: familias retornadas + sin seguridad alimentaria → el retorno se vuelve frágil.
+      id: 'retorno-fragil',
+      condicion: (_ind, ctx) => ctx.familias >= 2 && !ctx.hayAlimentos && ctx.mes >= 8,
+      titulo: 'La canasta vacía',
+      texto:
+        'Las familias volvieron — pero comer aquí cuesta el doble que en la ciudad: todo llega de ' +
+        'lejos, cuando llega. Dos madres te lo dicen sin rodeos: "Volvimos por la tierra, pero si ' +
+        'mis hijos pasan hambre, nos regresamos a los albergues".',
+      opciones: [
+        {
+          texto: 'Montar distribución de alimentos de emergencia y acelerar el centro permanente.',
+          efectos: { confianza: 4, legitimidad: 3 },
+          fondos: -20,
+          retro:
+            'El retorno sin seguridad alimentaria es una visita, no un retorno. La doctrina ' +
+            'humanitaria lo trata como condición de sostenibilidad: si la canasta básica no está ' +
+            'al alcance, las familias votarán con los pies — y cada familia que se va desanda a ' +
+            'todas las demás.',
+          codex: ['respuesta-humanitaria'],
+        },
+        {
+          texto: 'Confiar en que el mercado local lo resolverá con el tiempo.',
+          efectos: { confianza: -7, legitimidad: -5 },
+          retro:
+            'El mercado resolverá — en años. Las familias deciden en semanas. La diferencia entre ' +
+            'esas dos velocidades es exactamente el espacio que la asistencia alimentaria de ' +
+            'transición existe para cubrir. Sin ella, el retorno que celebraste se convierte en ' +
+            'una segunda partida.',
+          codex: ['respuesta-humanitaria'],
+        },
+      ],
+    },
+    {
+      // Cadena: sin escuela ni cancha → la juventud queda disponible para quien sí la busca.
+      id: 'reclutamiento',
+      condicion: (_ind, ctx) => !ctx.hayEducacion && ctx.mes >= 9,
+      titulo: 'Los que rondan a los muchachos',
+      texto:
+        'Un campesino te lo cuenta en voz baja: motos desconocidas pasan por las tardes y hablan ' +
+        'con los adolescentes. Ofrecen plata, teléfono, "respeto". En el valle no hay escuela ni ' +
+        'cancha ni nada que dispute esas tardes — y las disidencias lo saben.',
+      opciones: [
+        {
+          texto: 'Levantar de urgencia espacios para la juventud: aula provisional y cancha, con monitores de la comunidad.',
+          efectos: { confianza: 4, seguridad: 3 },
+          fondos: -25,
+          retro:
+            'El reclutamiento no empieza con ideología: empieza con una tarde vacía. La protección ' +
+            'de la niñez en emergencias trata la escuela como lo que es — un escudo: cada hora de ' +
+            'aula o de cancha es una hora que el reclutador no tiene. Llegaste tarde, pero llegaste ' +
+            'antes que ellos.',
+          codex: ['ddr'],
+        },
+        {
+          texto: 'Hablar con las familias para que cuiden a sus hijos: no hay presupuesto para más.',
+          efectos: { seguridad: -8, confianza: -6 },
+          retro:
+            'Las familias ya cuidan — contra una oferta organizada de dinero y pertenencia, cuidar ' +
+            'no alcanza. Donde el posconflicto no construye futuro para los jóvenes, el conflicto ' +
+            'siguiente ya tiene quién lo pelee. El valle acaba de aprender la lección más cara de ' +
+            'todas las reconstrucciones.',
+          codex: ['ddr', 'garantias-seguridad'],
+        },
+      ],
+    },
   ],
 };

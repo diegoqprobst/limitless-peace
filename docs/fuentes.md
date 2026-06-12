@@ -100,3 +100,19 @@ cita textual no está sólidamente documentada, no se incluye.
 - **Nota sobre el emblema:** la "base humanitaria" del juego es deliberadamente neutra
   (carpa sin emblema): el uso de la cruz roja/media luna roja está protegido por los
   Convenios de Ginebra y reservado a usos autorizados.
+
+## Fuentes del Expediente: Irlanda del Norte
+
+- **Archivo CAIN** (Conflict Archive on the INternet, Ulster University) — cronología y
+  documentos primarios de los Troubles y el proceso de paz.
+- **Texto del Acuerdo de Belfast / Viernes Santo (10-4-1998)** — gobierno compartido,
+  principio de consentimiento, liberación anticipada de presos (428 liberados).
+- **Comisión Mitchell (informe, enero 1996)** — desarme en paralelo a la negociación;
+  ignorado en 1995-96 ("Washington 3"), adoptado desde 1997.
+- Hechos citados: encuentros Hume–Adams (1988, 1993); canal secreto británico–IRA
+  (1990-93, revelado nov. 1993); Declaración de Downing Street (dic. 1993); cese del IRA
+  (31-8-1994) y ruptura en Canary Wharf (9-2-1996); Principios Mitchell y entrada de Sinn
+  Féin (sept. 1997); referendos simultáneos (22-5-1998: 71,1% / 94,4%); atentado de Omagh
+  (15-8-1998, 29 muertos, "IRA Auténtico"); fin del desarme del IRA (sept. 2005, IICD).
+- **Lectura recomendada en el cierre del Expediente:** *No digas nada* (P. R. Keefe) —
+  el caso Jean McConville, memoria y silencio tras el conflicto.
