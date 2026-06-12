@@ -21,8 +21,13 @@ function hash(i: number, k: number): number {
   return s - Math.floor(s);
 }
 
-/** Placa con el nombre, dibujada en canvas (sin fuentes externas). */
+/**
+ * Placa con el nombre, dibujada en canvas (sin fuentes externas).
+ * Plano con billboard manual (mirando siempre a cámara): los sprites de
+ * three dejaron de renderizar en esta escena (r184), el plano es robusto.
+ */
 function PlacaNombre({ nombre, y }: { nombre: string; y: number }) {
+  const ref = useRef<THREE.Mesh>(null);
   const textura = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
@@ -37,14 +42,20 @@ function PlacaNombre({ nombre, y }: { nombre: string; y: number }) {
     ctx.shadowBlur = 8;
     ctx.fillText(nombre, 256, 48);
     const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 4;
     return t;
   }, [nombre]);
 
+  useFrame(({ camera }) => {
+    ref.current?.quaternion.copy(camera.quaternion);
+  });
+
   return (
-    <sprite position={[0, y, 0]} scale={[2.6, 0.5, 1]}>
-      <spriteMaterial map={textura} transparent depthWrite={false} />
-    </sprite>
+    <mesh ref={ref} position={[0, y, 0]} scale={[2.6, 0.5, 1]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={textura} transparent depthWrite={false} side={THREE.DoubleSide} />
+    </mesh>
   );
 }
 

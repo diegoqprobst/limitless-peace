@@ -201,7 +201,7 @@ export const NIVEL_VALLE: NivelTerritorio = {
   eventosCondicionales: [
     {
       id: 'incursion',
-      condicion: (ind, ctx) => ind.seguridad < 40 && ctx.mes >= 3,
+      condicion: (ind, ctx) => ind.seguridad < ctx.umbralIncursion && ctx.mes >= 3,
       titulo: 'La incursión',
       texto:
         'Lo que temías: un grupo armado disidente entra de noche al valle. Saben que aquí hay ' +
@@ -237,6 +237,39 @@ export const NIVEL_VALLE: NivelTerritorio = {
           'probar la puerta cuando la paz avanza. Su respuesta nunca fue rendirse ni devolver el ' +
           'golpe: fue cerrar los vacíos — con presencia, con diálogo, con comunidad organizada.',
       },
+    },
+    {
+      // Cadena lógica: aluvión (mes 5) + sin planta potabilizadora → brote.
+      // Construir agua a tiempo PREVIENE este evento por completo.
+      id: 'brote',
+      condicion: (_ind, ctx) => ctx.vistos.includes('lluvias') && !ctx.hayAgua && ctx.mes >= 7,
+      titulo: 'El agua que enferma',
+      texto:
+        'Era predecible y nadie lo previno: tras la creciente, los pozos quedaron contaminados ' +
+        'y el valle no tiene planta potabilizadora. Primero fueron los niños — diarreas, ' +
+        'fiebre — y ahora hay una fila frente al puesto de salud que le da la vuelta a la plaza.',
+      opciones: [
+        {
+          texto: 'Respuesta de emergencia: agua segura en camiones + campaña de salud, mientras se instala la potabilizadora.',
+          efectos: { seguridad: 2, confianza: 3 },
+          fondos: -30,
+          retro:
+            'Caro, tarde — y correcto. La secuencia inundación → agua contaminada → brote es de las ' +
+            'más documentadas en la respuesta humanitaria: por eso las ERU de agua y saneamiento se ' +
+            'despliegan ANTES de que la gente enferme, no después. El estándar Esfera existe porque ' +
+            'esta cadena mata más que muchas balas.',
+          codex: ['respuesta-humanitaria'],
+        },
+        {
+          texto: 'Tratar los casos en el puesto de salud y esperar que el brote ceda solo.',
+          efectos: { seguridad: -8, confianza: -7, legitimidad: -5 },
+          retro:
+            'Tratar la enfermedad sin tocar el agua es achicar el bote sin tapar el hueco: el brote ' +
+            'se realimenta cada día. En las crisis reales, el agua segura no es "infraestructura": ' +
+            'es salud pública preventiva. La lección quedó cara: la potabilizadora ya no es opcional.',
+          codex: ['respuesta-humanitaria'],
+        },
+      ],
     },
     {
       id: 'accidente-mina',

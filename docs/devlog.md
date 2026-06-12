@@ -293,3 +293,33 @@ tipografía Poppins/Roboto; aprovechar la pantalla en desktop.
 **Verificación:** build limpio; 14/14 tests del motor (la base queda excluida de
 mantenimiento y de ataques); en navegador a 1400px: carpa con vitalidad inicial, 9
 edificios + 2 acciones en paleta, diario con su primera entrada, Roboto activo.
+
+## 2026-06-12 · Fotos y enlaces en la Memoria, salida de La Mesa, dificultades y primera cadena causal
+
+**Pedidos de Diego:** fotos/enlaces en las historias; botón para salir de La Mesa; modos
+principiante/libre/difícil; y que las cosas "tengan lógica" (aluvión → potabilizadora o
+enfermedades) — con análisis de gamificación sistémica.
+
+- **Jardín de la Memoria:** cada historia ahora tiene foto real (Wikimedia Commons,
+  licencias libres, URLs estables vía API REST de Wikipedia) y sección "🔗 Para
+  profundizar" (Wikipedia, Nobel, Building Bridges for Peace, JEP/Comisión de la Verdad).
+- **Bugfix descubierto y resuelto:** el jardín 3D quedó en negro (regresión silenciosa) —
+  los `<sprite>` con CanvasTexture dejaron de renderizar la escena en three r184.
+  Bisección empírica (escena mínima → jardín sin placas → culpable: PlacaNombre);
+  reescrito como plano con billboard manual (`quaternion.copy(camera)`) + SRGBColorSpace.
+  Lección de ingeniería: verificar visualmente TODAS las escenas tras cada refactor.
+- **La Mesa:** botón "← Menú" visible en la cabecera (antes solo el logo, indescubrible).
+- **Dificultades** (`builder/dificultad.ts`): 🌱 Principiante (170 fondos, +26/mes,
+  mantenimiento 1, incursión <28) · 🕊️ Libre (diseñada) · 🔥 Difícil (95, +16/mes,
+  mantenimiento 3, incursión <48). Selector en la intro del Territorio; verificado en
+  navegador (Difícil arranca con 95 y +16/mes).
+- **Primera cadena causal implementada:** aluvión (mes 5) sin planta potabilizadora →
+  evento "El agua que enferma" (mes 7+). Construir agua a tiempo lo PREVIENE por completo.
+  `ContextoEvento` ahora expone `vistos`/`hayAgua`: cada cadena nueva es un campo + un
+  evento condicional. Retro doctrinal: la secuencia inundación→agua contaminada→brote y
+  por qué WatSan se despliega antes del brote.
+- **`docs/analisis-sistemas.md`:** análisis pedido por Diego — cadenas causales propuestas
+  (retorno frágil, reclutamiento juvenil), terreno con elevaciones y ubicación segura del
+  centro de distribución (nivel 2), y el "modo Expediente" para gamificar procesos reales:
+  Irlanda del Norte como primer candidato y ETA como caso especial (final sin acuerdo;
+  requiere revisión experta y la lectura pendiente de Diego). Prioridades impacto÷esfuerzo.

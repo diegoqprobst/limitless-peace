@@ -11,6 +11,7 @@ import type {
   TipoCelda,
 } from './types';
 import { ACCIONES, POR_TIPO, UMBRAL_RETORNO } from './catalogo';
+import { DIFICULTADES, type Dificultad } from './dificultad';
 
 /**
  * Motor del modo Territorio: funciones puras sobre un estado inmutable.
@@ -34,6 +35,7 @@ export interface EstadoTerritorio {
   diario: string[];
   /** Efecto ambiental activo sobre el tablero 3D (lluvia, ataque). */
   efectoVisual: EfectoVisual | null;
+  dificultad: Dificultad;
 }
 
 const TIPO_POR_CARACTER: Record<string, TipoCelda> = {
@@ -44,7 +46,10 @@ const TIPO_POR_CARACTER: Record<string, TipoCelda> = {
   R: 'rio',
 };
 
-export function crearEstado(nivel: NivelTerritorio): EstadoTerritorio {
+export function crearEstado(
+  nivel: NivelTerritorio,
+  dificultad: Dificultad = 'libre',
+): EstadoTerritorio {
   const celdas: Celda[][] = nivel.mapa.map((fila) =>
     fila.split('').map((c) => ({
       tipo: TIPO_POR_CARACTER[c] ?? 'tierra',
@@ -57,8 +62,9 @@ export function crearEstado(nivel: NivelTerritorio): EstadoTerritorio {
   celdas[bf][bc] = { ...celdas[bf][bc], tipo: 'tierra', edificio: 'base' };
   return {
     celdas: recomputarVitalidad(celdas),
-    fondos: nivel.fondosIniciales,
+    fondos: DIFICULTADES[dificultad].fondosIniciales,
     mes: 1,
+    dificultad,
     indicadores: nivel.indicadoresIniciales,
     herramienta: null,
     eventoActivo: null,
@@ -121,13 +127,18 @@ export function contarFamilias(celdas: Celda[][]): { pobladas: number; total: nu
 }
 
 /** Ingreso neto mensual: base + mercados − mantenimiento de cada edificio construido. */
-export function ingresoMensual(nivel: NivelTerritorio, celdas: Celda[][]): number {
-  let ingreso = nivel.ingresoBase;
+export function ingresoMensual(
+  _nivel: NivelTerritorio,
+  celdas: Celda[][],
+  dificultad: Dificultad = 'libre',
+): number {
+  const config = DIFICULTADES[dificultad];
+  let ingreso = config.ingresoBase;
   for (const fila of celdas) {
     for (const celda of fila) {
       if (celda.edificio && celda.edificio !== 'base') {
         ingreso += POR_TIPO[celda.edificio].ingresoMensual ?? 0;
-        ingreso -= nivel.mantenimientoPorEdificio;
+        ingreso -= config.mantenimientoPorEdificio;
       }
     }
   }
@@ -241,9 +252,16 @@ export function actuar(
 export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): EstadoTerritorio {
   if (estado.fase !== 'jugando' || estado.eventoActivo) return estado;
   const mes = estado.mes + 1;
-  const fondos = Math.max(0, estado.fondos + ingresoMensual(nivel, estado.celdas));
+  const fondos = Math.max(0, estado.fondos + ingresoMensual(nivel, estado.celdas, estado.dificultad));
 
-  const ctx: ContextoEvento = { mes, minas: contarMinas(estado.celdas), fondos };
+  const ctx: ContextoEvento = {
+    mes,
+    minas: contarMinas(estado.celdas),
+    fondos,
+    hayAgua: estado.celdas.flat().some((c) => c.edificio === 'agua'),
+    vistos: estado.eventosVistos,
+    umbralIncursion: DIFICULTADES[estado.dificultad].umbralIncursion,
+  };
   const evento: EventoTerritorio | null =
     nivel.eventos.find((e) => e.mes === mes && !estado.eventosVistos.includes(e.id)) ??
     nivel.eventosCondicionales.find(

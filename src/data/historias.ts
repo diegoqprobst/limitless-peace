@@ -20,6 +20,10 @@ export interface Historia {
   leccion: string;
   /** Entradas del códex relacionadas. */
   codex: string[];
+  /** Foto con licencia libre (Wikimedia Commons). */
+  imagen?: { url: string; credito: string };
+  /** Para profundizar: biografías, archivos, sitios oficiales. */
+  enlaces: { titulo: string; url: string }[];
 }
 
 export const HISTORIAS: Historia[] = [
@@ -55,6 +59,15 @@ export const HISTORIAS: Historia[] = [
       'están al otro lado de la frontera — a menudo están en casa. Por eso en el juego los ' +
       'saboteadores son una mecánica, no un accidente.',
     codex: ['spoilers', 'pre-negociacion'],
+    imagen: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Flickr_-_Israel_Defense_Forces_-_Life_of_Lt._Gen._Yitzhak_Rabin%2C_7th_IDF_Chief_of_Staff_in_photos_%2811%29.jpg/330px-Flickr_-_Israel_Defense_Forces_-_Life_of_Lt._Gen._Yitzhak_Rabin%2C_7th_IDF_Chief_of_Staff_in_photos_%2811%29.jpg',
+      credito: 'Foto: IDF / Wikimedia Commons',
+    },
+    enlaces: [
+      { titulo: 'Biografía — Wikipedia', url: 'https://es.wikipedia.org/wiki/Isaac_Rabin' },
+      { titulo: 'Premio Nobel de la Paz 1994', url: 'https://www.nobelprize.org/prizes/peace/1994/rabin/facts/' },
+      { titulo: 'Los Acuerdos de Oslo — Wikipedia', url: 'https://es.wikipedia.org/wiki/Acuerdos_de_Oslo' },
+    ],
   },
   {
     id: 'mandela',
@@ -88,6 +101,15 @@ export const HISTORIAS: Historia[] = [
       'entender al adversario mejor de lo que él se entiende, y construir un futuro donde ' +
       'quepa — porque el que no cabe, conspira.',
     codex: ['comision-verdad', 'medidas-confianza'],
+    imagen: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Nelson_Mandela_1994_%282%29.jpg/330px-Nelson_Mandela_1994_%282%29.jpg',
+      credito: 'Foto: Wikimedia Commons',
+    },
+    enlaces: [
+      { titulo: 'Biografía — Wikipedia', url: 'https://es.wikipedia.org/wiki/Nelson_Mandela' },
+      { titulo: 'Premio Nobel de la Paz 1993', url: 'https://www.nobelprize.org/prizes/peace/1993/mandela/facts/' },
+      { titulo: 'Fundación Nelson Mandela', url: 'https://www.nelsonmandela.org/' },
+    ],
   },
   {
     id: 'hume',
@@ -119,6 +141,15 @@ export const HISTORIAS: Historia[] = [
       'parecen vergonzosos son los que mañana parecen visionarios — el juego te hace tomar ' +
       'esa misma decisión en la primera jugada de La Mesa.',
     codex: ['pre-negociacion', 'mediacion'],
+    imagen: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/John_Hume_2008.jpg/330px-John_Hume_2008.jpg',
+      credito: 'Foto: Wikimedia Commons',
+    },
+    enlaces: [
+      { titulo: 'Biografía — Wikipedia', url: 'https://es.wikipedia.org/wiki/John_Hume' },
+      { titulo: 'Premio Nobel de la Paz 1998', url: 'https://www.nobelprize.org/prizes/peace/1998/hume/facts/' },
+      { titulo: 'El Acuerdo de Viernes Santo — Wikipedia', url: 'https://es.wikipedia.org/wiki/Acuerdo_de_Viernes_Santo' },
+    ],
   },
   {
     id: 'bigombe',
@@ -148,6 +179,14 @@ export const HISTORIAS: Historia[] = [
       'acuerdo, sino cada persona que vuelve viva. La Resolución 1325 de la ONU reconoce lo ' +
       'que Bigombe encarnó: sin mujeres en las mesas, la paz pierde a sus mejores artesanas.',
     codex: ['mediacion', 'genero'],
+    imagen: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Bigombe_Betty_Atuku.jpg/330px-Bigombe_Betty_Atuku.jpg',
+      credito: 'Foto: Wikimedia Commons',
+    },
+    enlaces: [
+      { titulo: 'Biografía — Wikipedia (EN)', url: 'https://en.wikipedia.org/wiki/Betty_Bigombe' },
+      { titulo: 'Mujeres, Paz y Seguridad — ONU (Res. 1325)', url: 'https://www.un.org/securitycouncil/es/content/resolutions-0' },
+    ],
   },
   {
     id: 'victimas-habana',
@@ -176,6 +215,11 @@ export const HISTORIAS: Historia[] = [
       'con su voz nace anclado. En el juego, esa decisión — abrirles la mesa o no — es de ' +
       'las que más mueve el destino del proceso.',
     codex: ['victimas', 'justicia-transicional'],
+    enlaces: [
+      { titulo: 'Los diálogos de La Habana — Wikipedia', url: 'https://es.wikipedia.org/wiki/Di%C3%A1logos_de_paz_entre_el_gobierno_de_Santos_y_las_FARC-EP' },
+      { titulo: 'Comisión de la Verdad de Colombia', url: 'https://web.comisiondelaverdad.co/' },
+      { titulo: 'Jurisdicción Especial para la Paz (JEP)', url: 'https://www.jep.gov.co/' },
+    ],
   },
   {
     id: 'berry-magee',
@@ -205,5 +249,13 @@ export const HISTORIAS: Historia[] = [
       'humana: una conversación a la vez. Esta es la versión persona-a-persona de lo que el ' +
       'modo Territorio simula a escala de aldea: el tejido se repara hilo por hilo.',
     codex: ['memoria', 'victimas'],
+    imagen: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Patrick_Magee_-_Brighton_Bomber_%26_Jo_Berry_whose_father_was_killed_in_the_bomb.jpg/330px-Patrick_Magee_-_Brighton_Bomber_%26_Jo_Berry_whose_father_was_killed_in_the_bomb.jpg',
+      credito: 'Foto: Wikimedia Commons — Jo Berry y Pat Magee, juntos',
+    },
+    enlaces: [
+      { titulo: 'Building Bridges for Peace (organización de Jo Berry)', url: 'https://www.buildingbridgesforpeace.org/' },
+      { titulo: 'El atentado de Brighton — Wikipedia (EN)', url: 'https://en.wikipedia.org/wiki/Brighton_hotel_bombing' },
+    ],
   },
 ];

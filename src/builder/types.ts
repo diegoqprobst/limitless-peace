@@ -92,6 +92,12 @@ export interface ContextoEvento {
   mes: number;
   minas: number;
   fondos: number;
+  /** Hay una planta potabilizadora construida (cadena aluvión→enfermedad). */
+  hayAgua: boolean;
+  /** Eventos ya ocurridos: permite encadenar consecuencias. */
+  vistos: string[];
+  /** Umbral de seguridad bajo el cual llega la incursión (según dificultad). */
+  umbralIncursion: number;
 }
 
 /** Evento condicional: se dispara cuando el estado del valle lo provoca. */

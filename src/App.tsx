@@ -106,6 +106,9 @@ function Juego({ onVolverMenu }: { onVolverMenu: () => void }) {
           🕊️ Limitless Peace
         </span>
         <div className="cabecera-acciones">
+          <button className="boton-codex" onClick={onVolverMenu} title="Volver al menú">
+            ← {lang === 'es' ? 'Menú' : 'Menu'}
+          </button>
           <div className="selector-idioma" role="group" aria-label={ui.idiomaLabel}>
             {IDIOMAS.map((idioma) => (
               <button

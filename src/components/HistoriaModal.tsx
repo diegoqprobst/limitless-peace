@@ -31,6 +31,12 @@ export function HistoriaModal({
             ✕
           </button>
         </div>
+        {historia.imagen && (
+          <figure className="historia-figura">
+            <img src={historia.imagen.url} alt={historia.nombre} loading="lazy" />
+            <figcaption>{historia.imagen.credito}</figcaption>
+          </figure>
+        )}
         {historia.parrafos.map((p, i) => (
           <p key={i} className="historia-parrafo">
             {p}
@@ -45,6 +51,22 @@ export function HistoriaModal({
           <h4>{es ? '🕊️ Lo que enseña' : '🕊️ What it teaches'}</h4>
           <p>{historia.leccion}</p>
         </div>
+        {historia.enlaces.length > 0 && (
+          <div className="historia-enlaces">
+            <p className="eco-etiqueta">🔗 {es ? 'Para profundizar' : 'Go deeper'}</p>
+            {historia.enlaces.map((e) => (
+              <a
+                key={e.url}
+                className="historia-enlace"
+                href={e.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {e.titulo} ↗
+              </a>
+            ))}
+          </div>
+        )}
         <div className="codex-desbloqueado">
           <span>📖 {es ? 'Conceptos relacionados:' : 'Related concepts:'}</span>
           <button className="chip-codex" onClick={() => setCodexAbierto(true)}>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Herramienta } from '../builder/types';
 import { lazy, Suspense } from 'react';
 import { CONSTRUIBLES, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
+import { DIFICULTADES, type Dificultad } from '../builder/dificultad';
 
 /** El tablero 3D (Three.js, ~300 KB gzip) se descarga solo al entrar a este modo. */
 const Tablero3D = lazy(() =>
@@ -34,11 +35,12 @@ const NIVEL = NIVEL_VALLE;
 export function Territorio({ onVolverMenu }: Props) {
   const { content } = useLang();
   const [estado, setEstado] = useState<EstadoTerritorio>(() => crearEstado(NIVEL));
+  const [dificultad, setDificultad] = useState<Dificultad>('libre');
   const [codexAbierto, setCodexAbierto] = useState(false);
   const [historiaAbierta, setHistoriaAbierta] = useState<string | null>(null);
 
   const { pobladas, total } = useMemo(() => contarFamilias(estado.celdas), [estado.celdas]);
-  const ingreso = useMemo(() => ingresoMensual(NIVEL, estado.celdas), [estado.celdas]);
+  const ingreso = useMemo(() => ingresoMensual(NIVEL, estado.celdas, estado.dificultad), [estado.celdas, estado.dificultad]);
   const minas = useMemo(() => contarMinas(estado.celdas), [estado.celdas]);
 
   const alertas: string[] = [];
@@ -71,10 +73,26 @@ export function Territorio({ onVolverMenu }: Props) {
           <h2>Inspiración</h2>
           <p>{NIVEL.inspiracion}</p>
         </div>
+
+        <div className="selector-dificultad">
+          {(Object.keys(DIFICULTADES) as Dificultad[]).map((d) => (
+            <button
+              key={d}
+              className={`tarjeta dificultad-tarjeta ${dificultad === d ? 'activa' : ''}`}
+              onClick={() => setDificultad(d)}
+            >
+              <span className="dificultad-nombre">
+                {DIFICULTADES[d].emoji} {DIFICULTADES[d].nombre}
+              </span>
+              <span className="dificultad-descripcion">{DIFICULTADES[d].descripcion}</span>
+            </button>
+          ))}
+        </div>
+
         <div className="acciones-finales">
           <button
             className="boton-principal"
-            onClick={() => setEstado((e) => ({ ...e, fase: 'jugando' }))}
+            onClick={() => setEstado({ ...crearEstado(NIVEL, dificultad), fase: 'jugando' })}
           >
             Comenzar la reconstrucción →
           </button>
@@ -108,7 +126,7 @@ export function Territorio({ onVolverMenu }: Props) {
           <PanelIndicadores indicadores={estado.indicadores} />
         </section>
         <div className="acciones-finales">
-          <button className="boton-principal" onClick={() => setEstado(crearEstado(NIVEL))}>
+          <button className="boton-principal" onClick={() => setEstado(crearEstado(NIVEL, dificultad))}>
             ↺ Intentarlo de nuevo
           </button>
           <button className="boton-secundario" onClick={onVolverMenu}>
@@ -140,7 +158,7 @@ export function Territorio({ onVolverMenu }: Props) {
           </p>
         </section>
         <div className="acciones-finales">
-          <button className="boton-principal" onClick={() => setEstado(crearEstado(NIVEL))}>
+          <button className="boton-principal" onClick={() => setEstado(crearEstado(NIVEL, dificultad))}>
             ↺ Jugar de nuevo
           </button>
           <button className="boton-secundario" onClick={onVolverMenu}>
