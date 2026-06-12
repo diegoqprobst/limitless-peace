@@ -349,3 +349,28 @@ Sincronía perfecta para ejecutar las prioridades 2 y 3 del análisis sistémico
   veredicto "✓ Coincidiste", revelación y chips del códex funcionando.
 - **Pendiente música:** Diego compondrá el fondo (Logic/Audition/AI). Integración lista
   para recibir un loop (toggle 🔊, apagado por defecto para talleres).
+
+## 2026-06-12 · Rediseño del Territorio (tablero protagonista) + onboarding + consultoría UX
+
+**Pregunta de Diego:** "a mí me entusiasma como voluntario — ¿pero a otra persona?"
+Respuesta honesta y plan completo en `docs/consultoria-ux.md`. Implementado hoy:
+
+- **Tablero protagonista:** el valle pasa de 480px fijos a hasta 60% de la pantalla
+  (máx. 720px); app a 1380px en desktop. La construcción dejó de ser columna lateral:
+  ahora es **barra horizontal de chips** bajo el tablero (patrón RTS) con nombres cortos
+  (`corto` en el catálogo) y tooltips con la descripción completa. Diario a la derecha.
+- **Tutorial contextual de primera vez** (3 pasos que reaccionan al estado real del juego:
+  elegir herramienta → colocar cerca de casas → avanzar mes). Saltable; no reaparece
+  (localStorage `lp-tutorial-territorio`).
+- **Meta siempre visible:** chip 🎯 en HUD (familias X/meta · indicador mínimo /55, verde
+  al cumplirse) — la condición de victoria ya no vive solo en la intro.
+- **Herramienta activa explicada** en la línea de estado al seleccionarla.
+
+**Hallazgo de verificación importante:** los lienzos 3D aparecían "en blanco" en las
+verificaciones — tras bisección (escena mínima ✓) y diagnóstico final, la causa es
+ambiental: **las pestañas en segundo plano congelan requestAnimationFrame** (el panel de
+preview y las pestañas MCP de Chrome reportan `visibilityState: hidden`), así que Three.js
+nunca dibuja un frame ahí. El juego renderiza correctamente en pestañas visibles. (Esto
+también reinterpreta el "bug del sprite" del jardín: el billboard nuevo se queda — es
+robusto — pero el sprite probablemente era inocente.) Verificación funcional de hoy por
+DOM: tutorial paso 1 visible, 11 chips, HUD con meta, layout correcto en captura.

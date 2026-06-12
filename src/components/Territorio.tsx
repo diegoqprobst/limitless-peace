@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Herramienta } from '../builder/types';
 import { lazy, Suspense } from 'react';
 import { CONSTRUIBLES, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
@@ -55,6 +55,44 @@ export function Territorio({ onVolverMenu }: Props) {
 
   const elegirHerramienta = (h: Herramienta) =>
     setEstado((e) => ({ ...e, herramienta: e.herramienta === h ? null : h, mensaje: null }));
+
+  // ── Claridad: meta visible, herramienta activa, tutorial de primera vez ──
+  const metaFam = Math.ceil(total * NIVEL.metaFamilias);
+  const ind = estado.indicadores;
+  const minIndicador = Math.min(ind.confianza, ind.seguridad, ind.justicia, ind.legitimidad);
+  const herramientaActiva =
+    estado.herramienta === 'limpiar' || estado.herramienta === 'desminar'
+      ? ACCIONES[estado.herramienta]
+      : CONSTRUIBLES.find((e) => e.tipo === estado.herramienta);
+
+  const construidos = useMemo(
+    () => estado.celdas.flat().filter((c) => c.edificio && c.edificio !== 'base').length,
+    [estado.celdas],
+  );
+  const [tutorialVisto, setTutorialVisto] = useState(
+    () => localStorage.getItem('lp-tutorial-territorio') === '1',
+  );
+  const saltarTutorial = () => {
+    localStorage.setItem('lp-tutorial-territorio', '1');
+    setTutorialVisto(true);
+  };
+  let pasoTutorial: string | null = null;
+  if (!tutorialVisto && estado.fase === 'jugando') {
+    if (construidos === 0 && !estado.herramienta) {
+      pasoTutorial =
+        'Paso 1 de 3 — Elige qué construir en la barra de abajo. Buen comienzo: 🛐 Encuentro o ⚽ Cancha (baratos y dan confianza).';
+    } else if (construidos === 0) {
+      pasoTutorial =
+        'Paso 2 de 3 — Toca una celda de tierra CERCA de las casas 🏚️: cada edificio irradia vitalidad a su alrededor (verás el área al pasar el cursor).';
+    } else if (estado.mes === 1) {
+      pasoTutorial =
+        'Paso 3 de 3 — ¿Ves el verde crecer? Cuando una casa junta 50 de vitalidad, su familia vuelve 🏠. Pulsa "Avanzar mes" para recibir fondos — y atento a los dilemas.';
+    }
+  }
+  useEffect(() => {
+    if (!tutorialVisto && estado.mes > 1 && construidos > 0) saltarTutorial();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado.mes, construidos]);
 
   if (estado.fase === 'intro') {
     return (
@@ -180,10 +218,17 @@ export function Territorio({ onVolverMenu }: Props) {
             📅 Mes <strong>{estado.mes}</strong>
           </span>
           <span className="hud-dato">
-            💰 <strong>{estado.fondos}</strong> <small>(+{ingreso}/mes)</small>
+            💰 <strong>{estado.fondos}</strong> <small>({ingreso >= 0 ? '+' : ''}{ingreso}/mes)</small>
           </span>
-          <span className="hud-dato">
-            🏠 <strong>{pobladas}/{total}</strong> familias
+          <span
+            className="hud-dato"
+            title={`Para ganar: ${metaFam} familias de vuelta y los 4 indicadores en 55 o más`}
+          >
+            🎯 <strong className={pobladas >= metaFam ? 'meta-ok' : ''}>{pobladas}/{metaFam} 🏠</strong>
+            {' · '}
+            <strong className={minIndicador >= NIVEL.metaIndicador ? 'meta-ok' : ''}>
+              {minIndicador}/{NIVEL.metaIndicador} ind.
+            </strong>
           </span>
         </div>
         <button className="boton-codex" onClick={() => setCodexAbierto(true)}>
@@ -203,6 +248,15 @@ export function Territorio({ onVolverMenu }: Props) {
               {a}
             </span>
           ))}
+        </div>
+      )}
+
+      {pasoTutorial && (
+        <div className="tutorial-barra">
+          <span>💡 {pasoTutorial}</span>
+          <button className="tutorial-saltar" onClick={saltarTutorial}>
+            Saltar guía
+          </button>
         </div>
       )}
 
@@ -226,52 +280,51 @@ export function Territorio({ onVolverMenu }: Props) {
             ))}
           </div>
         </aside>
+      </div>
 
-        <aside className="paleta">
-          <p className="paleta-titulo">Construir</p>
-          {CONSTRUIBLES.map((e) => (
-            <button
-              key={e.tipo}
-              className={`paleta-item ${estado.herramienta === e.tipo ? 'activa' : ''} ${
-                estado.fondos < e.costo ? 'sin-fondos' : ''
-              }`}
-              onClick={() => elegirHerramienta(e.tipo)}
-              title={e.descripcion}
-            >
-              <span className="paleta-emoji">{e.emoji}</span>
-              <span className="paleta-nombre">{e.nombre}</span>
-              <span className="paleta-costo">{e.costo}</span>
-            </button>
-          ))}
-          <p className="paleta-titulo">Acciones</p>
-          {(['limpiar', 'desminar'] as const).map((a) => (
-            <button
-              key={a}
-              className={`paleta-item ${estado.herramienta === a ? 'activa' : ''} ${
-                estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
-              }`}
-              onClick={() => elegirHerramienta(a)}
-              title={ACCIONES[a].descripcion}
-            >
-              <span className="paleta-emoji">{ACCIONES[a].emoji}</span>
-              <span className="paleta-nombre">{ACCIONES[a].nombre}</span>
-              <span className="paleta-costo">{ACCIONES[a].costo}</span>
-            </button>
-          ))}
+      <div className="barra-construccion">
+        {CONSTRUIBLES.map((e) => (
           <button
-            className="boton-principal boton-mes"
-            onClick={() => setEstado((e) => avanzarMes(e, NIVEL))}
+            key={e.tipo}
+            className={`chip-construir ${estado.herramienta === e.tipo ? 'activa' : ''} ${
+              estado.fondos < e.costo ? 'sin-fondos' : ''
+            }`}
+            onClick={() => elegirHerramienta(e.tipo)}
+            title={`${e.nombre} — ${e.descripcion}`}
           >
-            Avanzar mes ⏵
+            <span>{e.emoji}</span>
+            <span className="chip-nombre">{e.corto}</span>
+            <span className="paleta-costo">{e.costo}</span>
           </button>
-        </aside>
+        ))}
+        <span className="barra-sep" />
+        {(['limpiar', 'desminar'] as const).map((a) => (
+          <button
+            key={a}
+            className={`chip-construir ${estado.herramienta === a ? 'activa' : ''} ${
+              estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
+            }`}
+            onClick={() => elegirHerramienta(a)}
+            title={`${ACCIONES[a].nombre} — ${ACCIONES[a].descripcion}`}
+          >
+            <span>{ACCIONES[a].emoji}</span>
+            <span className="chip-nombre">{ACCIONES[a].corto}</span>
+            <span className="paleta-costo">{ACCIONES[a].costo}</span>
+          </button>
+        ))}
+        <button
+          className="boton-principal boton-mes-barra"
+          onClick={() => setEstado((e) => avanzarMes(e, NIVEL))}
+        >
+          Avanzar mes ⏵
+        </button>
       </div>
 
       <p className={`territorio-mensaje ${estado.mensaje ? 'visible' : ''}`}>
         {estado.mensaje ??
-          (estado.herramienta
-            ? 'Haz clic en una celda del valle para aplicar la herramienta.'
-            : 'Elige qué construir · arrastra para orbitar la cámara · rueda para acercar')}
+          (herramientaActiva
+            ? `${herramientaActiva.emoji} ${herramientaActiva.nombre}: ${herramientaActiva.descripcion} Toca una celda del valle.`
+            : 'Elige qué construir abajo · arrastra para orbitar la cámara · rueda para acercar')}
       </p>
 
       {estado.eventoActivo && (

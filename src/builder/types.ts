@@ -30,6 +30,8 @@ export type Herramienta = TipoEdificio | 'limpiar' | 'desminar';
 export interface DefEdificio {
   tipo: TipoEdificio;
   nombre: string;
+  /** Nombre corto para la barra de construcción. */
+  corto: string;
   emoji: string;
   costo: number;
   /** Radio (distancia Chebyshev) al que irradia vitalidad. */

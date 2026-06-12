@@ -9,6 +9,7 @@ import type { DefEdificio, TipoEdificio } from './types';
 export const EDIFICIOS: DefEdificio[] = [
   {
     tipo: 'base',
+    corto: 'Base',
     nombre: 'Base humanitaria',
     emoji: '⛺',
     costo: 0,
@@ -21,6 +22,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'salud',
+    corto: 'Salud',
     nombre: 'Puesto de salud',
     emoji: '🏥',
     costo: 40,
@@ -32,6 +34,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'agua',
+    corto: 'Agua',
     nombre: 'Planta potabilizadora',
     emoji: '💧',
     costo: 35,
@@ -44,6 +47,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'alimentos',
+    corto: 'Alimentos',
     nombre: 'Centro de distribución de alimentos',
     emoji: '📦',
     costo: 30,
@@ -55,6 +59,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'escuela',
+    corto: 'Escuela',
     nombre: 'Escuela rural',
     emoji: '🏫',
     costo: 35,
@@ -65,6 +70,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'encuentro',
+    corto: 'Encuentro',
     nombre: 'Espacio de culto y encuentro',
     emoji: '🛐',
     costo: 25,
@@ -75,6 +81,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'mercado',
+    corto: 'Mercado',
     nombre: 'Mercado campesino',
     emoji: '🏪',
     costo: 30,
@@ -86,6 +93,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'memorial',
+    corto: 'Memorial',
     nombre: 'Memorial de las víctimas',
     emoji: '🕯️',
     costo: 20,
@@ -96,6 +104,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'emisora',
+    corto: 'Emisora',
     nombre: 'Emisora comunitaria',
     emoji: '📻',
     costo: 30,
@@ -106,6 +115,7 @@ export const EDIFICIOS: DefEdificio[] = [
   },
   {
     tipo: 'cancha',
+    corto: 'Cancha',
     nombre: 'Cancha y parque',
     emoji: '⚽',
     costo: 15,
@@ -127,12 +137,14 @@ export const CONSTRUIBLES = EDIFICIOS.filter((e) => e.tipo !== 'base');
 export const ACCIONES = {
   limpiar: {
     nombre: 'Limpiar escombros',
+    corto: 'Limpiar',
     emoji: '🧹',
     costo: 10,
     descripcion: 'Despeja una celda de escombros para poder construir.',
   },
   desminar: {
     nombre: 'Desminado humanitario',
+    corto: 'Desminar',
     emoji: '⛏️',
     costo: 25,
     descripcion: 'Libera un campo minado. Lento y costoso — como en la realidad.',

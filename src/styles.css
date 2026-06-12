@@ -1269,3 +1269,120 @@ button {
   font-size: 1.1rem;
   margin: 1.1rem 0 0.35rem;
 }
+
+/* ── Territorio rediseñado: el tablero es el protagonista ── */
+.territorio-cuerpo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.tablero3d {
+  width: 100%;
+  height: clamp(420px, 60vh, 720px);
+}
+
+@media (min-width: 1180px) {
+  .app:has(.territorio) {
+    max-width: 1380px;
+  }
+
+  .territorio-cuerpo {
+    grid-template-columns: 1fr 250px;
+  }
+
+  .diario-entradas {
+    max-height: calc(clamp(420px, 60vh, 720px) - 2.2rem);
+  }
+}
+
+.barra-construccion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 1rem;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.6rem 0.75rem;
+}
+
+.chip-construir {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  color: var(--tinta);
+  padding: 0.42rem 0.8rem;
+  font-size: 0.88rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.chip-construir:hover {
+  border-color: var(--acento);
+}
+
+.chip-construir.activa {
+  border-color: var(--acento);
+  background: rgba(236, 178, 79, 0.12);
+  box-shadow: var(--halo-opcion);
+}
+
+.chip-construir.sin-fondos {
+  opacity: 0.45;
+}
+
+.chip-nombre {
+  font-weight: 500;
+}
+
+.barra-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--borde);
+  margin: 0 0.3rem;
+}
+
+.boton-mes-barra {
+  margin: 0 0 0 auto;
+  padding: 0.55rem 1.4rem;
+  font-size: 0.95rem;
+}
+
+/* ── Tutorial de primera vez ── */
+.tutorial-barra {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  background: rgba(236, 178, 79, 0.08);
+  border: 1px solid rgba(236, 178, 79, 0.35);
+  border-radius: var(--radio);
+  padding: 0.55rem 0.9rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.92rem;
+  animation: aparecer 0.3s ease-out;
+}
+
+.tutorial-saltar {
+  background: none;
+  border: none;
+  color: var(--tinta-suave);
+  text-decoration: underline;
+  font-size: 0.8rem;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.meta-ok {
+  color: var(--paz);
+}
+
+@media (max-width: 700px) {
+  .boton-mes-barra {
+    width: 100%;
+    margin: 0.4rem 0 0;
+  }
+}
