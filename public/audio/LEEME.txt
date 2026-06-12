@@ -1,0 +1,9 @@
+Suelta aquí el tema musical como:  tema.m4a   (también sirve tema.mp3 u .ogg si ajustas BotonMusica.tsx)
+
+Specs del loop:
+- 60–120 segundos, loop sin costura (la cola de la última nota debe "cruzar" al inicio)
+- Tempo lento (70–85 bpm), arpegio suave
+- Exportar M4A/AAC ~128 kbps
+- Volumen conservador: el juego lo reproduce al 35%, pero masteriza tranquilo (~-18 LUFS)
+
+El botón 🎵 aparece solo cuando el archivo existe. Apagado por defecto (clave en talleres).

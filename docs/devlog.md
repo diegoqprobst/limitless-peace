@@ -394,3 +394,17 @@ Las tres piezas para que Diego invite a sus seguidores:
 
 **Verificación:** build limpio; 22/22 tests del motor; DOM verificado (ganchos, plegables,
 modal de reporte con ambos botones, 3 dificultades intactas).
+
+## 2026-06-12 · Sistema de música listo (a la espera de la guitarra de Diego)
+
+Decisión: la música será **guitarra grabada por Diego** (pulida en Logic) — coherencia con
+"la paz es artesanía", sonido humano que encaja con Vela y Tinta, y licencia 100% propia
+ante el jurado. Implementado el sistema receptor:
+
+- `components/BotonMusica.tsx`: botón flotante 🎵 que SOLO aparece si existe
+  `/audio/tema.m4a`; apagado por defecto (talleres), fade in/out suave, volumen 35%,
+  preferencia en localStorage.
+- `public/audio/LEEME.txt` con las specs del loop (60–120 s sin costura, 70–85 bpm,
+  M4A ~128 kbps, ~-18 LUFS). Integrar la música = soltar un archivo, cero código.
+
+Verificado: el botón permanece oculto sin archivo; build limpio.

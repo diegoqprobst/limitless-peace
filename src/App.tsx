@@ -12,6 +12,7 @@ import { MenuPrincipal } from './components/MenuPrincipal';
 import { Territorio } from './components/Territorio';
 import { Expediente } from './components/Expediente';
 import { BotonReporte } from './components/BotonReporte';
+import { BotonMusica } from './components/BotonMusica';
 
 /** El Jardín de la Memoria usa Three.js: se descarga solo al entrar. */
 const Historias = lazy(() =>
@@ -218,6 +219,7 @@ function Shell() {
   return (
     <>
       {contenido}
+      <BotonMusica />
       <BotonReporte modo={modo} />
     </>
   );
