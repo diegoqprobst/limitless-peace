@@ -102,5 +102,20 @@ e6 = { ...e6, fase: 'jugando', mes: 8, eventosVistos: ['lluvias', 'brote', 'reto
 e6 = avanzarMes(e6, NIVEL_VALLE);
 check('cadena juventud→reclutamiento sin escuela ni cancha', e6.eventoActivo?.id === 'reclutamiento');
 
+
+
+// ── Primera familia: vuelve con 35 (la esperanza no espera) ──
+let e7 = crearEstado(NIVEL_VALLE);
+e7 = { ...e7, fase: 'jugando', fondos: 200 };
+// dos edificios cerca de la casa (1,4): escuela (2,4 no... usar (2,3)) + salud (2,5)
+e7 = { ...e7, herramienta: 'escuela' };
+e7 = actuar(e7, NIVEL_VALLE, 2, 3);
+const fam7a = contarFamilias(e7.celdas).pobladas;
+e7 = { ...e7, herramienta: 'salud' };
+e7 = actuar(e7, NIVEL_VALLE, 1, 5);
+const fam7b = contarFamilias(e7.celdas).pobladas;
+check('primera familia retorna con vitalidad ≥35 (dos edificios)', fam7b >= 1, `antes=${fam7a} después=${fam7b}`);
+check('solo UNA familia con la regla de la primera', fam7b === 1, `pobladas=${fam7b}`);
+
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);

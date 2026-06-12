@@ -10,7 +10,13 @@ import type {
   OpcionEvento,
   TipoCelda,
 } from './types';
-import { ACCIONES, POR_TIPO, UMBRAL_RETORNO } from './catalogo';
+import {
+  ACCIONES,
+  POR_TIPO,
+  UMBRAL_PERMANENCIA,
+  UMBRAL_PRIMERA,
+  UMBRAL_RETORNO,
+} from './catalogo';
 import { DIFICULTADES, type Dificultad } from './dificultad';
 
 /**
@@ -100,16 +106,39 @@ export function recomputarVitalidad(celdas: Celda[][]): Celda[][] {
     }
   }
 
-  return celdas.map((fila, f) =>
+  const resultado = celdas.map((fila, f) =>
     fila.map((celda, c) => {
       const v = Math.min(100, vitalidad[f][c]);
       return {
         ...celda,
         vitalidad: v,
-        poblada: celda.tipo === 'casa' && v >= UMBRAL_RETORNO,
+        // Retornar exige UMBRAL_RETORNO; quedarse, solo UMBRAL_PERMANENCIA.
+        poblada:
+          celda.tipo === 'casa' &&
+          (v >= UMBRAL_RETORNO || (celda.poblada && v >= UMBRAL_PERMANENCIA)),
       };
     }),
   );
+
+  // La primera familia del valle vuelve antes: si nadie ha retornado aún,
+  // la casa con más vitalidad (≥ UMBRAL_PRIMERA) se repuebla.
+  const hayPoblada = resultado.some((fila) => fila.some((c) => c.poblada));
+  if (!hayPoblada) {
+    let mejor: { f: number; c: number; v: number } | null = null;
+    resultado.forEach((fila, f) =>
+      fila.forEach((celda, c) => {
+        if (celda.tipo === 'casa' && celda.vitalidad >= UMBRAL_PRIMERA) {
+          if (!mejor || celda.vitalidad > mejor.v) mejor = { f, c, v: celda.vitalidad };
+        }
+      }),
+    );
+    if (mejor) {
+      const { f, c } = mejor;
+      resultado[f][c] = { ...resultado[f][c], poblada: true };
+    }
+  }
+
+  return resultado;
 }
 
 export function contarFamilias(celdas: Celda[][]): { pobladas: number; total: number } {

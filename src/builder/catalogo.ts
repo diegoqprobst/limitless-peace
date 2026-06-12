@@ -153,3 +153,11 @@ export const ACCIONES = {
 
 /** Umbral de vitalidad para que una familia retorne a su casa. */
 export const UMBRAL_RETORNO = 50;
+
+/**
+ * La PRIMERA familia del valle vuelve antes (la esperanza no espera) y,
+ * una vez retornada, una familia solo se va si la vitalidad cae por debajo
+ * de este umbral (histéresis: volver cuesta más que quedarse).
+ */
+export const UMBRAL_PRIMERA = 35;
+export const UMBRAL_PERMANENCIA = 35;

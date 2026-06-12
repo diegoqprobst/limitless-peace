@@ -374,3 +374,23 @@ nunca dibuja un frame ahí. El juego renderiza correctamente en pestañas visibl
 también reinterpreta el "bug del sprite" del jardín: el billboard nuevo se queda — es
 robusto — pero el sprite probablemente era inocente.) Verificación funcional de hoy por
 DOM: tutorial paso 1 visible, 11 chips, HUD con meta, layout correcto en captura.
+
+## 2026-06-12 · Listo para playtest público: gancho inmediato + reporte de bugs
+
+Las tres piezas para que Diego invite a sus seguidores:
+
+- **Intros de ~40 palabras**: Mesa y Territorio abren con un gancho de dos líneas y botón
+  de acción inmediato; la historia completa, el rol y las reglas viven en un plegable
+  "¿Cómo se juega?". El jugador frío ya no lee 150 palabras antes de tocar nada.
+- **La primera familia vuelve en <2 minutos**: nueva regla del motor — la PRIMERA familia
+  del valle retorna con vitalidad 35 ("la esperanza no espera") y, una vez retornada,
+  cualquier familia solo se va si cae bajo 35 (histéresis: volver cuesta más que quedarse).
+  Con 2 edificios bien puestos el primer 🏠 ocurre en el mes 1. Tests: 22/22 ✓ (incluida
+  la regla de la primera y que las celdas de escombros rechazan colocación).
+- **🐞 Botón "Reportar"** flotante en todos los modos: textarea en lenguaje natural +
+  contexto técnico automático (modo, URL, pantalla, navegador) → "Enviar por correo"
+  (mailto prellenado) o "Copiar para WhatsApp". Cero registro, cero backend — pensado
+  para playtesters que no saben qué es GitHub.
+
+**Verificación:** build limpio; 22/22 tests del motor; DOM verificado (ganchos, plegables,
+modal de reporte con ambos botones, 3 dificultades intactas).

@@ -11,6 +11,7 @@ import { lazy, Suspense } from 'react';
 import { MenuPrincipal } from './components/MenuPrincipal';
 import { Territorio } from './components/Territorio';
 import { Expediente } from './components/Expediente';
+import { BotonReporte } from './components/BotonReporte';
 
 /** El Jardín de la Memoria usa Three.js: se descarga solo al entrar. */
 const Historias = lazy(() =>
@@ -188,23 +189,19 @@ function Shell() {
   const { lang, setLang, ui } = useLang();
   const [modo, setModo] = useState<Modo>('menu');
 
-  if (modo === 'mesa') return <Juego onVolverMenu={() => setModo('menu')} />;
-
-  if (modo === 'territorio') {
-    return (
+  let contenido: React.ReactNode;
+  if (modo === 'mesa') contenido = <Juego onVolverMenu={() => setModo('menu')} />;
+  else if (modo === 'territorio') {
+    contenido = (
       <div className="app">
         <Territorio onVolverMenu={() => setModo('menu')} />
         <footer className="pie">{ui.footer}</footer>
       </div>
     );
-  }
-
-  if (modo === 'expediente') {
-    return <Expediente onVolverMenu={() => setModo('menu')} />;
-  }
-
-  if (modo === 'memoria') {
-    return (
+  } else if (modo === 'expediente') {
+    contenido = <Expediente onVolverMenu={() => setModo('menu')} />;
+  } else if (modo === 'memoria') {
+    contenido = (
       <div className="app">
         <Suspense
           fallback={<div className="tablero3d tablero3d-cargando">🕯️ Encendiendo las llamas…</div>}
@@ -214,8 +211,24 @@ function Shell() {
         <footer className="pie">{ui.footer}</footer>
       </div>
     );
+  } else {
+    contenido = menu(lang, setLang, ui, setModo);
   }
 
+  return (
+    <>
+      {contenido}
+      <BotonReporte modo={modo} />
+    </>
+  );
+}
+
+function menu(
+  lang: ReturnType<typeof useLang>['lang'],
+  setLang: ReturnType<typeof useLang>['setLang'],
+  ui: ReturnType<typeof useLang>['ui'],
+  setModo: (m: Modo) => void,
+) {
   return (
     <div className="app">
       <header className="cabecera">

@@ -97,20 +97,27 @@ export function Territorio({ onVolverMenu }: Props) {
   if (estado.fase === 'intro') {
     return (
       <main className="pantalla pantalla-inicio">
-        <p className="sobretitulo">Modo Territorio · prototipo</p>
+        <p className="sobretitulo">Modo Territorio</p>
         <h1 className="titulo-juego">{NIVEL.nombre}</h1>
-        <p className="resumen">{NIVEL.intro}</p>
-        <div className="caja-rol">
-          <h2>La meta</h2>
+        <p className="resumen gancho">
+          La guerra vació este valle. Reconstrúyelo edificio a edificio hasta que las familias
+          vuelvan — y tu equipo humanitario pueda irse.
+        </p>
+
+        <details className="como-jugar">
+          <summary>¿Cómo se juega? · la historia completa</summary>
+          <p>{NIVEL.intro}</p>
           <p>
-            Repobla al menos {Math.ceil(NIVEL.metaFamilias * 100)}% de las casas y lleva los cuatro
-            indicadores por encima de {NIVEL.metaIndicador}. Cada edificio irradia vitalidad a su
-            alrededor; las familias vuelven cuando su casa supera {UMBRAL_RETORNO} de vitalidad.
-            Cada mes recibes fondos — y a veces, dilemas.
+            <strong>La meta:</strong> repobla al menos {Math.ceil(NIVEL.metaFamilias * 100)}% de
+            las casas y lleva los cuatro indicadores por encima de {NIVEL.metaIndicador}. Cada
+            edificio irradia vitalidad a su alrededor; una familia vuelve cuando su casa reúne{' '}
+            {UMBRAL_RETORNO} de vitalidad — la primera, apenas ve una luz. Cada mes recibes
+            fondos… y a veces, dilemas.
           </p>
-          <h2>Inspiración</h2>
-          <p>{NIVEL.inspiracion}</p>
-        </div>
+          <p>
+            <strong>Inspiración:</strong> {NIVEL.inspiracion}
+          </p>
+        </details>
 
         <div className="selector-dificultad">
           {(Object.keys(DIFICULTADES) as Dificultad[]).map((d) => (

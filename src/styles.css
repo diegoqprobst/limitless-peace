@@ -1386,3 +1386,90 @@ button {
     margin: 0.4rem 0 0;
   }
 }
+
+/* ── Intro recortada: gancho + plegable ── */
+.gancho {
+  text-align: center;
+  font-size: 1.15rem;
+  max-width: 580px;
+  margin: 0 auto 0.5rem;
+}
+
+.como-jugar {
+  max-width: 640px;
+  margin: 1.25rem auto;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.9rem 1.25rem;
+}
+
+.como-jugar summary {
+  cursor: pointer;
+  color: var(--acento);
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.como-jugar summary:hover {
+  color: var(--tinta);
+}
+
+.como-jugar p {
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+  margin: 0.75rem 0 0;
+}
+
+.como-jugar strong {
+  color: var(--tinta);
+}
+
+/* ── Botón de reporte (playtest) ── */
+.boton-reporte {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  background: var(--fondo-elevado);
+  color: var(--tinta-suave);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.boton-reporte:hover {
+  border-color: var(--acento);
+  color: var(--tinta);
+}
+
+.reporte-panel {
+  max-width: 520px;
+}
+
+.reporte-texto {
+  width: 100%;
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  font-family: var(--font-lectura);
+  font-size: 0.95rem;
+  padding: 0.75rem 0.9rem;
+  resize: vertical;
+  margin: 0.5rem 0 1rem;
+}
+
+.reporte-texto:focus {
+  outline: none;
+  border-color: var(--acento);
+}
+
+.reporte-acciones .boton-principal,
+.reporte-acciones .boton-secundario {
+  font-size: 0.92rem;
+  padding: 0.6rem 1.2rem;
+}
