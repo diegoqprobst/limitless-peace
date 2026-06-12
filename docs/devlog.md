@@ -264,3 +264,32 @@ Newsreader con halo, Source Serif 4 en lectura, nueva paleta y grano.
 Registro A creado en Cloudflare (DNS only), certificado emitido con `vercel certs issue`.
 **https://peace.diegoquinde.com** responde 200 con el juego. URL definitiva hasta que la
 candidatura amerite dominio propio de marca.
+
+## 2026-06-12 · Doctrina humanitaria real + animaciones de eventos + diario
+
+**Pedidos de Diego:** edificios según lo que la Cruz Roja realmente despliega en crisis;
+la base del jugador como puesto humanitario; animaciones cuando pasan cosas (las lluvias);
+tipografía Poppins/Roboto; aprovechar la pantalla en desktop.
+
+- **Catálogo anclado a doctrina IFRC (ERU):** nueva planta potabilizadora 💧 (ERU WatSan;
+  descripción cita el estándar Esfera de 15 L/persona/día) y centro de distribución de
+  alimentos 📦 (ERU Relief: imparcialidad). Nueva entrada del códex: "La caja de
+  herramientas humanitaria (ERU)" (23 entradas). Fuentes: catálogo ERU de IFRC + Manual
+  Esfera, documentadas en fuentes.md.
+- **Base humanitaria ⛺ (ERU Base Camp):** pre-instalada al iniciar (carpa neutra SIN
+  emblema — protegido por los Convenios de Ginebra), irradia la primera vitalidad del
+  valle, no paga mantenimiento, la incursión nunca la ataca. La victoria-retiro ahora es
+  literal: el campamento que se desmonta existe en el mapa desde el mes 1.
+- **Animaciones de eventos en el 3D:** lluvia (90 gotas) cae sobre el valle durante "Las
+  lluvias se llevan el vado"; humo y brasas se elevan del edificio destruido tras la
+  incursión. Motor: nuevo estado `efectoVisual` (lluvia/ataque) que el tablero consume.
+- **Diario del valle (desktop ≥1180px):** registro cronológico autogenerado — base
+  instalada, construcciones, escombros/desminado, familias que retornan, eventos y la
+  decisión tomada, destrucciones. El Territorio usa layout ancho (1280px) con tres
+  columnas: tablero · diario · paleta.
+- **Tipografía:** Poppins (display, 600) + Roboto (lectura) reemplazan a las serif del
+  design system por pedido directo de Diego.
+
+**Verificación:** build limpio; 14/14 tests del motor (la base queda excluida de
+mantenimiento y de ataques); en navegador a 1400px: carpa con vitalidad inicial, 9
+edificios + 2 acciones en paleta, diario con su primera entrada, Roboto activo.

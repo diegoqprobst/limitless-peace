@@ -3,6 +3,7 @@ import { aplicarEfectos } from '../engine/types';
 import type {
   Celda,
   ContextoEvento,
+  EfectoVisual,
   EventoTerritorio,
   Herramienta,
   NivelTerritorio,
@@ -29,6 +30,10 @@ export interface EstadoTerritorio {
   codexDescubierto: string[];
   fase: 'intro' | 'jugando' | 'victoria' | 'fracaso';
   mensaje: string | null;
+  /** Diario del valle: registro cronológico de lo que va pasando (desktop). */
+  diario: string[];
+  /** Efecto ambiental activo sobre el tablero 3D (lluvia, ataque). */
+  efectoVisual: EfectoVisual | null;
 }
 
 const TIPO_POR_CARACTER: Record<string, TipoCelda> = {
@@ -47,8 +52,11 @@ export function crearEstado(nivel: NivelTerritorio): EstadoTerritorio {
       poblada: false,
     })),
   );
+  // La base humanitaria llega antes que todo lo demás.
+  const [bf, bc] = nivel.posicionBase;
+  celdas[bf][bc] = { ...celdas[bf][bc], tipo: 'tierra', edificio: 'base' };
   return {
-    celdas,
+    celdas: recomputarVitalidad(celdas),
     fondos: nivel.fondosIniciales,
     mes: 1,
     indicadores: nivel.indicadoresIniciales,
@@ -59,6 +67,8 @@ export function crearEstado(nivel: NivelTerritorio): EstadoTerritorio {
     codexDescubierto: [],
     fase: 'intro',
     mensaje: null,
+    diario: ['Mes 1 · ⛺ El equipo humanitario instala su base en el valle.'],
+    efectoVisual: null,
   };
 }
 
@@ -110,12 +120,12 @@ export function contarFamilias(celdas: Celda[][]): { pobladas: number; total: nu
   return { pobladas, total };
 }
 
-/** Ingreso neto mensual: base + mercados − mantenimiento de cada edificio. */
+/** Ingreso neto mensual: base + mercados − mantenimiento de cada edificio construido. */
 export function ingresoMensual(nivel: NivelTerritorio, celdas: Celda[][]): number {
   let ingreso = nivel.ingresoBase;
   for (const fila of celdas) {
     for (const celda of fila) {
-      if (celda.edificio) {
+      if (celda.edificio && celda.edificio !== 'base') {
         ingreso += POR_TIPO[celda.edificio].ingresoMensual ?? 0;
         ingreso -= nivel.mantenimientoPorEdificio;
       }
@@ -165,6 +175,7 @@ export function actuar(
         celdas: recomputarVitalidad(celdas),
         fondos: estado.fondos - ACCIONES.limpiar.costo,
         mensaje: null,
+        diario: [...estado.diario, `Mes ${estado.mes} · 🧹 Escombros despejados.`],
       },
       nivel,
     );
@@ -183,6 +194,7 @@ export function actuar(
         fondos: estado.fondos - ACCIONES.desminar.costo,
         indicadores: aplicarEfectos(estado.indicadores, { seguridad: 5 }),
         mensaje: null,
+        diario: [...estado.diario, `Mes ${estado.mes} · ⛏️ Campo desminado: la tierra vuelve a ser tierra.`],
       },
       nivel,
     );
@@ -199,16 +211,27 @@ export function actuar(
   if (celda.edificio) return conMensaje('Esta celda ya tiene un edificio.');
   if (estado.fondos < def.costo) return conMensaje('Fondos insuficientes.');
 
-  const celdas = estado.celdas.map((fila, i) =>
-    fila.map((cel, j) => (i === f && j === c ? { ...cel, edificio: herramienta } : cel)),
+  const celdas = recomputarVitalidad(
+    estado.celdas.map((fila, i) =>
+      fila.map((cel, j) => (i === f && j === c ? { ...cel, edificio: herramienta } : cel)),
+    ),
   );
+  const antes = contarFamilias(estado.celdas).pobladas;
+  const despues = contarFamilias(celdas).pobladas;
+  const diario = [...estado.diario, `Mes ${estado.mes} · ${def.emoji} Construido: ${def.nombre}.`];
+  if (despues > antes) {
+    diario.push(
+      `Mes ${estado.mes} · 🏠 ${despues - antes === 1 ? 'Una familia retornó' : `${despues - antes} familias retornaron`} al valle.`,
+    );
+  }
   return comprobarVictoria(
     {
       ...estado,
-      celdas: recomputarVitalidad(celdas),
+      celdas,
       fondos: estado.fondos - def.costo,
       indicadores: aplicarEfectos(estado.indicadores, def.efectos),
       mensaje: null,
+      diario,
     },
     nivel,
   );
@@ -235,24 +258,29 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
     eventoActivo: evento,
     eventosVistos: evento ? [...estado.eventosVistos, evento.id] : estado.eventosVistos,
     mensaje: null,
+    diario: evento
+      ? [...estado.diario, `Mes ${mes} · ⚠️ ${evento.titulo}`]
+      : estado.diario,
+    efectoVisual: evento?.visual === 'lluvia' ? { tipo: 'lluvia' } : null,
   };
 }
 
-/** El ataque destruye el edificio más valioso: la tensión se ve en el mapa. */
+/** El ataque destruye el edificio más valioso (nunca la base): la tensión se ve en el mapa. */
 function destruirEdificio(estado: EstadoTerritorio): {
   celdas: Celda[][];
   mensaje: string | null;
+  celdaAtacada: [number, number] | null;
 } {
   let objetivo: { f: number; c: number; costo: number } | null = null;
   estado.celdas.forEach((fila, f) =>
     fila.forEach((celda, c) => {
-      if (celda.edificio) {
+      if (celda.edificio && celda.edificio !== 'base') {
         const costo = POR_TIPO[celda.edificio].costo;
         if (!objetivo || costo > objetivo.costo) objetivo = { f, c, costo };
       }
     }),
   );
-  if (!objetivo) return { celdas: estado.celdas, mensaje: null };
+  if (!objetivo) return { celdas: estado.celdas, mensaje: null, celdaAtacada: null };
   const { f, c } = objetivo;
   const nombre = POR_TIPO[estado.celdas[f][c].edificio!].nombre;
   const antes = contarFamilias(estado.celdas).pobladas;
@@ -273,6 +301,7 @@ function destruirEdificio(estado: EstadoTerritorio): {
   return {
     celdas,
     mensaje: `El ataque destruyó: ${nombre}.${exodo}`,
+    celdaAtacada: [f, c],
   };
 }
 
@@ -281,8 +310,13 @@ export function resolverEvento(estado: EstadoTerritorio, opcion: OpcionEvento): 
   if (!estado.eventoActivo) return estado;
   let celdas = estado.celdas;
   let mensaje: string | null = null;
+  let efectoVisual = estado.efectoVisual;
+  const diario = [...estado.diario, `→ ${opcion.texto}`];
   if (opcion.efectoEspecial === 'destruir-edificio') {
-    ({ celdas, mensaje } = destruirEdificio(estado));
+    let celdaAtacada: [number, number] | null = null;
+    ({ celdas, mensaje, celdaAtacada } = destruirEdificio(estado));
+    if (mensaje) diario.push(`Mes ${estado.mes} · 💥 ${mensaje}`);
+    if (celdaAtacada) efectoVisual = { tipo: 'ataque', f: celdaAtacada[0], c: celdaAtacada[1] };
   }
   return {
     ...estado,
@@ -292,6 +326,8 @@ export function resolverEvento(estado: EstadoTerritorio, opcion: OpcionEvento): 
     codexDescubierto: [...new Set([...estado.codexDescubierto, ...(opcion.codex ?? [])])],
     retroEvento: opcion,
     mensaje,
+    diario,
+    efectoVisual,
   };
 }
 
@@ -300,10 +336,17 @@ export function cerrarEvento(estado: EstadoTerritorio, nivel: NivelTerritorio): 
   const ind = estado.indicadores;
   const minimo = Math.min(ind.confianza, ind.seguridad, ind.justicia, ind.legitimidad);
   if (minimo <= 10) {
-    return { ...estado, eventoActivo: null, retroEvento: null, fase: 'fracaso', herramienta: null };
+    return {
+      ...estado,
+      eventoActivo: null,
+      retroEvento: null,
+      fase: 'fracaso',
+      herramienta: null,
+      efectoVisual: null,
+    };
   }
   return comprobarVictoria(
-    { ...estado, eventoActivo: null, retroEvento: null },
+    { ...estado, eventoActivo: null, retroEvento: null, efectoVisual: null },
     nivel,
   );
 }

@@ -122,6 +122,30 @@ export const CODEX: EntradaCodex[] = [
       'atroces sin volverse cómplice del silencio?',
   },
   {
+    id: 'respuesta-humanitaria',
+    titulo: 'La caja de herramientas humanitaria (ERU)',
+    categoria: 'Marco humanitario',
+    definicion:
+      'Las Unidades de Respuesta a Emergencias (ERU) son los módulos estandarizados que la ' +
+      'Federación Internacional (IFRC) despliega en crisis: equipos y personal listos para ' +
+      'instalar en días lo esencial — salud, agua, alimentos, logística, campamento base.',
+    enLaPractica:
+      'Los módulos clásicos son: atención básica de salud y hospital de referencia; agua y ' +
+      'saneamiento (plantas potabilizadoras que producen agua segura para decenas de miles ' +
+      'de personas); distribución de socorro (alimentos y bienes esenciales, entregados con ' +
+      'imparcialidad); logística; telecomunicaciones; y el campamento base que sostiene a los ' +
+      'equipos. El manual Esfera fija los estándares mínimos: por ejemplo, ~15 litros de agua ' +
+      'por persona al día. En el modo Territorio construyes exactamente estas piezas.',
+    casoReal:
+      'Las ERU de la Cruz Roja se han desplegado en cientos de emergencias: el terremoto de ' +
+      'Haití (2010), el tifón Haiyan en Filipinas (2013), el éxodo rohinyá en Bangladesh ' +
+      '(2017). En posconflicto, estas capacidades acompañan el retorno de comunidades ' +
+      'desplazadas mientras el Estado restablece servicios.',
+    paraReflexionar:
+      'Si solo pudieras instalar UNA unidad en una comunidad en crisis, ¿cuál elegirías y por ' +
+      'qué? ¿Cambia tu respuesta si la crisis es guerra en vez de terremoto?',
+  },
+  {
     id: 'medidas-confianza',
     titulo: 'Medidas de construcción de confianza',
     categoria: 'Sostener la mesa',

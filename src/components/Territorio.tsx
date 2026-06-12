@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Herramienta } from '../builder/types';
 import { lazy, Suspense } from 'react';
-import { EDIFICIOS, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
+import { CONSTRUIBLES, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
 
 /** El tablero 3D (Three.js, ~300 KB gzip) se descarga solo al entrar a este modo. */
 const Tablero3D = lazy(() =>
@@ -194,12 +194,24 @@ export function Territorio({ onVolverMenu }: Props) {
             celdas={estado.celdas}
             herramienta={estado.herramienta}
             onCelda={(f, c) => setEstado((e) => actuar(e, NIVEL, f, c))}
+            efecto={estado.efectoVisual}
           />
         </Suspense>
 
+        <aside className="diario">
+          <p className="paleta-titulo">Diario del valle</p>
+          <div className="diario-entradas">
+            {[...estado.diario].reverse().map((entrada, i) => (
+              <p key={estado.diario.length - i} className="diario-entrada">
+                {entrada}
+              </p>
+            ))}
+          </div>
+        </aside>
+
         <aside className="paleta">
           <p className="paleta-titulo">Construir</p>
-          {EDIFICIOS.map((e) => (
+          {CONSTRUIBLES.map((e) => (
             <button
               key={e.tipo}
               className={`paleta-item ${estado.herramienta === e.tipo ? 'activa' : ''} ${

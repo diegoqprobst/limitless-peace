@@ -32,6 +32,7 @@ export const NIVEL_VALLE: NivelTerritorio = {
     'TMMTTTTRTT',
     'TMCTTETRTT',
   ],
+  posicionBase: [3, 5],
   fondosIniciales: 120,
   ingresoBase: 20,
   mantenimientoPorEdificio: 2,
@@ -159,6 +160,7 @@ export const NIVEL_VALLE: NivelTerritorio = {
     {
       id: 'lluvias',
       mes: 5,
+      visual: 'lluvia',
       titulo: 'Las lluvias se llevan el vado',
       texto:
         'Una creciente del río destruye el paso del vado: la única conexión entre las dos orillas ' +

@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import type { Celda, Herramienta, TipoEdificio } from '../builder/types';
+import type { Celda, EfectoVisual, Herramienta, TipoEdificio } from '../builder/types';
 import { POR_TIPO } from '../builder/catalogo';
 
 /**
@@ -15,6 +15,8 @@ interface Props {
   celdas: Celda[][];
   herramienta: Herramienta | null;
   onCelda: (f: number, c: number) => void;
+  /** Efecto ambiental activo: lluvia sobre el valle, humo tras un ataque. */
+  efecto?: EfectoVisual | null;
 }
 
 /** Pseudo-aleatorio determinista por celda (sin Math.random: estable entre renders). */
@@ -91,6 +93,67 @@ function Casa({ poblada }: { poblada: boolean }) {
 function Edificio({ tipo }: { tipo: TipoEdificio }) {
   let cuerpo: React.ReactNode;
   switch (tipo) {
+    case 'base':
+      cuerpo = (
+        <>
+          {/* carpa humanitaria (sin emblema: neutralidad y respeto legal) */}
+          <mesh castShadow position={[0, 0.22, 0]} rotation={[0, Math.PI / 4, 0]}>
+            <coneGeometry args={[0.42, 0.44, 4]} />
+            <meshStandardMaterial color="#ddd6c8" />
+          </mesh>
+          <mesh castShadow position={[0.28, 0.1, 0.22]}>
+            <boxGeometry args={[0.16, 0.2, 0.16]} />
+            <meshStandardMaterial color="#a3805a" />
+          </mesh>
+          <mesh castShadow position={[-0.05, 0.52, 0]}>
+            <cylinderGeometry args={[0.012, 0.012, 0.5, 5]} />
+            <meshStandardMaterial color="#9a9a9a" />
+          </mesh>
+          <mesh position={[0.06, 0.7, 0]}>
+            <boxGeometry args={[0.16, 0.1, 0.01]} />
+            <meshStandardMaterial color="#ecb24f" emissive="#ecb24f" emissiveIntensity={0.5} />
+          </mesh>
+        </>
+      );
+      break;
+    case 'agua':
+      cuerpo = (
+        <>
+          <mesh castShadow position={[0, 0.18, 0]}>
+            <cylinderGeometry args={[0.24, 0.26, 0.36, 10]} />
+            <meshStandardMaterial color="#7d9bb5" />
+          </mesh>
+          <mesh castShadow position={[0.22, 0.12, 0.18]}>
+            <cylinderGeometry args={[0.09, 0.09, 0.24, 8]} />
+            <meshStandardMaterial color="#5e7d96" />
+          </mesh>
+          <mesh position={[0, 0.42, 0]}>
+            <sphereGeometry args={[0.07, 8, 8]} />
+            <meshStandardMaterial color="#9fc4e0" emissive="#6fa8c9" emissiveIntensity={0.7} />
+          </mesh>
+        </>
+      );
+      break;
+    case 'alimentos':
+      cuerpo = (
+        <>
+          <mesh castShadow position={[0, 0.16, 0]}>
+            <boxGeometry args={[0.6, 0.32, 0.46]} />
+            <meshStandardMaterial color="#b08d57" />
+          </mesh>
+          {[
+            [-0.16, 0.38, 0.05],
+            [0.08, 0.38, -0.08],
+            [0.2, 0.38, 0.12],
+          ].map(([x, y, z], i) => (
+            <mesh key={i} castShadow position={[x, y, z]}>
+              <boxGeometry args={[0.14, 0.12, 0.14]} />
+              <meshStandardMaterial color={i % 2 ? '#c9a36a' : '#8fae6b'} />
+            </mesh>
+          ))}
+        </>
+      );
+      break;
     case 'salud':
       cuerpo = (
         <>
@@ -299,6 +362,77 @@ function SenalMinas() {
   );
 }
 
+/** Lluvia sobre el valle (evento "Las lluvias se llevan el vado"). */
+function Lluvia({ cols, filas }: { cols: number; filas: number }) {
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  const gotas = useMemo(
+    () =>
+      Array.from({ length: 90 }, (_, i) => ({
+        x: (hash(i, 0, 1) - 0.5) * (cols + 2),
+        z: (hash(i, 0, 2) - 0.5) * (filas + 2),
+        y: hash(i, 0, 3) * 6,
+        vel: 5 + hash(i, 0, 4) * 4,
+      })),
+    [cols, filas],
+  );
+  useFrame((_, delta) => {
+    gotas.forEach((g, i) => {
+      const m = refs.current[i];
+      if (!m) return;
+      m.position.y -= g.vel * delta;
+      if (m.position.y < 0) m.position.y = 5 + hash(i, 0, 7);
+    });
+  });
+  return (
+    <>
+      {gotas.map((g, i) => (
+        <mesh key={i} ref={(el) => (refs.current[i] = el)} position={[g.x, g.y, g.z]}>
+          <boxGeometry args={[0.012, 0.3, 0.012]} />
+          <meshBasicMaterial color="#7d9bb5" transparent opacity={0.45} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+/** Humo y brasas sobre el edificio recién destruido (incursión). */
+function Humo({ x, z }: { x: number; z: number }) {
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  const nubes = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) => ({
+        dx: (hash(i, 0, 11) - 0.5) * 0.3,
+        dz: (hash(i, 0, 12) - 0.5) * 0.3,
+        vel: 0.35 + hash(i, 0, 13) * 0.3,
+        fase: hash(i, 0, 14) * 2,
+        escala: 0.07 + hash(i, 0, 15) * 0.08,
+      })),
+    [],
+  );
+  useFrame((estado) => {
+    const t = estado.clock.elapsedTime;
+    nubes.forEach((n, i) => {
+      const m = refs.current[i];
+      if (!m) return;
+      const ciclo = ((t * n.vel + n.fase) % 1.6) / 1.6;
+      m.position.set(x + n.dx + ciclo * 0.15, 0.15 + ciclo * 1.1, z + n.dz);
+      m.scale.setScalar(n.escala * (1 + ciclo * 1.6));
+      (m.material as THREE.MeshStandardMaterial).opacity = 0.55 * (1 - ciclo);
+    });
+  });
+  return (
+    <>
+      {nubes.map((_n, i) => (
+        <mesh key={i} ref={(el) => (refs.current[i] = el)} position={[x, 0.2, z]}>
+          <sphereGeometry args={[1, 7, 7]} />
+          <meshStandardMaterial color="#5a5a5a" transparent opacity={0.5} depthWrite={false} />
+        </mesh>
+      ))}
+      <pointLight position={[x, 0.25, z]} color="#ff6a3c" intensity={1.6} distance={2.2} />
+    </>
+  );
+}
+
 function Agua() {
   const mat = useRef<THREE.MeshStandardMaterial>(null);
   useFrame((estado) => {
@@ -376,7 +510,7 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
   );
 }
 
-export function Tablero3D({ celdas, herramienta, onCelda }: Props) {
+export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
   const [hovered, setHovered] = useState<[number, number] | null>(null);
   const filas = celdas.length;
   const cols = celdas[0].length;
@@ -427,6 +561,12 @@ export function Tablero3D({ celdas, herramienta, onCelda }: Props) {
               onCelda={onCelda}
             />
           )),
+        )}
+
+        {/* efectos ambientales de los eventos */}
+        {efecto?.tipo === 'lluvia' && <Lluvia cols={cols} filas={filas} />}
+        {efecto?.tipo === 'ataque' && (
+          <Humo x={efecto.c - (cols - 1) / 2} z={efecto.f - (filas - 1) / 2} />
         )}
 
         {/* previsualización del aura del edificio seleccionado */}

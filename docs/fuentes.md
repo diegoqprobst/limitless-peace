@@ -86,3 +86,17 @@ recomienda una revisión por un/a especialista en construcción de paz antes de 
 
 Nota: las historias se narran con tono literario pero sin hechos inventados; cuando una
 cita textual no está sólidamente documentada, no se incluye.
+
+## Fuentes del modo Territorio (doctrina humanitaria)
+
+- **IFRC, Emergency Response Units (ERU):** catálogo oficial de módulos de respuesta —
+  salud básica, hospital de referencia, agua y saneamiento (módulos M15/M40/MSM20),
+  distribución de socorro, logística, telecomunicaciones y campamento base. Base directa
+  del catálogo de edificios del juego (potabilizadora, centro de distribución, puesto de
+  salud, base humanitaria).
+- **Manual Esfera (Sphere Handbook):** estándares mínimos humanitarios — p. ej. ~15 litros
+  de agua por persona/día, estándares de seguridad alimentaria, salud y alojamiento.
+  Citado en las descripciones de los edificios.
+- **Nota sobre el emblema:** la "base humanitaria" del juego es deliberadamente neutra
+  (carpa sin emblema): el uso de la cruz roja/media luna roja está protegido por los
+  Convenios de Ginebra y reservado a usos autorizados.

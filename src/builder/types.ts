@@ -13,12 +13,16 @@ export type TipoCelda = 'tierra' | 'escombros' | 'casa' | 'minado' | 'rio';
 
 export type TipoEdificio =
   | 'salud'
+  | 'agua'
+  | 'alimentos'
   | 'escuela'
   | 'encuentro'
   | 'mercado'
   | 'memorial'
   | 'emisora'
-  | 'cancha';
+  | 'cancha'
+  /** La base del equipo humanitario: pre-instalada, se desmonta en la victoria. */
+  | 'base';
 
 /** Herramienta activa: un edificio para colocar, o una acción sobre la celda. */
 export type Herramienta = TipoEdificio | 'limpiar' | 'desminar';
@@ -71,7 +75,12 @@ export interface EventoTerritorio {
   texto: string;
   opciones: OpcionEvento[];
   eco?: EcoHistorico;
+  /** Efecto visual ambiental en el tablero 3D mientras el evento está activo. */
+  visual?: 'lluvia';
 }
+
+/** Efecto visual transitorio sobre el tablero 3D. */
+export type EfectoVisual = { tipo: 'lluvia' } | { tipo: 'ataque'; f: number; c: number };
 
 /** Evento fijo: se dispara en un mes concreto. */
 export interface EventoFijo extends EventoTerritorio {
@@ -102,6 +111,8 @@ export interface NivelTerritorio {
    * T tierra · E escombros · C casa destruida · M campo minado · R río
    */
   mapa: string[];
+  /** Celda donde se instala la base humanitaria al comenzar. */
+  posicionBase: [number, number];
   fondosIniciales: number;
   ingresoBase: number;
   /** Costo mensual de sostener cada edificio: construir de más también es un riesgo. */

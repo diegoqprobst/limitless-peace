@@ -22,8 +22,8 @@
   --legitimidad: #ecb24f;
   --borde: #363c4d;
   --radio: 10px;
-  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
-  --font-lectura: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-lectura: 'Roboto', system-ui, sans-serif;
   /* halos de vela: la luz ámbar gana presencia en los momentos clave */
   --halo-boton: 0 0 22px rgba(236, 178, 79, 0.3);
   --halo-opcion: 0 0 14px rgba(236, 178, 79, 0.12);
@@ -934,6 +934,52 @@ button {
   width: 100%;
 }
 
+/* ── Diario del valle (solo escritorio ancho) ── */
+.diario {
+  width: 230px;
+  flex-shrink: 0;
+  display: none;
+}
+
+.diario-entradas {
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.75rem 0.9rem;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.diario-entrada {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--tinta-suave);
+  margin: 0 0 0.55rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.diario-entrada:first-child {
+  color: var(--tinta);
+}
+
+.diario-entrada:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* En escritorio amplio, el Territorio usa toda la pantalla y muestra el diario */
+@media (min-width: 1180px) {
+  .app:has(.territorio) {
+    max-width: 1280px;
+  }
+
+  .diario {
+    display: block;
+  }
+}
+
 .territorio-mensaje {
   text-align: center;
   color: var(--tinta-suave);
@@ -1066,7 +1112,7 @@ button {
 .codex-detalle h3,
 .codex-cabecera h2 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .titulo-juego,

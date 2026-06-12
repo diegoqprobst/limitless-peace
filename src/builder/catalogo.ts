@@ -8,6 +8,18 @@ import type { DefEdificio, TipoEdificio } from './types';
  */
 export const EDIFICIOS: DefEdificio[] = [
   {
+    tipo: 'base',
+    nombre: 'Base humanitaria',
+    emoji: '⛺',
+    costo: 0,
+    radio: 2,
+    aporteVitalidad: 8,
+    efectos: {},
+    descripcion:
+      'El campamento de tu equipo (ERU Base Camp). Ya está instalado: tu trabajo es que ' +
+      'algún día sobre. La victoria es desmontarlo.',
+  },
+  {
     tipo: 'salud',
     nombre: 'Puesto de salud',
     emoji: '🏥',
@@ -15,7 +27,31 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 2,
     aporteVitalidad: 15,
     efectos: { seguridad: 8 },
-    descripcion: 'Atención básica. La presencia de salud es la primera señal de que el Estado volvió.',
+    descripcion:
+      'ERU de atención básica de salud: la primera señal de que alguien cuida este lugar.',
+  },
+  {
+    tipo: 'agua',
+    nombre: 'Planta potabilizadora',
+    emoji: '💧',
+    costo: 35,
+    radio: 2,
+    aporteVitalidad: 14,
+    efectos: { seguridad: 5, legitimidad: 3 },
+    descripcion:
+      'ERU de agua y saneamiento. El estándar Esfera pide 15 litros por persona al día: ' +
+      'sin agua segura no hay retorno posible.',
+  },
+  {
+    tipo: 'alimentos',
+    nombre: 'Centro de distribución de alimentos',
+    emoji: '📦',
+    costo: 30,
+    radio: 2,
+    aporteVitalidad: 12,
+    efectos: { confianza: 6, legitimidad: 4 },
+    descripcion:
+      'ERU de socorro: distribución imparcial — según la necesidad, nunca según el bando.',
   },
   {
     tipo: 'escuela',
@@ -83,6 +119,9 @@ export const EDIFICIOS: DefEdificio[] = [
 export const POR_TIPO: Record<TipoEdificio, DefEdificio> = Object.fromEntries(
   EDIFICIOS.map((e) => [e.tipo, e]),
 ) as Record<TipoEdificio, DefEdificio>;
+
+/** Los edificios que el jugador puede construir (la base viene instalada). */
+export const CONSTRUIBLES = EDIFICIOS.filter((e) => e.tipo !== 'base');
 
 /** Acciones sobre celdas (no son edificios). */
 export const ACCIONES = {
