@@ -428,3 +428,28 @@ Tres pedidos de Diego del feedback de uso:
 
 **Verificación:** build limpio; 24/24 tests del motor (incluido el bono del mercado);
 flujo del menú de celda confirmado end-to-end en navegador real.
+
+## 2026-06-13 · Rediseño "cockpit": el Territorio cabe en una sola pantalla (sin scroll)
+
+**Pedido de Diego:** en la Mac el modo Territorio hacía scroll — quería todo en una pantalla
+fija "como un footer siempre presente", y un rediseño más gamificado de indicadores y
+acciones (el mapa lo ama, se queda).
+
+- **Layout cockpit (sin scroll):** la fase de juego del Territorio ahora es un contenedor
+  `position: fixed; height: 100dvh` con `display:flex` en columna y `overflow:hidden`.
+  Filas: barra superior compacta · stat pods · **mapa (flex:1, protagonista)** · footer de
+  construcción. Verificado: `scrollHeight === clientHeight` (cero scroll) en escritorio.
+- **Indicadores gamificados (stat pods):** de barras horizontales planas a 4 "pods" estilo
+  HUD de videojuego — icono (🤝🛡️⚖️🏛️), nombre, valor grande en Poppins, barra inferior
+  de color y borde lateral del color del indicador; pulso rojo cuando cae bajo 30.
+- **Recursos como píldoras** en la barra superior (📅 mes · 💰 fondos+ingreso · 🎯 meta),
+  y la barra de construcción convertida en **chips con scroll horizontal** + botón
+  "Avanzar mes" fijo a la derecha (siempre visible, nunca se va con el scroll).
+- **Overlays sobre el mapa:** tutorial, alertas y la pista de ayuda flotan sobre el valle
+  (no ocupan filas propias) para dar el máximo espacio al mapa.
+- **Móvil:** stat pods a 2 columnas, nombres ocultos, diario oculto — el mapa manda.
+- Los botones flotantes 🎵/🐞 suben por encima del footer del cockpit (`:has(.cockpit)`).
+
+**Verificación (Chrome real):** cockpit sin scroll; construir vía menú de celda dentro del
+cockpit (Encuentro: confianza 30→40, fondos 120→95, diario actualizado, verde creciendo);
+24/24 tests del motor siguen en verde.

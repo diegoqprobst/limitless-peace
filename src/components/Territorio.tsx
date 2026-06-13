@@ -32,6 +32,14 @@ interface Props {
 
 const NIVEL = NIVEL_VALLE;
 
+/** Indicadores como "stat pods" de videojuego: icono + valor + barra. */
+const INDICADORES_HUD = [
+  { k: 'confianza', emoji: '🤝', nombre: 'Confianza' },
+  { k: 'seguridad', emoji: '🛡️', nombre: 'Seguridad' },
+  { k: 'justicia', emoji: '⚖️', nombre: 'Justicia' },
+  { k: 'legitimidad', emoji: '🏛️', nombre: 'Legitimidad' },
+] as const;
+
 export function Territorio({ onVolverMenu }: Props) {
   const { content } = useLang();
   const [estado, setEstado] = useState<EstadoTerritorio>(() => crearEstado(NIVEL));
@@ -266,30 +274,39 @@ export function Territorio({ onVolverMenu }: Props) {
   }
 
   return (
-    <main className="pantalla territorio">
-      <div className="territorio-cabecera">
-        <button className="boton-volver" onClick={onVolverMenu}>
-          ← Menú
+    <div className="cockpit">
+      {/* barra superior compacta */}
+      <div className="cockpit-top">
+        <button className="cockpit-volver" onClick={onVolverMenu} title="Volver al menú">
+          ←
         </button>
-        <div className="territorio-hud">
-          <span className="hud-dato">
-            📅 Mes <strong>{estado.mes}</strong>
+        <div className="cockpit-recursos">
+          <span className="recurso" title="Mes actual">
+            <span className="recurso-ico">📅</span>
+            <strong>{estado.mes}</strong>
           </span>
-          <span className="hud-dato">
-            💰 <strong>{estado.fondos}</strong> <small>({ingreso >= 0 ? '+' : ''}{ingreso}/mes)</small>
+          <span className="recurso" title={`Fondos · ${ingreso >= 0 ? '+' : ''}${ingreso} por mes`}>
+            <span className="recurso-ico">💰</span>
+            <strong>{estado.fondos}</strong>
+            <small className={ingreso < 0 ? 'ingreso-neg' : ''}>
+              {ingreso >= 0 ? '+' : ''}
+              {ingreso}
+            </small>
           </span>
           <span
-            className="hud-dato"
-            title={`Para ganar: ${metaFam} familias de vuelta y los 4 indicadores en 55 o más`}
+            className="recurso recurso-meta"
+            title={`Meta: ${metaFam} familias de vuelta y los 4 indicadores en ${NIVEL.metaIndicador}+`}
           >
-            🎯 <strong className={pobladas >= metaFam ? 'meta-ok' : ''}>{pobladas}/{metaFam} 🏠</strong>
-            {' · '}
+            <span className="recurso-ico">🎯</span>
+            <strong className={pobladas >= metaFam ? 'meta-ok' : ''}>
+              {pobladas}/{metaFam}🏠
+            </strong>
             <strong className={minIndicador >= NIVEL.metaIndicador ? 'meta-ok' : ''}>
-              {minIndicador}/{NIVEL.metaIndicador} ind.
+              {minIndicador}/{NIVEL.metaIndicador}
             </strong>
           </span>
         </div>
-        <button className="boton-codex" onClick={() => setCodexAbierto(true)}>
+        <button className="cockpit-codex" onClick={() => setCodexAbierto(true)} title="Códex">
           📖
           {estado.codexDescubierto.length > 0 && (
             <span className="contador-codex">{estado.codexDescubierto.length}</span>
@@ -297,39 +314,69 @@ export function Territorio({ onVolverMenu }: Props) {
         </button>
       </div>
 
-      <PanelIndicadores indicadores={estado.indicadores} />
+      {/* indicadores gamificados (stat pods) */}
+      <div className="cockpit-stats">
+        {INDICADORES_HUD.map(({ k, emoji, nombre }) => {
+          const v = estado.indicadores[k];
+          return (
+            <div key={k} className={`stat-pod ${k} ${v < 30 ? 'critico' : ''}`} title={nombre}>
+              <span className="stat-emoji">{emoji}</span>
+              <div className="stat-info">
+                <span className="stat-nombre">{nombre}</span>
+                <span className="stat-valor">{v}</span>
+              </div>
+              <div className="stat-barra">
+                <div className="stat-relleno" style={{ width: `${v}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-      {alertas.length > 0 && (
-        <div className="alertas">
-          {alertas.map((a) => (
-            <span key={a} className="alerta">
-              {a}
-            </span>
-          ))}
+      {/* zona central: el mapa (protagonista) + el diario */}
+      <div className="cockpit-medio">
+        <div className="cockpit-mapa">
+          <Suspense
+            fallback={<div className="tablero3d tablero3d-cargando">Levantando el valle…</div>}
+          >
+            <Tablero3D
+              celdas={estado.celdas}
+              herramienta={estado.herramienta}
+              onCelda={tocarCelda}
+              efecto={estado.efectoVisual}
+            />
+          </Suspense>
+
+          <div className="overlay-top">
+            {pasoTutorial && (
+              <div className="overlay-tutorial">
+                <span>💡 {pasoTutorial}</span>
+                <button className="tutorial-saltar" onClick={saltarTutorial}>
+                  Saltar
+                </button>
+              </div>
+            )}
+            {alertas.length > 0 && (
+              <div className="overlay-alertas">
+                {alertas.map((a) => (
+                  <span key={a} className="alerta">
+                    {a}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <p className={`overlay-hint ${estado.mensaje ? 'visible' : ''}`}>
+            {estado.mensaje ??
+              (herramientaActiva
+                ? `${herramientaActiva.emoji} ${herramientaActiva.nombre} — toca una celda`
+                : '👆 Toca una celda para construir · 🖐 arrastra para girar · rueda para acercar')}
+          </p>
         </div>
-      )}
 
-      {pasoTutorial && (
-        <div className="tutorial-barra">
-          <span>💡 {pasoTutorial}</span>
-          <button className="tutorial-saltar" onClick={saltarTutorial}>
-            Saltar guía
-          </button>
-        </div>
-      )}
-
-      <div className="territorio-cuerpo">
-        <Suspense fallback={<div className="tablero3d tablero3d-cargando">Levantando el valle…</div>}>
-          <Tablero3D
-            celdas={estado.celdas}
-            herramienta={estado.herramienta}
-            onCelda={tocarCelda}
-            efecto={estado.efectoVisual}
-          />
-        </Suspense>
-
-        <aside className="diario">
-          <p className="paleta-titulo">Diario del valle</p>
+        <aside className="cockpit-diario">
+          <p className="diario-titulo">📜 Diario del valle</p>
           <div className="diario-entradas">
             {[...estado.diario].reverse().map((entrada, i) => (
               <p key={estado.diario.length - i} className="diario-entrada">
@@ -340,50 +387,47 @@ export function Territorio({ onVolverMenu }: Props) {
         </aside>
       </div>
 
-      <div className="barra-construccion">
-        {CONSTRUIBLES.map((e) => (
-          <button
-            key={e.tipo}
-            className={`chip-construir ${estado.herramienta === e.tipo ? 'activa' : ''} ${
-              estado.fondos < e.costo ? 'sin-fondos' : ''
-            }`}
-            onClick={() => elegirHerramienta(e.tipo)}
-            title={`${e.nombre} — ${e.descripcion}`}
-          >
-            <span>{e.emoji}</span>
-            <span className="chip-nombre">{e.corto}</span>
-            <span className="paleta-costo">{e.costo}</span>
-          </button>
-        ))}
-        <span className="barra-sep" />
-        {(['limpiar', 'desminar'] as const).map((a) => (
-          <button
-            key={a}
-            className={`chip-construir ${estado.herramienta === a ? 'activa' : ''} ${
-              estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
-            }`}
-            onClick={() => elegirHerramienta(a)}
-            title={`${ACCIONES[a].nombre} — ${ACCIONES[a].descripcion}`}
-          >
-            <span>{ACCIONES[a].emoji}</span>
-            <span className="chip-nombre">{ACCIONES[a].corto}</span>
-            <span className="paleta-costo">{ACCIONES[a].costo}</span>
-          </button>
-        ))}
+      {/* footer de construcción: chips (scroll) + avanzar mes */}
+      <div className="cockpit-footer">
+        <div className="cockpit-chips">
+          {CONSTRUIBLES.map((e) => (
+            <button
+              key={e.tipo}
+              className={`chip-construir ${estado.herramienta === e.tipo ? 'activa' : ''} ${
+                estado.fondos < e.costo ? 'sin-fondos' : ''
+              }`}
+              onClick={() => elegirHerramienta(e.tipo)}
+              title={`${e.nombre} — ${e.descripcion}`}
+            >
+              <span>{e.emoji}</span>
+              <span className="chip-nombre">{e.corto}</span>
+              <span className="paleta-costo">{e.costo}</span>
+            </button>
+          ))}
+          <span className="barra-sep" />
+          {(['limpiar', 'desminar'] as const).map((a) => (
+            <button
+              key={a}
+              className={`chip-construir ${estado.herramienta === a ? 'activa' : ''} ${
+                estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
+              }`}
+              onClick={() => elegirHerramienta(a)}
+              title={`${ACCIONES[a].nombre} — ${ACCIONES[a].descripcion}`}
+            >
+              <span>{ACCIONES[a].emoji}</span>
+              <span className="chip-nombre">{ACCIONES[a].corto}</span>
+              <span className="paleta-costo">{ACCIONES[a].costo}</span>
+            </button>
+          ))}
+        </div>
         <button
-          className="boton-principal boton-mes-barra"
+          className="boton-mes-cockpit"
           onClick={() => setEstado((e) => avanzarMes(e, NIVEL))}
         >
-          Avanzar mes ⏵
+          Avanzar<br />
+          mes ⏵
         </button>
       </div>
-
-      <p className={`territorio-mensaje ${estado.mensaje ? 'visible' : ''}`}>
-        {estado.mensaje ??
-          (herramientaActiva
-            ? `${herramientaActiva.emoji} ${herramientaActiva.nombre}: ${herramientaActiva.descripcion} Toca una celda del valle.`
-            : 'Toca una celda del valle para construir ahí · o elige abajo · arrastra para orbitar · rueda para acercar')}
-      </p>
 
       {estado.eventoActivo && (
         <div className="codex-fondo">
@@ -525,6 +569,6 @@ export function Territorio({ onVolverMenu }: Props) {
       {historiaEco && (
         <HistoriaModal historia={historiaEco} onCerrar={() => setHistoriaAbierta(null)} />
       )}
-    </main>
+    </div>
   );
 }

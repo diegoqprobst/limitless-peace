@@ -1540,3 +1540,368 @@ button {
 .menu-acciones .boton-secundario {
   margin: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   COCKPIT del Territorio — todo en una sola pantalla, sin scroll.
+   Layout fijo de altura completa: barra · stats · mapa · acciones.
+   ═══════════════════════════════════════════════════════════════ */
+.cockpit {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100dvh;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--fondo);
+  background-image: radial-gradient(ellipse at 50% -10%, var(--fondo-brillo) 0%, var(--fondo) 60%);
+  overflow: hidden;
+}
+
+/* ── Barra superior compacta ── */
+.cockpit-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.cockpit-volver,
+.cockpit-codex {
+  background: var(--fondo-elevado);
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.4rem 0.7rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.cockpit-volver:hover,
+.cockpit-codex:hover {
+  border-color: var(--acento);
+}
+
+.cockpit-recursos {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.recurso {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.recurso-ico {
+  font-size: 1rem;
+}
+
+.recurso strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.recurso small {
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+}
+
+.recurso small.ingreso-neg {
+  color: var(--peligro);
+}
+
+.recurso-meta strong + strong {
+  margin-left: 0.35rem;
+  padding-left: 0.35rem;
+  border-left: 1px solid var(--borde);
+}
+
+.meta-ok {
+  color: var(--paz);
+}
+
+/* ── Indicadores gamificados (stat pods) ── */
+.cockpit-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.stat-pod {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.45rem 0.7rem 0.55rem;
+  overflow: hidden;
+}
+
+.stat-pod.confianza {
+  box-shadow: inset 3px 0 0 var(--confianza);
+}
+.stat-pod.seguridad {
+  box-shadow: inset 3px 0 0 var(--seguridad);
+}
+.stat-pod.justicia {
+  box-shadow: inset 3px 0 0 var(--justicia);
+}
+.stat-pod.legitimidad {
+  box-shadow: inset 3px 0 0 var(--legitimidad);
+}
+
+.stat-emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.stat-nombre {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tinta-suave);
+}
+
+.stat-valor {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+.stat-barra {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--fondo);
+}
+
+.stat-relleno {
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+.stat-pod.confianza .stat-relleno {
+  background: var(--confianza);
+}
+.stat-pod.seguridad .stat-relleno {
+  background: var(--seguridad);
+}
+.stat-pod.justicia .stat-relleno {
+  background: var(--justicia);
+}
+.stat-pod.legitimidad .stat-relleno {
+  background: var(--legitimidad);
+}
+
+.stat-pod.critico {
+  border-color: var(--peligro);
+}
+
+.stat-pod.critico .stat-valor {
+  color: var(--peligro);
+  animation: pulso 1.4s infinite;
+}
+
+/* ── Zona central: mapa protagonista + diario ── */
+.cockpit-medio {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cockpit-mapa {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.cockpit-mapa .tablero3d {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+.overlay-top {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.overlay-tutorial {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(28, 32, 48, 0.92);
+  border: 1px solid rgba(236, 178, 79, 0.4);
+  border-radius: var(--radio);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.86rem;
+  pointer-events: auto;
+  backdrop-filter: blur(3px);
+}
+
+.overlay-tutorial .tutorial-saltar {
+  margin-left: auto;
+}
+
+.overlay-alertas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  pointer-events: none;
+}
+
+.overlay-hint {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 92%;
+  text-align: center;
+  background: rgba(17, 20, 29, 0.82);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.overlay-hint.visible {
+  color: var(--acento);
+  border-color: var(--acento-suave);
+}
+
+.cockpit-diario {
+  width: 230px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.6rem 0.75rem;
+  overflow: hidden;
+}
+
+.diario-titulo {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--tinta-suave);
+  margin: 0 0 0.5rem;
+}
+
+.cockpit-diario .diario-entradas {
+  flex: 1;
+  overflow-y: auto;
+  max-height: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* ── Footer de construcción ── */
+.cockpit-footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.cockpit-chips {
+  flex: 1;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0.6rem;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  scrollbar-width: thin;
+}
+
+.cockpit-chips .chip-construir {
+  flex-shrink: 0;
+}
+
+.boton-mes-cockpit {
+  flex-shrink: 0;
+  background: var(--acento);
+  color: var(--fondo);
+  border: none;
+  border-radius: var(--radio);
+  padding: 0.5rem 1.4rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.15;
+  box-shadow: var(--halo-boton);
+  transition: transform 0.1s ease;
+}
+
+.boton-mes-cockpit:hover {
+  background: var(--acento-suave);
+  transform: translateY(-1px);
+}
+
+/* Los botones flotantes suben por encima del footer del cockpit */
+body:has(.cockpit) .boton-musica,
+body:has(.cockpit) .boton-reporte {
+  bottom: 5.2rem;
+}
+
+/* ── Móvil: el diario se oculta, el mapa manda ── */
+@media (max-width: 760px) {
+  .cockpit-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat-nombre {
+    display: none;
+  }
+  .cockpit-diario {
+    display: none;
+  }
+  .boton-mes-cockpit {
+    padding: 0.5rem 0.9rem;
+  }
+}
