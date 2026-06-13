@@ -117,5 +117,17 @@ const fam7b = contarFamilias(e7.celdas).pobladas;
 check('primera familia retorna con vitalidad ≥35 (dos edificios)', fam7b >= 1, `antes=${fam7a} después=${fam7b}`);
 check('solo UNA familia con la regla de la primera', fam7b === 1, `pobladas=${fam7b}`);
 
+// ── Bono del mercado: ingresos 1.5× ──
+let e8 = crearEstado(NIVEL_VALLE);
+e8 = { ...e8, fase: 'jugando', fondos: 300 };
+const ingresoSinMercado = ingresoMensual(NIVEL_VALLE, e8.celdas, 'libre');
+e8 = { ...e8, herramienta: 'mercado' };
+e8 = actuar(e8, NIVEL_VALLE, 0, 0);
+check('mercado colocado', e8.celdas[0][0].edificio === 'mercado', `edif=${e8.celdas[0][0].edificio}`);
+const ingresoConMercado = ingresoMensual(NIVEL_VALLE, e8.celdas, 'libre');
+// base 20 + 10 mercado - 2 mant = 28; con bono ×1.5 = 42
+check('mercado da bono comunitario 1.5×', ingresoConMercado === Math.round((20 + 10 - 2) * 1.5),
+  `sin=${ingresoSinMercado} con=${ingresoConMercado}`);
+
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);

@@ -38,6 +38,8 @@ export function Territorio({ onVolverMenu }: Props) {
   const [dificultad, setDificultad] = useState<Dificultad>('libre');
   const [codexAbierto, setCodexAbierto] = useState(false);
   const [historiaAbierta, setHistoriaAbierta] = useState<string | null>(null);
+  const [menuCelda, setMenuCelda] = useState<{ f: number; c: number } | null>(null);
+  const [seleccionMenu, setSeleccionMenu] = useState<Herramienta | null>(null);
 
   const { pobladas, total } = useMemo(() => contarFamilias(estado.celdas), [estado.celdas]);
   const ingreso = useMemo(() => ingresoMensual(NIVEL, estado.celdas, estado.dificultad), [estado.celdas, estado.dificultad]);
@@ -55,6 +57,55 @@ export function Territorio({ onVolverMenu }: Props) {
 
   const elegirHerramienta = (h: Herramienta) =>
     setEstado((e) => ({ ...e, herramienta: e.herramienta === h ? null : h, mensaje: null }));
+
+  // ── Tocar una celda: si hay herramienta, construye; si no, abre el menú ──
+  const tocarCelda = (f: number, c: number) => {
+    if (estado.herramienta) {
+      setEstado((e) => actuar(e, NIVEL, f, c));
+      return;
+    }
+    const celda = estado.celdas[f][c];
+    if (celda.tipo === 'tierra' && !celda.edificio) {
+      setSeleccionMenu(null);
+      setMenuCelda({ f, c });
+    } else if (celda.tipo === 'escombros') {
+      setSeleccionMenu('limpiar');
+      setMenuCelda({ f, c });
+    } else if (celda.tipo === 'minado') {
+      setSeleccionMenu('desminar');
+      setMenuCelda({ f, c });
+    } else {
+      setEstado((e) => ({
+        ...e,
+        mensaje:
+          celda.edificio
+            ? 'Aquí ya hay un edificio.'
+            : celda.tipo === 'casa'
+              ? 'Las casas son de las familias: construye al lado.'
+              : 'Ahí no se puede construir.',
+      }));
+    }
+  };
+
+  const cerrarMenu = () => {
+    setMenuCelda(null);
+    setSeleccionMenu(null);
+  };
+
+  const confirmarMenu = () => {
+    if (!menuCelda || !seleccionMenu) return;
+    const { f, c } = menuCelda;
+    setEstado((e) => ({ ...actuar({ ...e, herramienta: seleccionMenu }, NIVEL, f, c), herramienta: null }));
+    cerrarMenu();
+  };
+
+  const celdaMenu = menuCelda ? estado.celdas[menuCelda.f][menuCelda.c] : null;
+  const defMenu =
+    seleccionMenu === 'limpiar' || seleccionMenu === 'desminar'
+      ? ACCIONES[seleccionMenu]
+      : CONSTRUIBLES.find((e) => e.tipo === seleccionMenu);
+  const costoMenu = defMenu?.costo ?? 0;
+  const puedePagarMenu = !!seleccionMenu && estado.fondos >= costoMenu;
 
   // ── Claridad: meta visible, herramienta activa, tutorial de primera vez ──
   const metaFam = Math.ceil(total * NIVEL.metaFamilias);
@@ -272,7 +323,7 @@ export function Territorio({ onVolverMenu }: Props) {
           <Tablero3D
             celdas={estado.celdas}
             herramienta={estado.herramienta}
-            onCelda={(f, c) => setEstado((e) => actuar(e, NIVEL, f, c))}
+            onCelda={tocarCelda}
             efecto={estado.efectoVisual}
           />
         </Suspense>
@@ -331,7 +382,7 @@ export function Territorio({ onVolverMenu }: Props) {
         {estado.mensaje ??
           (herramientaActiva
             ? `${herramientaActiva.emoji} ${herramientaActiva.nombre}: ${herramientaActiva.descripcion} Toca una celda del valle.`
-            : 'Elige qué construir abajo · arrastra para orbitar la cámara · rueda para acercar')}
+            : 'Toca una celda del valle para construir ahí · o elige abajo · arrastra para orbitar · rueda para acercar')}
       </p>
 
       {estado.eventoActivo && (
@@ -402,6 +453,67 @@ export function Territorio({ onVolverMenu }: Props) {
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {menuCelda && celdaMenu && (
+        <div className="codex-fondo" onClick={cerrarMenu}>
+          <div className="codex-panel menu-celda" onClick={(e) => e.stopPropagation()}>
+            <div className="codex-cabecera">
+              <h2>
+                {celdaMenu.tipo === 'tierra'
+                  ? '¿Qué construir aquí?'
+                  : celdaMenu.tipo === 'escombros'
+                    ? 'Esta celda tiene escombros'
+                    : 'Aquí hay un campo minado'}
+              </h2>
+              <button className="boton-cerrar" onClick={cerrarMenu}>
+                ✕
+              </button>
+            </div>
+
+            {celdaMenu.tipo === 'tierra' ? (
+              <div className="menu-grid">
+                {CONSTRUIBLES.map((e) => {
+                  const sinFondos = estado.fondos < e.costo;
+                  return (
+                    <button
+                      key={e.tipo}
+                      className={`chip-construir ${seleccionMenu === e.tipo ? 'activa' : ''} ${sinFondos ? 'sin-fondos' : ''}`}
+                      onClick={() => setSeleccionMenu(e.tipo)}
+                    >
+                      <span>{e.emoji}</span>
+                      <span className="chip-nombre">{e.corto}</span>
+                      <span className="paleta-costo">{e.costo}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="codex-intro">
+                {celdaMenu.tipo === 'escombros'
+                  ? 'Despeja los escombros para poder construir en esta celda.'
+                  : 'Las minas siguen matando años después de la guerra. Desminar es lento y costoso — pero la seguridad va primero.'}
+              </p>
+            )}
+
+            {defMenu && <p className="menu-desc">{defMenu.descripcion}</p>}
+
+            <div className="acciones-finales menu-acciones">
+              <button
+                className="boton-principal"
+                disabled={!puedePagarMenu}
+                onClick={confirmarMenu}
+              >
+                {seleccionMenu
+                  ? `✓ ${defMenu?.corto ?? 'Construir'} (${costoMenu}) ${puedePagarMenu ? '' : '— sin fondos'}`
+                  : 'Elige una opción'}
+              </button>
+              <button className="boton-secundario" onClick={cerrarMenu}>
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

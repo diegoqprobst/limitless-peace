@@ -89,7 +89,9 @@ export const EDIFICIOS: DefEdificio[] = [
     aporteVitalidad: 10,
     efectos: { legitimidad: 4 },
     ingresoMensual: 10,
-    descripcion: 'Economía local: genera +10 fondos cada mes.',
+    descripcion:
+      'Economía local: genera +10 fondos al mes y, al reactivar la comunidad, ' +
+      'acelera toda la recuperación de recursos en 1.5×.',
   },
   {
     tipo: 'memorial',

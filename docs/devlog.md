@@ -408,3 +408,23 @@ ante el jurado. Implementado el sistema receptor:
   M4A ~128 kbps, ~-18 LUFS). Integrar la música = soltar un archivo, cero código.
 
 Verificado: el botón permanece oculto sin archivo; build limpio.
+
+## 2026-06-12 · Tocar para construir (con OK), espacio en el footer y bono del mercado
+
+Tres pedidos de Diego del feedback de uso:
+
+- **Espacio inferior:** los botones flotantes 🎵/🐞 ya no tapan contenido — `.app` con
+  padding-bottom 5rem y footer con margen. Ahora se puede interactuar con lo de abajo.
+- **Menú al tocar la celda (con OK):** además de la barra inferior, ahora **tocas una
+  celda del valle y se abre un menú** "¿Qué construir aquí?" con todos los edificios; al
+  elegir uno se resalta, muestra su descripción y el botón OK pasa a "✓ Nombre (costo)"
+  (deshabilitado si no alcanza). En **escombros** y **minas**, el menú ofrece quitarlas
+  (Limpiar / Desminar) con su OK. Mucho más descubrible en móvil/touch que el flujo
+  "elige herramienta → toca celda" (que se conserva). Verificado en Chrome real:
+  construir Encuentro desde el menú descuenta fondos, sube confianza y registra en el diario.
+- **Bono comunitario del mercado:** si hay al menos un mercado, los recursos se recuperan
+  **1.5× más rápido** (la economía local reactivada). Aplicado al ingreso neto positivo;
+  descripción del mercado actualizada. Test: ingreso 28 → 42 con mercado.
+
+**Verificación:** build limpio; 24/24 tests del motor (incluido el bono del mercado);
+flujo del menú de celda confirmado end-to-end en navegador real.

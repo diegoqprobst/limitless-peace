@@ -155,7 +155,14 @@ export function contarFamilias(celdas: Celda[][]): { pobladas: number; total: nu
   return { pobladas, total };
 }
 
-/** Ingreso neto mensual: base + mercados − mantenimiento de cada edificio construido. */
+/** Bono comunitario del mercado: la economía local acelera la recuperación. */
+export const BONO_MERCADO = 1.5;
+
+/**
+ * Ingreso neto mensual: base + mercados − mantenimiento. Si hay al menos un
+ * mercado, la comunidad reactiva la economía y los recursos se recuperan
+ * 1.5× más rápido (solo cuando el balance es positivo).
+ */
 export function ingresoMensual(
   _nivel: NivelTerritorio,
   celdas: Celda[][],
@@ -163,14 +170,17 @@ export function ingresoMensual(
 ): number {
   const config = DIFICULTADES[dificultad];
   let ingreso = config.ingresoBase;
+  let hayMercado = false;
   for (const fila of celdas) {
     for (const celda of fila) {
       if (celda.edificio && celda.edificio !== 'base') {
         ingreso += POR_TIPO[celda.edificio].ingresoMensual ?? 0;
         ingreso -= config.mantenimientoPorEdificio;
+        if (celda.edificio === 'mercado') hayMercado = true;
       }
     }
   }
+  if (hayMercado && ingreso > 0) ingreso = Math.round(ingreso * BONO_MERCADO);
   return ingreso;
 }
 
