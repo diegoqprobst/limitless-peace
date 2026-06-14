@@ -43,6 +43,8 @@ export interface DefEdificio {
   /** Fondos que genera cada mes (mercados). */
   ingresoMensual?: number;
   descripcion: string;
+  /** Explicación en lenguaje claro de QUÉ cambia (para el tooltip). */
+  porque: string;
 }
 
 export interface Celda {
@@ -51,6 +53,8 @@ export interface Celda {
   vitalidad: number;
   /** Solo casas: la familia retornó (vitalidad suficiente alrededor). */
   poblada: boolean;
+  /** Relieve del terreno (0 valle … 3 colina): visual, da carácter al mapa. */
+  elevacion: number;
 }
 
 export interface OpcionEvento {

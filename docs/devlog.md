@@ -453,3 +453,27 @@ acciones (el mapa lo ama, se queda).
 **Verificación (Chrome real):** cockpit sin scroll; construir vía menú de celda dentro del
 cockpit (Encuentro: confianza 30→40, fondos 120→95, diario actualizado, verde creciendo);
 24/24 tests del motor siguen en verde.
+
+## 2026-06-13 · Terreno con relieve, tooltips "qué cambia" y fuera el Encuentro
+
+Tres pedidos de Diego:
+
+- **Espacio de culto y encuentro retirado** del nivel del valle (queda en el catálogo de
+  tipos para niveles futuros). La barra pasa de 9 a 8 edificios construibles; tutorial,
+  tests y textos actualizados.
+- **Terreno con elevaciones y valles:** cada celda tiene ahora una `elevacion` (0–3)
+  calculada de forma determinista con dos ondas suaves; el río corre por el fondo del
+  valle (siempre 0). El tablero 3D terracea los pilares (escalón 0.34) y eleva edificios,
+  casas, vegetación y la previsualización del aura a la altura de su celda. Es visual por
+  ahora —da carácter al mapa— y deja montada la futura mecánica de "ubicación segura"
+  por elevación (ver `docs/analisis-sistemas.md`).
+- **Tooltips "qué cambia":** al pasar el cursor por un edificio aparece un panel con su
+  nombre, costo, los efectos como chips de color (+5 Seguridad, +3 Legitimidad…) y una
+  frase en lenguaje claro (campo `porque` en el catálogo): p. ej. agua = "previene los
+  brotes de enfermedad tras una inundación". El mismo texto `porque` se muestra en el
+  menú de celda (touch/móvil, donde no hay hover).
+
+**Verificación (Chrome real):** terreno con colinas/vaguadas y río hundido visible;
+tooltip de Agua (+5 Seguridad, +3 Legitimidad, frase de prevención) y de Mercado
+(+4 Legitimidad, +10 fondos/mes, bono 1.5×); Encuentro ausente de la barra. 24/24 tests
+del motor en verde; build limpio.

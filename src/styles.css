@@ -1905,3 +1905,87 @@ body:has(.cockpit) .boton-reporte {
     padding: 0.5rem 0.9rem;
   }
 }
+
+/* ── Tooltip "qué cambia" sobre los chips de construcción ── */
+.tooltip-edificio {
+  position: fixed;
+  left: 50%;
+  bottom: 5.2rem;
+  transform: translateX(-50%);
+  z-index: 45;
+  width: min(92vw, 420px);
+  background: rgba(27, 31, 42, 0.97);
+  border: 1px solid var(--acento-suave);
+  border-radius: var(--radio);
+  padding: 0.7rem 0.9rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  animation: aparecer 0.15s ease-out;
+}
+
+.tip-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tip-emoji {
+  font-size: 1.2rem;
+}
+
+.tip-cab strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tip-costo {
+  margin-left: auto;
+  color: var(--acento);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.tip-efectos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+
+.tip-efecto {
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: var(--fondo-elevado);
+  border: 1px solid var(--borde);
+}
+
+.tip-efecto.confianza {
+  color: var(--confianza);
+  border-color: var(--confianza);
+}
+.tip-efecto.seguridad {
+  color: var(--seguridad);
+  border-color: var(--seguridad);
+}
+.tip-efecto.justicia {
+  color: var(--justicia);
+  border-color: var(--justicia);
+}
+.tip-efecto.legitimidad {
+  color: var(--legitimidad);
+  border-color: var(--legitimidad);
+}
+.tip-efecto.ingreso {
+  color: var(--acento);
+  border-color: var(--acento-suave);
+}
+
+.tip-porque {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}

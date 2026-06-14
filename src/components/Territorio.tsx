@@ -40,6 +40,32 @@ const INDICADORES_HUD = [
   { k: 'legitimidad', emoji: '🏛️', nombre: 'Legitimidad' },
 ] as const;
 
+/** Chips "+N Indicador" + ingreso, para el tooltip de cada edificio. */
+function efectosDeTip(tipo: Herramienta | null) {
+  if (!tipo || tipo === 'limpiar' || tipo === 'desminar') return null;
+  const def = CONSTRUIBLES.find((e) => e.tipo === tipo);
+  if (!def) return null;
+  const nombres: Record<string, string> = {
+    confianza: 'Confianza',
+    seguridad: 'Seguridad',
+    justicia: 'Justicia',
+    legitimidad: 'Legitimidad',
+  };
+  const chips = Object.entries(def.efectos).map(([k, v]) => (
+    <span key={k} className={`tip-efecto ${k}`}>
+      +{v} {nombres[k]}
+    </span>
+  ));
+  if (def.ingresoMensual) {
+    chips.push(
+      <span key="ing" className="tip-efecto ingreso">
+        +{def.ingresoMensual} fondos/mes
+      </span>,
+    );
+  }
+  return chips;
+}
+
 export function Territorio({ onVolverMenu }: Props) {
   const { content } = useLang();
   const [estado, setEstado] = useState<EstadoTerritorio>(() => crearEstado(NIVEL));
@@ -48,6 +74,7 @@ export function Territorio({ onVolverMenu }: Props) {
   const [historiaAbierta, setHistoriaAbierta] = useState<string | null>(null);
   const [menuCelda, setMenuCelda] = useState<{ f: number; c: number } | null>(null);
   const [seleccionMenu, setSeleccionMenu] = useState<Herramienta | null>(null);
+  const [tip, setTip] = useState<Herramienta | null>(null);
 
   const { pobladas, total } = useMemo(() => contarFamilias(estado.celdas), [estado.celdas]);
   const ingreso = useMemo(() => ingresoMensual(NIVEL, estado.celdas, estado.dificultad), [estado.celdas, estado.dificultad]);
@@ -115,6 +142,12 @@ export function Territorio({ onVolverMenu }: Props) {
   const costoMenu = defMenu?.costo ?? 0;
   const puedePagarMenu = !!seleccionMenu && estado.fondos >= costoMenu;
 
+  // Tooltip: qué cambia el edificio/acción bajo el cursor.
+  const tipDef =
+    tip === 'limpiar' || tip === 'desminar'
+      ? ACCIONES[tip]
+      : CONSTRUIBLES.find((e) => e.tipo === tip);
+
   // ── Claridad: meta visible, herramienta activa, tutorial de primera vez ──
   const metaFam = Math.ceil(total * NIVEL.metaFamilias);
   const ind = estado.indicadores;
@@ -139,7 +172,7 @@ export function Territorio({ onVolverMenu }: Props) {
   if (!tutorialVisto && estado.fase === 'jugando') {
     if (construidos === 0 && !estado.herramienta) {
       pasoTutorial =
-        'Paso 1 de 3 — Elige qué construir en la barra de abajo. Buen comienzo: 🛐 Encuentro o ⚽ Cancha (baratos y dan confianza).';
+        'Paso 1 de 3 — Elige qué construir en la barra de abajo. Buen comienzo: ⚽ Cancha o 🏥 Salud (pasa el cursor por cada una para ver qué cambia).';
     } else if (construidos === 0) {
       pasoTutorial =
         'Paso 2 de 3 — Toca una celda de tierra CERCA de las casas 🏚️: cada edificio irradia vitalidad a su alrededor (verás el área al pasar el cursor).';
@@ -387,6 +420,19 @@ export function Territorio({ onVolverMenu }: Props) {
         </aside>
       </div>
 
+      {/* tooltip: qué cambia el edificio/acción bajo el cursor */}
+      {tipDef && (
+        <div className="tooltip-edificio">
+          <div className="tip-cab">
+            <span className="tip-emoji">{tipDef.emoji}</span>
+            <strong>{tipDef.nombre}</strong>
+            <span className="tip-costo">💰 {tipDef.costo}</span>
+          </div>
+          <div className="tip-efectos">{efectosDeTip(tip)}</div>
+          <p className="tip-porque">{tipDef.porque}</p>
+        </div>
+      )}
+
       {/* footer de construcción: chips (scroll) + avanzar mes */}
       <div className="cockpit-footer">
         <div className="cockpit-chips">
@@ -397,7 +443,8 @@ export function Territorio({ onVolverMenu }: Props) {
                 estado.fondos < e.costo ? 'sin-fondos' : ''
               }`}
               onClick={() => elegirHerramienta(e.tipo)}
-              title={`${e.nombre} — ${e.descripcion}`}
+              onMouseEnter={() => setTip(e.tipo)}
+              onMouseLeave={() => setTip((t) => (t === e.tipo ? null : t))}
             >
               <span>{e.emoji}</span>
               <span className="chip-nombre">{e.corto}</span>
@@ -412,7 +459,8 @@ export function Territorio({ onVolverMenu }: Props) {
                 estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
               }`}
               onClick={() => elegirHerramienta(a)}
-              title={`${ACCIONES[a].nombre} — ${ACCIONES[a].descripcion}`}
+              onMouseEnter={() => setTip(a)}
+              onMouseLeave={() => setTip((t) => (t === a ? null : t))}
             >
               <span>{ACCIONES[a].emoji}</span>
               <span className="chip-nombre">{ACCIONES[a].corto}</span>
@@ -542,7 +590,7 @@ export function Territorio({ onVolverMenu }: Props) {
               </p>
             )}
 
-            {defMenu && <p className="menu-desc">{defMenu.descripcion}</p>}
+            {defMenu && <p className="menu-desc">💡 {defMenu.porque}</p>}
 
             <div className="acciones-finales menu-acciones">
               <button

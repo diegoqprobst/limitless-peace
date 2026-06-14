@@ -34,6 +34,9 @@ function easeOutBack(t: number): number {
 const MUERTA = new THREE.Color('#46413a');
 const VIVA = new THREE.Color('#5d9c64');
 
+/** Altura de cada escalón de relieve del terreno. */
+const ESCALON = 0.34;
+
 /** Grupo que "brota" al montarse (construcción de edificios, retorno de familias). */
 function Brote({ children }: { children: React.ReactNode }) {
   const ref = useRef<THREE.Group>(null);
@@ -461,6 +464,9 @@ interface CeldaTileProps {
 
 function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTileProps) {
   const esRio = celda.tipo === 'rio';
+  const elev = celda.elevacion ?? 0;
+  const yTop = elev * ESCALON; // altura de la superficie de esta celda
+  const altura = 0.3 + elev * ESCALON; // el pilar baja hasta la base común
   const color =
     celda.tipo === 'minado'
       ? '#4d3038'
@@ -469,13 +475,13 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
         : MUERTA.clone().lerp(VIVA, celda.vitalidad / 100);
 
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, yTop, z]}>
       {esRio ? (
         <Agua />
       ) : (
         <mesh
           receiveShadow
-          position={[0, -0.15, 0]}
+          position={[0, -altura / 2, 0]}
           onClick={(e) => {
             e.stopPropagation();
             onCelda(f, c);
@@ -490,7 +496,7 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
             document.body.style.cursor = 'auto';
           }}
         >
-          <boxGeometry args={[0.96, 0.3, 0.96]} />
+          <boxGeometry args={[0.96, altura, 0.96]} />
           <meshStandardMaterial
             color={color}
             emissive={hovered ? '#e8b04b' : '#000000'}
@@ -569,10 +575,14 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
           <Humo x={efecto.c - (cols - 1) / 2} z={efecto.f - (filas - 1) / 2} />
         )}
 
-        {/* previsualización del aura del edificio seleccionado */}
+        {/* previsualización del aura del edificio seleccionado (a la altura del terreno) */}
         {hovered && esEdificio && (
           <mesh
-            position={[hovered[1] - (cols - 1) / 2, 0.02, hovered[0] - (filas - 1) / 2]}
+            position={[
+              hovered[1] - (cols - 1) / 2,
+              (celdas[hovered[0]][hovered[1]].elevacion ?? 0) * ESCALON + 0.02,
+              hovered[0] - (filas - 1) / 2,
+            ]}
             rotation={[-Math.PI / 2, 0, 0]}
           >
             <planeGeometry args={[radioAura * 2 + 0.96, radioAura * 2 + 0.96]} />

@@ -19,6 +19,7 @@ export const EDIFICIOS: DefEdificio[] = [
     descripcion:
       'El campamento de tu equipo (ERU Base Camp). Ya está instalado: tu trabajo es que ' +
       'algún día sobre. La victoria es desmontarlo.',
+    porque: 'Tu campamento. Cuando el valle ya no lo necesite, lo desmontas: eso es ganar.',
   },
   {
     tipo: 'salud',
@@ -31,6 +32,8 @@ export const EDIFICIOS: DefEdificio[] = [
     efectos: { seguridad: 8 },
     descripcion:
       'ERU de atención básica de salud: la primera señal de que alguien cuida este lugar.',
+    porque:
+      'Atiende heridas y enfermedades. Sube la Seguridad y, junto al agua, evita que un brote se descontrole.',
   },
   {
     tipo: 'agua',
@@ -44,6 +47,8 @@ export const EDIFICIOS: DefEdificio[] = [
     descripcion:
       'ERU de agua y saneamiento. El estándar Esfera pide 15 litros por persona al día: ' +
       'sin agua segura no hay retorno posible.',
+    porque:
+      'Agua potable: previene los brotes de enfermedad tras una inundación. Sin ella, las epidemias se disparan.',
   },
   {
     tipo: 'alimentos',
@@ -56,6 +61,8 @@ export const EDIFICIOS: DefEdificio[] = [
     efectos: { confianza: 6, legitimidad: 4 },
     descripcion:
       'ERU de socorro: distribución imparcial — según la necesidad, nunca según el bando.',
+    porque:
+      'Comida para todos sin distinción. Sostiene el retorno: sin alimentos cerca, las familias se vuelven a ir.',
   },
   {
     tipo: 'escuela',
@@ -67,17 +74,8 @@ export const EDIFICIOS: DefEdificio[] = [
     aporteVitalidad: 12,
     efectos: { legitimidad: 6, confianza: 4 },
     descripcion: 'Donde estudian juntos los hijos de todos los bandos.',
-  },
-  {
-    tipo: 'encuentro',
-    corto: 'Encuentro',
-    nombre: 'Espacio de culto y encuentro',
-    emoji: '🛐',
-    costo: 25,
-    radio: 2,
-    aporteVitalidad: 10,
-    efectos: { confianza: 10 },
-    descripcion: 'Abierto a todas las confesiones. La comunidad vuelve a mirarse a la cara.',
+    porque:
+      'Niñez con futuro y tardes ocupadas. Previene el reclutamiento juvenil de las disidencias.',
   },
   {
     tipo: 'mercado',
@@ -92,6 +90,8 @@ export const EDIFICIOS: DefEdificio[] = [
     descripcion:
       'Economía local: genera +10 fondos al mes y, al reactivar la comunidad, ' +
       'acelera toda la recuperación de recursos en 1.5×.',
+    porque:
+      'Reactiva la economía: +10 fondos al mes y acelera TODA la recuperación de recursos en 1.5×.',
   },
   {
     tipo: 'memorial',
@@ -103,6 +103,7 @@ export const EDIFICIOS: DefEdificio[] = [
     aporteVitalidad: 6,
     efectos: { justicia: 12 },
     descripcion: 'Recordar para no repetir. Sin memoria no hay justicia.',
+    porque: 'Reconoce a las víctimas. Es lo que más sube la Justicia.',
   },
   {
     tipo: 'emisora',
@@ -114,6 +115,8 @@ export const EDIFICIOS: DefEdificio[] = [
     aporteVitalidad: 5,
     efectos: { legitimidad: 8, confianza: 5 },
     descripcion: 'La voz del valle: pedagogía de paz contra el rumor. Alcance amplio.',
+    porque:
+      'La voz del valle contra el rumor. Sube Legitimidad y Confianza, y su alcance es el más amplio (radio 3).',
   },
   {
     tipo: 'cancha',
@@ -125,6 +128,7 @@ export const EDIFICIOS: DefEdificio[] = [
     aporteVitalidad: 8,
     efectos: { confianza: 6, seguridad: 3 },
     descripcion: 'Donde la juventud se encuentra en vez de reclutarse.',
+    porque: 'La más barata. Reúne a la juventud, sube la Confianza y ayuda a prevenir el reclutamiento.',
   },
 ];
 
@@ -143,6 +147,7 @@ export const ACCIONES = {
     emoji: '🧹',
     costo: 10,
     descripcion: 'Despeja una celda de escombros para poder construir.',
+    porque: 'Despeja los escombros de una celda para poder construir ahí.',
   },
   desminar: {
     nombre: 'Desminado humanitario',
@@ -150,6 +155,7 @@ export const ACCIONES = {
     emoji: '⛏️',
     costo: 25,
     descripcion: 'Libera un campo minado. Lento y costoso — como en la realidad.',
+    porque: 'Libera un campo minado. Las minas matan años después de la guerra: la seguridad va primero.',
   },
 } as const;
 

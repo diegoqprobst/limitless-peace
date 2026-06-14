@@ -24,10 +24,10 @@ let e = crearEstado(NIVEL_VALLE);
 e = { ...e, fase: 'jugando' };
 
 // Colocar espacio de culto en (3,4) (tierra)
-e = { ...e, herramienta: 'encuentro' };
+e = { ...e, herramienta: 'salud' };
 e = actuar(e, NIVEL_VALLE, 3, 4);
-check('edificio colocado', e.celdas[3][4].edificio === 'encuentro');
-check('fondos descontados', e.fondos === 120 - 25, `fondos=${e.fondos}`);
+check('edificio colocado', e.celdas[3][4].edificio === 'salud');
+check('fondos descontados', e.fondos === 120 - 40, `fondos=${e.fondos}`);
 
 // Mantenimiento: ingreso neto = base 20 + 0 mercados − 2 mantenimiento = 18
 check('mantenimiento aplicado al ingreso', ingresoMensual(NIVEL_VALLE, e.celdas) === 18);

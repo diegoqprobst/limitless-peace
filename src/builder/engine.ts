@@ -52,16 +52,32 @@ const TIPO_POR_CARACTER: Record<string, TipoCelda> = {
   R: 'rio',
 };
 
+/**
+ * Relieve determinista del terreno (0 valle … 3 colina). Dos ondas suaves
+ * dan colinas y vaguadas; el río corre por el fondo del valle (siempre 0)
+ * y sus orillas quedan bajas. Es visual — da carácter al mapa sin tocar la
+ * mecánica (la "ubicación segura" por elevación llegará en un nivel futuro).
+ */
+function relieve(f: number, c: number, tipo: Celda['tipo']): number {
+  if (tipo === 'rio') return 0;
+  const onda = Math.sin(c * 0.7 + 0.5) * 1.3 + Math.cos(f * 0.9 + 1.2) * 1.1 + 1.4;
+  return Math.max(0, Math.min(3, Math.round(onda)));
+}
+
 export function crearEstado(
   nivel: NivelTerritorio,
   dificultad: Dificultad = 'libre',
 ): EstadoTerritorio {
-  const celdas: Celda[][] = nivel.mapa.map((fila) =>
-    fila.split('').map((c) => ({
-      tipo: TIPO_POR_CARACTER[c] ?? 'tierra',
-      vitalidad: 0,
-      poblada: false,
-    })),
+  const celdas: Celda[][] = nivel.mapa.map((fila, f) =>
+    fila.split('').map((c, col) => {
+      const tipo = TIPO_POR_CARACTER[c] ?? 'tierra';
+      return {
+        tipo,
+        vitalidad: 0,
+        poblada: false,
+        elevacion: relieve(f, col, tipo),
+      };
+    }),
   );
   // La base humanitaria llega antes que todo lo demás.
   const [bf, bc] = nivel.posicionBase;
