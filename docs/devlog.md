@@ -505,3 +505,24 @@ el builder 3D) y el elemento de "dos voces enfrentadas" por nodo — requiere au
 **Verificación (Chrome real):** menú → La Mesa → escena con faros, vitales, título display
 y 3 tarjetas A/B/C; al elegir, indicadores con deltas y retro cinematográfica con chips de
 Códex. Build limpio.
+
+## 2026-06-13 · Intro con vela y final cinematográfico (resto del handoff "Vela y Tinta")
+
+Diego re-compartió el design system; del prototipo quedaban por portar la intro y el final
+(La Mesa ya se hizo). Implementado (contenido real intacto):
+
+- **Intro de La Mesa:** vela encendida que respira (`.vela-grande`, keyframe `flamea`) sobre
+  el título, con el halo ámbar de `.mesa-escenario` y el título en fuente display con glow.
+  Se conserva el gancho de 2 líneas y el plegable "¿Cómo se juega?".
+- **Pantalla final:** hereda el halo respirante de `.mesa-escenario` y el título pasa a
+  display más grande, manteniendo descripción, lección, indicadores y estadísticas reales.
+
+**No portado (a propósito):** el panel flotante "✦ Dirección de arte" (herramienta del
+diseñador, no de producción) y el mapa 2D de regiones (el Territorio real es el builder 3D,
+como advirtió el propio diseñador).
+
+**Nota:** el zip "adjunto" no llegó al sistema de archivos; es el mismo design system del
+handoff anterior (hash Mp1dQ7…), del que esta entrega completa las pantallas faltantes.
+
+**Verificación (Chrome real):** intro de La Mesa con vela respirando, título display y halo;
+build limpio.

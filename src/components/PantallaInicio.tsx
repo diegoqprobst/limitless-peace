@@ -10,9 +10,10 @@ export function PantallaInicio({ contexto, onComenzar }: Props) {
   const es = lang === 'es';
 
   return (
-    <main className="pantalla pantalla-inicio">
+    <main className="pantalla pantalla-inicio mesa-escenario">
+      <div className="vela-grande" aria-hidden="true" />
       <p className="sobretitulo">{ui.inicioSobretitulo}</p>
-      <h1 className="titulo-juego">{contexto.titulo}</h1>
+      <h1 className="titulo-juego display">{contexto.titulo}</h1>
       <p className="resumen gancho">
         {es
           ? 'Treinta y dos años de guerra. Una mesa secreta. Tú asesoras al equipo mediador — y cada decisión viene de procesos de paz reales.'

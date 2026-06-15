@@ -22,9 +22,9 @@ export function PantallaFinal({
   const final = content.obtenerFinal(indicadores);
 
   return (
-    <main className="pantalla pantalla-final">
+    <main className={`pantalla pantalla-final mesa-escenario ${final.id}`}>
       <p className="sobretitulo">{ui.finalSobretitulo}</p>
-      <h1 className={`titulo-final ${final.id}`}>{final.titulo}</h1>
+      <h1 className={`titulo-final display ${final.id}`}>{final.titulo}</h1>
 
       <section className="tarjeta">
         <p className="final-descripcion">{final.descripcion}</p>

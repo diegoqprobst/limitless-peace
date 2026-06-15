@@ -2311,3 +2311,40 @@ body:has(.cockpit) .boton-reporte {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Intro & Final cinematográficos (Vela y Tinta) ── */
+.vela-grande {
+  width: 24px;
+  height: 42px;
+  margin: 0 auto 1.6rem;
+  border-radius: 50% 50% 48% 48% / 62% 62% 40% 40%;
+  background: radial-gradient(
+    circle at 50% 70%,
+    #fff2c4 0%,
+    #ffc46b 38%,
+    #ff9d3c 72%,
+    rgba(255, 120, 40, 0.1) 100%
+  );
+  box-shadow: 0 0 50px 14px rgba(255, 150, 60, 0.4), 0 0 130px 40px rgba(255, 150, 60, 0.16);
+  animation: flamea 2.4s ease-in-out infinite;
+}
+@keyframes flamea {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.92, 1.05) translateY(-1px);
+    opacity: 0.92;
+  }
+}
+
+.pantalla-inicio.mesa-escenario .titulo-juego {
+  text-shadow: 0 0 60px rgba(236, 178, 79, 0.25);
+}
+
+/* El final hereda el halo respirante; el título usa la fuente display con más peso */
+.pantalla-final.mesa-escenario .titulo-final {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
