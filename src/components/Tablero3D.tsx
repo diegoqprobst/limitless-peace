@@ -516,6 +516,146 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
   );
 }
 
+/**
+ * El mundo alrededor del valle (Claude Design, jun 2026): el tablero se vuelve
+ * un diorama sobre un pedestal, abrazado por colinas y montañas en capas que se
+ * pierden en la niebla, con un lago al que desemboca el río. Escenografía pura
+ * (no recibe clics) — la mecánica del valle no cambia.
+ */
+function Entorno({ cols, filas }: { cols: number; filas: number }) {
+  const env = useMemo(() => {
+    const rng = (seed: number) => {
+      let s = seed % 2147483647;
+      if (s <= 0) s += 2147483646;
+      return () => (s = (s * 16807) % 2147483647) / 2147483647;
+    };
+    const anillo = (radio: number, n: number, aMin: number, aMax: number, seed: number) => {
+      const rr = rng(seed);
+      return Array.from({ length: n }, (_, i) => {
+        const ang = (i / n) * Math.PI * 2 + rr() * 0.3;
+        const rad = radio + (rr() - 0.5) * radio * 0.18;
+        const alto = aMin + (aMax - aMin) * rr();
+        return {
+          x: Math.cos(ang) * rad,
+          z: Math.sin(ang) * rad,
+          alto,
+          base: alto * (0.7 + rr() * 0.5),
+          ry: rr() * Math.PI,
+        };
+      });
+    };
+    const m1 = anillo(28, 22, 6, 12, 11);
+    const m2 = anillo(44, 26, 9, 18, 21);
+    const m3 = anillo(64, 22, 14, 26, 31);
+
+    const rh = rng(55);
+    const colinas = Array.from({ length: 15 }, () => {
+      const ang = rh() * Math.PI * 2;
+      const rad = 11 + rh() * 9;
+      const alto = 0.5 + rh() * 1.1;
+      const ancho = 2.6 + rh() * 2.4;
+      const cx = Math.cos(ang) * rad;
+      const cz = Math.sin(ang) * rad;
+      const pinos = Array.from({ length: 2 + Math.floor(rh() * 3) }, () => {
+        const pa = rh() * Math.PI * 2;
+        const pd = rh() * ancho * 0.7;
+        const ph = 0.8 + rh() * 1;
+        return { x: cx + Math.cos(pa) * pd, y: -1.4 + alto * 0.6 + ph / 2, z: cz + Math.sin(pa) * pd, ph };
+      });
+      return { cx, cz, ancho, alto, pinos };
+    });
+
+    const rp = rng(77);
+    const pinosLejos = Array.from({ length: 64 }, () => {
+      const ang = rp() * Math.PI * 2;
+      const rad = 22 + rp() * 16;
+      const ph = 1.4 + rp() * 2.4;
+      return { x: Math.cos(ang) * rad, y: -1.4 + ph / 2, z: Math.sin(ang) * rad, ph };
+    });
+
+    // terreno desplazado: se hunde bajo el tablero, ondula y sube hacia el horizonte
+    const terreno = new THREE.PlaneGeometry(190, 190, 52, 52);
+    terreno.rotateX(-Math.PI / 2);
+    const pos = terreno.attributes.position;
+    const rt = rng(99);
+    for (let i = 0; i < pos.count; i++) {
+      const px = pos.getX(i);
+      const pz = pos.getZ(i);
+      const d = Math.hypot(px, pz);
+      const hueco = Math.max(0, 1 - d / 7) * 1.2;
+      const ondas = (Math.sin(px * 0.18 + 1) + Math.cos(pz * 0.16)) * 0.5 + rt() * 0.4;
+      const subeLejos = Math.min(1, d / 56) * 2.4;
+      pos.setY(i, -1.0 - hueco + ondas * (d > 9 ? 1 : 0) + subeLejos);
+    }
+    terreno.computeVertexNormals();
+
+    return { m1, m2, m3, colinas, pinosLejos, terreno };
+  }, []);
+
+  const Montanas = ({ datos, color }: { datos: typeof env.m1; color: string }) => (
+    <>
+      {datos.map((m, i) => (
+        <mesh key={i} position={[m.x, m.alto / 2 - 1.5, m.z]} rotation={[0, m.ry, 0]}>
+          <coneGeometry args={[m.base, m.alto, 4]} />
+          <meshStandardMaterial color={color} flatShading />
+        </mesh>
+      ))}
+    </>
+  );
+
+  const lago: [number, number, number] = [cols * 0.85, -0.95, filas * 1.0];
+
+  return (
+    <group>
+      {/* terreno hasta el horizonte */}
+      <mesh geometry={env.terreno} position={[0, -0.05, 0]} receiveShadow>
+        <meshStandardMaterial color="#2c3330" flatShading />
+      </mesh>
+
+      {/* montañas en capas (profundidad atmosférica) */}
+      <Montanas datos={env.m3} color="#28303c" />
+      <Montanas datos={env.m2} color="#2f3845" />
+      <Montanas datos={env.m1} color="#39434f" />
+
+      {/* colinas cercanas con pinos */}
+      {env.colinas.map((h, i) => (
+        <group key={i}>
+          <mesh position={[h.cx, -1.4, h.cz]} scale={[1, h.alto / h.ancho, 1]} receiveShadow>
+            <sphereGeometry args={[h.ancho, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color="#313a33" flatShading />
+          </mesh>
+          {h.pinos.map((p, j) => (
+            <mesh key={j} position={[p.x, p.y, p.z]}>
+              <coneGeometry args={[0.26, p.ph, 5]} />
+              <meshStandardMaterial color="#2c3b30" flatShading />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      {/* bosque lejano */}
+      {env.pinosLejos.map((p, i) => (
+        <mesh key={i} position={[p.x, p.y, p.z]}>
+          <coneGeometry args={[0.5, p.ph, 5]} />
+          <meshStandardMaterial color="#2c3b30" flatShading />
+        </mesh>
+      ))}
+
+      {/* lago al que desemboca el río */}
+      <mesh position={lago} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[10, 40]} />
+        <meshStandardMaterial
+          color="#2b4f6e"
+          emissive="#3a6e96"
+          emissiveIntensity={0.2}
+          metalness={0.6}
+          roughness={0.25}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
   const [hovered, setHovered] = useState<[number, number] | null>(null);
   const filas = celdas.length;
@@ -533,7 +673,7 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
         onPointerMissed={() => setHovered(null)}
       >
         <color attach="background" args={['#11141d']} />
-        <fog attach="fog" args={['#11141d', 17, 32]} />
+        <fog attach="fog" args={['#11141d', 24, 88]} />
         <ambientLight intensity={0.75} />
         <hemisphereLight args={['#aab8d4', '#4a4438', 0.55]} />
         <directionalLight
@@ -547,9 +687,12 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
           shadow-camera-bottom={-9}
         />
 
-        {/* terreno base bajo el tablero */}
-        <mesh position={[0, -0.36, 0]} receiveShadow>
-          <boxGeometry args={[cols + 1.2, 0.12, filas + 1.2]} />
+        {/* el mundo alrededor del valle (diorama sobre pedestal) */}
+        <Entorno cols={cols} filas={filas} />
+
+        {/* pedestal grueso que sostiene el valle */}
+        <mesh position={[0, -0.55, 0]} receiveShadow castShadow>
+          <boxGeometry args={[cols + 1.2, 0.5, filas + 1.2]} />
           <meshStandardMaterial color="#23252e" />
         </mesh>
 
@@ -593,9 +736,11 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
         <OrbitControls
           enablePan={false}
           minDistance={6}
-          maxDistance={18}
-          minPolarAngle={0.35}
-          maxPolarAngle={Math.PI / 2.7}
+          maxDistance={40}
+          minPolarAngle={0.3}
+          maxPolarAngle={Math.PI / 2.4}
+          enableDamping
+          dampingFactor={0.07}
           target={[0, 0, 0]}
         />
       </Canvas>

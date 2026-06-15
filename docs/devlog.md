@@ -526,3 +526,24 @@ handoff anterior (hash Mp1dQ7…), del que esta entrega completa las pantallas f
 
 **Verificación (Chrome real):** intro de La Mesa con vela respirando, título display y halo;
 build limpio.
+
+## 2026-06-15 · El valle se vuelve un diorama en su mundo (handoff 3 de Claude Design)
+
+**Lo que traía el paquete:** el diseñador (a) reconstruyó módulos del handoff con contenido
+PLACEHOLDER para que compilara (5 historias Gbowee/Hume/Bigombe/Menchú/Santos, 4 nodos, 9
+conceptos) — **NO portado: nuestro contenido real es más rico (6 historias, 17 nodos, 23
+conceptos)**; y (b) un nuevo prototipo "Territorio 3D" que rodea el tablero de un mundo.
+Esa escenografía SÍ se portó al `Tablero3D` real (la mecánica no cambia):
+
+- **Diorama sobre pedestal:** la base fina pasa a un pedestal grueso (0.5 de alto) que
+  sostiene el valle como una maqueta.
+- **Entorno (`Entorno`):** terreno desplazado que se hunde bajo el tablero y sube hacia el
+  horizonte; **montañas en 3 anillos** (#39434f/#2f3845/#28303c) que se pierden en la
+  niebla; colinas cercanas (domos) con pinos; bosque lejano; y un **lago al que desemboca
+  el río**. Todo determinista (rng con semilla), estático y sin clics.
+- **Cámara y niebla:** `maxDistance` 18→40 (puedes alejarte a ver el mundo, oro para el
+  video), niebla 17–32 → 24–88 para que las montañas se desvanezcan en vez de cortarse, y
+  damping en la órbita.
+
+**Verificación (Chrome real):** el valle se ve sobre su pedestal con agua alrededor; sin
+errores de consola; build limpio. Imagen de referencia en `docs/design-system/`.
