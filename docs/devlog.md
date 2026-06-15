@@ -477,3 +477,31 @@ Tres pedidos de Diego:
 tooltip de Agua (+5 Seguridad, +3 Legitimidad, frase de prevención) y de Mercado
 (+4 Legitimidad, +10 fondos/mes, bono 1.5×); Encuentro ausente de la barra. 24/24 tests
 del motor en verde; build limpio.
+
+## 2026-06-13 · La Mesa cinematográfica (handoff 2 de Claude Design)
+
+**Flujo:** Diego pidió a Claude Design mejorar la interfaz; el diseñador exploró un
+rediseño de "Vela y Tinta" y, al abrir el repo real, descubrió que el Territorio ya era
+el builder 3D y **advirtió explícitamente que portar su mapa 2D sería un error**. Lo
+genuinamente aplicable era el rediseño de **La Mesa**. Implementado aquí (visual, fiel al
+contenido real, scopeado a `.mesa-escenario` para no tocar Territorio/Expediente/Memoria):
+
+- **Camino de fases:** la fila de chips pasa a un sendero de faros (puntos 0–4 + líneas);
+  el activo brilla en ámbar, los completados encendidos. La fase se nombra en el eyebrow
+  de la escena, así que el camino solo lleva números (sin solapamientos de etiquetas largas).
+- **Signos vitales:** indicadores restilizados — valor grande en Poppins, barra fina con
+  glow del color del indicador, delta animado (+10 verde / −3 rojo). Aplica también a las
+  pantallas de final.
+- **Escena de decisión:** eyebrow + título display con halo + texto centrado; opciones
+  como **tarjetas con badge de letra A/B/C**, borde-acento e elevación al hover.
+- **Retro cinematográfica:** brasa ámbar, "TU DECISIÓN" + cita en cursiva display,
+  divisor, chips del Códex con 🕊, botón principal con glow.
+- Halo ámbar que respira + viñeta detrás de la escena (`respira` keyframe).
+
+**No portado (a propósito):** el mapa 2D de regiones del prototipo (el Territorio real es
+el builder 3D) y el elemento de "dos voces enfrentadas" por nodo — requiere autoría de
+`vozA`/`vozB` por nodo en ES+EN; queda como mejora opcional con visto bueno de contenido.
+
+**Verificación (Chrome real):** menú → La Mesa → escena con faros, vitales, título display
+y 3 tarjetas A/B/C; al elegir, indicadores con deltas y retro cinematográfica con chips de
+Códex. Build limpio.

@@ -24,18 +24,23 @@ export function PantallaJuego({
   const fase = content.fases.find((f) => f.numero === nodo.fase);
 
   return (
-    <main className="pantalla pantalla-juego">
-      <div className="linea-fases">
-        {content.fases.map((f) => (
-          <div
-            key={f.numero}
-            className={`fase ${f.numero === nodo.fase ? 'activa' : ''} ${
-              f.numero < nodo.fase ? 'completada' : ''
-            }`}
-            title={f.descripcion}
-          >
-            <span className="fase-numero">{f.numero}</span>
-            <span className="fase-nombre">{f.nombre}</span>
+    <main className="pantalla pantalla-juego mesa-escenario">
+      {/* camino de fases: faros que se encienden con el avance del proceso */}
+      <div className="camino">
+        {content.fases.map((f, i) => (
+          <div className="camino-paso" key={f.numero}>
+            <div
+              className={`camino-nodo ${f.numero === nodo.fase ? 'activa' : ''} ${
+                f.numero < nodo.fase ? 'completada' : ''
+              }`}
+              title={f.descripcion}
+            >
+              <span className="camino-punto" />
+              <span className="camino-label">{f.numero}</span>
+            </div>
+            {i < content.fases.length - 1 && (
+              <span className={`camino-linea ${f.numero < nodo.fase ? 'hecha' : ''}`} />
+            )}
           </div>
         ))}
       </div>
@@ -46,29 +51,34 @@ export function PantallaJuego({
       />
 
       {!retroPendiente ? (
-        <section className="tarjeta nodo">
-          <p className="etiqueta-fase">{ui.faseLabel(nodo.fase, fase?.nombre ?? '')}</p>
-          <h2>{nodo.titulo}</h2>
-          <p className="nodo-texto">{nodo.texto}</p>
+        <section className="escena" key={nodo.id}>
+          <p className="escena-fase eyebrow">{ui.faseLabel(nodo.fase, fase?.nombre ?? '')}</p>
+          <h2 className="display escena-titulo">{nodo.titulo}</h2>
+          <p className="escena-texto">{nodo.texto}</p>
           <div className="opciones">
             {nodo.opciones.map((opcion, i) => (
               <button key={i} className="opcion" onClick={() => onElegir(opcion)}>
-                {opcion.texto}
+                <span className="opcion-num">{String.fromCharCode(65 + i)}</span>
+                <span className="opcion-txt">{opcion.texto}</span>
               </button>
             ))}
           </div>
         </section>
       ) : (
-        <section className="tarjeta retro">
-          <p className="etiqueta-retro">{ui.retroLabel}</p>
+        <section className="escena retro" key="retro">
+          <div className="retro-marca">
+            <span className="retro-em" />
+            <span className="eyebrow">{ui.retroLabel}</span>
+          </div>
           <p className="retro-decision">
-            {ui.tuDecision} <em>{retroPendiente.opcion.texto}</em>
+            <span className="retro-tu">{ui.tuDecision}</span>
+            <em>«{retroPendiente.opcion.texto}»</em>
           </p>
           <p className="retro-texto">{retroPendiente.opcion.retro}</p>
 
           {retroPendiente.opcion.codex && retroPendiente.opcion.codex.length > 0 && (
             <div className="codex-desbloqueado">
-              <span>{ui.nuevoCodex}</span>
+              <span className="etq">{ui.nuevoCodex}</span>
               {retroPendiente.opcion.codex.map((id) => {
                 const entrada = content.obtenerEntradaCodex(id);
                 return entrada ? (
