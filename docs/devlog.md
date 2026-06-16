@@ -746,3 +746,19 @@ Plomería lista para que sea enchufar y listo:
 **Verificación:** build limpio; preview en vivo: la ilustración aparece en "El primer contacto",
 bien posicionada y estilizada (carta + vela, glow ámbar, fundido). Pendiente: las 16 imágenes
 restantes que generará Diego en su Firefly.
+
+## 2026-06-16 · 16 ilustraciones Firefly integradas en La Mesa
+
+Diego generó las imágenes en su propio Firefly (Pro) siguiendo los 17 prompts "Vela y Tinta".
+Integradas 16 de 17 (falta `refrendacion-nodo`, "Sellar el pacto"):
+- Renombradas de los nombres largos de Firefly a `<id>.jpg` por convención.
+- Campo `imagen` seteado en los 16 nodos de `escenario.ts`. El `Firefly.jpg` suelto (campo de
+  velas, algunas apagadas) se mapeó a `genero` ("La paz, ¿para quiénes?" — inclusión).
+- Optimizadas para web: máx 1280px + JPG q82 (las fotográficas en PNG → JPG). 18 MB → 2.5 MB sin
+  pérdida visible (se muestran a ~560px). Originales quedan en el Firefly de Diego.
+- Muestra SVG `canal-secreto` reemplazada por la imagen real.
+
+**Verificación:** build limpio; preview en vivo: las 16 decodifican (16/16 ok, 0 errores), la
+ilustración aparece bien posicionada en la escena (carta lacrada + vela en "El primer contacto").
+Pendiente: `refrendacion-nodo` (Diego la genera) y, opcional, revisar `canal-secreto` (Firefly le
+añadió un abrecartas + lacre rojo que podría leerse algo duro).

@@ -67,7 +67,7 @@ export const NODOS: Nodo[] = [
     id: 'canal-secreto',
     fase: 0,
     titulo: 'El primer contacto',
-    imagen: 'escenas/canal-secreto.svg',
+    imagen: 'escenas/canal-secreto.jpg',
     texto:
       'Un emisario del FIM hace llegar una carta: están dispuestos a hablar, pero ' +
       'temen que el Gobierno use el anuncio para humillarlos públicamente. El ' +
@@ -109,6 +109,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'garantes',
+    imagen: 'escenas/garantes.jpg',
     fase: 0,
     titulo: 'Sede y garantes',
     texto:
@@ -148,6 +149,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'agenda',
+    imagen: 'escenas/agenda.jpg',
     fase: 0,
     titulo: 'La agenda: ¿todo o lo esencial?',
     texto:
@@ -192,6 +194,7 @@ export const NODOS: Nodo[] = [
   // ──────────────── FASE 1: MEDIDAS HUMANITARIAS Y CESE AL FUEGO ────────────────
   {
     id: 'acuerdo-humanitario',
+    imagen: 'escenas/acuerdo-humanitario.jpg',
     fase: 1,
     titulo: 'Mientras se negocia, la guerra sigue',
     texto:
@@ -234,6 +237,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'cese-fuego',
+    imagen: 'escenas/cese-fuego.jpg',
     fase: 1,
     titulo: 'Diseñar el cese al fuego',
     texto:
@@ -274,6 +278,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'violacion-cese',
+    imagen: 'escenas/violacion-cese.jpg',
     fase: 1,
     titulo: 'La primera crisis',
     texto:
@@ -315,6 +320,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'crisis-confianza',
+    imagen: 'escenas/crisis-confianza.jpg',
     fase: 1,
     titulo: 'El proceso pende de un hilo',
     texto:
@@ -348,6 +354,7 @@ export const NODOS: Nodo[] = [
   // ───────────────────── FASE 2: NEGOCIACIÓN SUSTANTIVA ─────────────────────
   {
     id: 'victimas',
+    imagen: 'escenas/victimas.jpg',
     fase: 2,
     titulo: 'Las víctimas piden la palabra',
     texto:
@@ -388,6 +395,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'justicia',
+    imagen: 'escenas/justicia.jpg',
     fase: 2,
     titulo: 'El dilema de la justicia',
     texto:
@@ -432,6 +440,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'verdad',
+    imagen: 'escenas/verdad.jpg',
     fase: 2,
     titulo: 'La verdad y la memoria',
     texto:
@@ -473,6 +482,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'ddr',
+    imagen: 'escenas/ddr.jpg',
     fase: 2,
     titulo: 'Las armas y la vida después',
     texto:
@@ -515,6 +525,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'genero',
+    imagen: 'escenas/genero.jpg',
     fase: 2,
     titulo: 'La paz, ¿para quiénes?',
     texto:
@@ -556,6 +567,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'spoilers-nodo',
+    imagen: 'escenas/spoilers-nodo.jpg',
     fase: 2,
     titulo: 'Los enemigos de la paz',
     texto:
@@ -639,6 +651,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'pedagogia-nodo',
+    imagen: 'escenas/pedagogia-nodo.jpg',
     fase: 3,
     titulo: 'Explicar la paz',
     texto:
@@ -683,6 +696,7 @@ export const NODOS: Nodo[] = [
   // ───────────────────────── FASE 4: IMPLEMENTACIÓN ─────────────────────────
   {
     id: 'implementacion-nodo',
+    imagen: 'escenas/implementacion-nodo.jpg',
     fase: 4,
     titulo: 'El día después',
     texto:
@@ -725,6 +739,7 @@ export const NODOS: Nodo[] = [
   },
   {
     id: 'proteccion',
+    imagen: 'escenas/proteccion.jpg',
     fase: 4,
     titulo: 'Proteger a los que firmaron',
     texto:
