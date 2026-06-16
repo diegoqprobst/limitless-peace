@@ -547,3 +547,29 @@ Esa escenografía SÍ se portó al `Tablero3D` real (la mecánica no cambia):
 
 **Verificación (Chrome real):** el valle se ve sobre su pedestal con agua alrededor; sin
 errores de consola; build limpio. Imagen de referencia en `docs/design-system/`.
+
+## 2026-06-15 · Vida humana en el valle + contraste tierra muerta→viva (handoff 4)
+
+El diseñador construyó un prototipo "Territorio Principiante" enorme (territorio-principiante.js)
+con muchas mejoras que Diego aprobó. Varias YA estaban en el juego real (panel permanente de
+indicadores = stat pods del cockpit; barra de meta = chip 🎯; tooltip de hover; base
+integrada/diorama). Se portaron las dos que el diseñador marcó como de mayor impacto y que
+faltaban — sin tocar la mecánica:
+
+- **Contraste tierra muerta → viva mucho más fuerte:** la celda pasa de un lerp lineal
+  gris→verde a una curva de 3 paradas con realce no lineal (`tierraColor`): tierra quemada
+  #6b4a30 → ocre #9a8a44 → verde vivo #4ea857, exponente 0.8. El arco "Terra Nil" ahora se
+  SIENTE (verificado: la tierra muerta se lee como ocre quemado, no gris).
+- **Vida humana:** figuras low-poly (`Persona`/`Gente`, cuerpo + cabeza con paletas de ropa
+  y piel variadas, balanceo de reposo) alrededor de los edificios cívicos (salud, escuela,
+  alimentos, mercado, cancha) y una familia frente a cada casa repoblada; **humo de
+  chimenea** (`HumoChimenea`) sobre las casas con familia. El valle ya no se ve deshabitado.
+
+**No portado (a propósito):** reloj/ciclo día-noche a 3 min/día (mi juego es por meses, no
+tiempo real — sería reinterpretar la mecánica); pops flotantes de +indicador al construir
+(el diario + el delta de los stat pods ya dan ese feedback); puente sobre el río y partículas
+extra (menor prioridad). El contenido placeholder del paquete (5 historias/4 nodos/9
+conceptos) NO se tocó: el real es más rico.
+
+**Verificación (Chrome real):** mercado construido con figura de persona al lado; tierra
+muerta en ocre quemado; sin errores de consola; build limpio; 24/24 tests del motor.

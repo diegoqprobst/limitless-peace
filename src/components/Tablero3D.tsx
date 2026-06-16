@@ -31,8 +31,109 @@ function easeOutBack(t: number): number {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
-const MUERTA = new THREE.Color('#46413a');
-const VIVA = new THREE.Color('#5d9c64');
+/**
+ * Contraste tierra muerta → viva más fuerte (Claude Design): curva de tres
+ * paradas con realce no lineal — tierra quemada → ocre (vegetación incipiente)
+ * → verde vivo. "Reverdecer" ahora se SIENTE como un cambio real.
+ */
+const MUERTA = new THREE.Color('#6b4a30');
+const MEDIA = new THREE.Color('#9a8a44');
+const VIVA = new THREE.Color('#4ea857');
+function tierraColor(vit: number): THREE.Color {
+  const t = Math.pow(Math.max(0, vit) / 100, 0.8);
+  return t < 0.5 ? MUERTA.clone().lerp(MEDIA, t / 0.5) : MEDIA.clone().lerp(VIVA, (t - 0.5) / 0.5);
+}
+
+/** Paletas de ropa y piel para las figuras del valle. */
+const ROPA = ['#b5563f', '#5a7da3', '#c79a4f', '#6f8f5a', '#a86a8e', '#7a6f95', '#c2784a'];
+const PIEL = ['#caa07a', '#a87b53', '#e0bd97', '#8a6240'];
+
+/** Una figura low-poly con balanceo de reposo: el valle se siente habitado. */
+function Persona({
+  ropa,
+  piel,
+  fase,
+  vel,
+}: {
+  ropa: string;
+  piel: string;
+  fase: number;
+  vel: number;
+}) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame((estado) => {
+    if (ref.current) ref.current.position.y = Math.sin(estado.clock.elapsedTime * vel + fase) * 0.015;
+  });
+  return (
+    <group ref={ref}>
+      <mesh position={[0, 0.065, 0]} castShadow>
+        <cylinderGeometry args={[0.028, 0.045, 0.13, 6]} />
+        <meshStandardMaterial color={ropa} />
+      </mesh>
+      <mesh position={[0, 0.155, 0]} castShadow>
+        <sphereGeometry args={[0.034, 7, 6]} />
+        <meshStandardMaterial color={piel} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Reparte n figuras alrededor del centro de una celda (sin pisar el edificio). */
+function Gente({ n, seed, radio = 0.34 }: { n: number; seed: number; radio?: number }) {
+  const gente = useMemo(
+    () =>
+      Array.from({ length: n }, (_, i) => {
+        const a = hash(seed, i, 11) * Math.PI * 2;
+        const r = radio * (0.55 + hash(seed, i, 12) * 0.45);
+        return {
+          x: Math.cos(a) * r,
+          z: Math.sin(a) * r,
+          ry: hash(seed, i, 13) * Math.PI * 2,
+          ropa: ROPA[Math.floor(hash(seed, i, 3) * ROPA.length)],
+          piel: PIEL[Math.floor(hash(seed, i, 4) * PIEL.length)],
+          fase: hash(seed, i, 5) * Math.PI * 2,
+          vel: 0.8 + hash(seed, i, 6),
+        };
+      }),
+    [n, seed, radio],
+  );
+  return (
+    <>
+      {gente.map((p, i) => (
+        <group key={i} position={[p.x, 0, p.z]} rotation={[0, p.ry, 0]}>
+          <Persona ropa={p.ropa} piel={p.piel} fase={p.fase} vel={p.vel} />
+        </group>
+      ))}
+    </>
+  );
+}
+
+/** Humo que sube de la chimenea de una casa con familia. */
+function HumoChimenea() {
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame((estado) => {
+    const tg = estado.clock.elapsedTime;
+    refs.current.forEach((m, i) => {
+      if (!m) return;
+      const off = i / 3;
+      const ph = (tg * 0.35 + off) % 1;
+      m.position.y = ph * 0.32;
+      m.position.x = Math.sin(ph * 6 + off * 6) * 0.04;
+      (m.material as THREE.MeshStandardMaterial).opacity = 0.5 * (1 - ph);
+      m.scale.setScalar(0.6 + ph * 1.1);
+    });
+  });
+  return (
+    <group position={[0.15, 0.6, -0.12]}>
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} ref={(el) => (refs.current[i] = el)}>
+          <sphereGeometry args={[0.05, 6, 5]} />
+          <meshStandardMaterial color="#cfcabc" transparent opacity={0.5} flatShading />
+        </mesh>
+      ))}
+    </group>
+  );
+}
 
 /** Altura de cada escalón de relieve del terreno. */
 const ESCALON = 0.34;
@@ -76,7 +177,7 @@ function VentanaViva() {
   );
 }
 
-function Casa({ poblada }: { poblada: boolean }) {
+function Casa({ poblada, seed }: { poblada: boolean; seed: number }) {
   const cuerpo = (
     <>
       <mesh castShadow position={[0, 0.18, 0]}>
@@ -88,12 +189,32 @@ function Casa({ poblada }: { poblada: boolean }) {
         <meshStandardMaterial color={poblada ? '#a8543f' : '#524a42'} />
       </mesh>
       {poblada && <VentanaViva />}
+      {poblada && (
+        <>
+          {/* chimenea humeante + la familia que volvió frente a su casa */}
+          <mesh castShadow position={[0.15, 0.5, -0.12]}>
+            <boxGeometry args={[0.07, 0.14, 0.07]} />
+            <meshStandardMaterial color="#7a6a58" />
+          </mesh>
+          <HumoChimenea />
+          <Gente n={1 + Math.floor(hash(seed, 0, 7) * 2)} seed={seed} radio={0.36} />
+        </>
+      )}
     </>
   );
   return poblada ? <Brote>{cuerpo}</Brote> : <group rotation={[0, 0.12, 0.04]}>{cuerpo}</group>;
 }
 
-function Edificio({ tipo }: { tipo: TipoEdificio }) {
+/** Edificios cívicos a cuyo alrededor se reúne la gente. */
+const EDIFICIOS_CON_GENTE: Partial<Record<TipoEdificio, number>> = {
+  salud: 2,
+  escuela: 3,
+  alimentos: 2,
+  mercado: 3,
+  cancha: 2,
+};
+
+function Edificio({ tipo, seed }: { tipo: TipoEdificio; seed: number }) {
   let cuerpo: React.ReactNode;
   switch (tipo) {
     case 'base':
@@ -300,7 +421,13 @@ function Edificio({ tipo }: { tipo: TipoEdificio }) {
       );
       break;
   }
-  return <Brote>{cuerpo}</Brote>;
+  const gente = EDIFICIOS_CON_GENTE[tipo];
+  return (
+    <Brote>
+      {cuerpo}
+      {gente ? <Gente n={gente} seed={seed} radio={0.42} /> : null}
+    </Brote>
+  );
 }
 
 /** Árboles que brotan en celdas vivas: la restauración se VE crecer. */
@@ -472,7 +599,7 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
       ? '#4d3038'
       : celda.tipo === 'escombros'
         ? '#3f3b34'
-        : MUERTA.clone().lerp(VIVA, celda.vitalidad / 100);
+        : tierraColor(celda.vitalidad);
 
   return (
     <group position={[x, yTop, z]}>
@@ -507,8 +634,8 @@ function CeldaTile({ celda, f, c, x, z, hovered, setHovered, onCelda }: CeldaTil
 
       {celda.tipo === 'escombros' && <Escombros f={f} c={c} />}
       {celda.tipo === 'minado' && <SenalMinas />}
-      {celda.tipo === 'casa' && <Casa poblada={celda.poblada} />}
-      {celda.edificio && <Edificio tipo={celda.edificio} />}
+      {celda.tipo === 'casa' && <Casa poblada={celda.poblada} seed={f * 31 + c * 7 + 1} />}
+      {celda.edificio && <Edificio tipo={celda.edificio} seed={f * 31 + c * 7 + 1} />}
       {celda.tipo === 'tierra' && !celda.edificio && (
         <Vegetacion f={f} c={c} vitalidad={celda.vitalidad} />
       )}
