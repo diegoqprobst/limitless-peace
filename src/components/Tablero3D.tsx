@@ -9,7 +9,7 @@ import { POR_TIPO } from '../builder/catalogo';
 export interface PopEfecto {
   f: number;
   c: number;
-  efectos: Partial<Record<'confianza' | 'seguridad' | 'justicia' | 'legitimidad', number>>;
+  efectos: Partial<Record<'confianza' | 'seguridad' | 'justicia' | 'legitimidad' | 'salud', number>>;
   /** Cambia cada vez para reiniciar la animación. */
   clave: number;
 }
@@ -37,12 +37,14 @@ const IND_COLOR: Record<string, string> = {
   seguridad: '#7fb585',
   justicia: '#b48ec9',
   legitimidad: '#ecb24f',
+  salud: '#e0828a',
 };
 const IND_NOMBRE: Record<string, string> = {
   confianza: 'Confianza',
   seguridad: 'Seguridad',
   justicia: 'Justicia',
   legitimidad: 'Legitimidad',
+  salud: 'Salud',
 };
 
 /** Pseudo-aleatorio determinista por celda (sin Math.random: estable entre renders). */

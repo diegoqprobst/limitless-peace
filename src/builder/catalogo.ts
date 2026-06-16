@@ -30,10 +30,11 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 2,
     aporteVitalidad: 15,
     efectos: { seguridad: 8 },
+    mensual: { salud: 4 },
     descripcion:
       'ERU de atención básica de salud: la primera señal de que alguien cuida este lugar.',
     porque:
-      'Atiende heridas y enfermedades. Sube la Seguridad y, junto al agua, evita que un brote se descontrole.',
+      'Atiende heridas y enfermedades. Sube la Seguridad y, cada mes, la Salud del valle; junto al agua evita que un brote se descontrole.',
   },
   {
     tipo: 'agua',
@@ -44,11 +45,12 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 2,
     aporteVitalidad: 14,
     efectos: { seguridad: 5, legitimidad: 3 },
+    mensual: { salud: 3 },
     descripcion:
       'ERU de agua y saneamiento. El estándar Esfera pide 15 litros por persona al día: ' +
       'sin agua segura no hay retorno posible.',
     porque:
-      'Agua potable: previene los brotes de enfermedad tras una inundación. Sin ella, las epidemias se disparan.',
+      'Agua potable: sube la Salud cada mes y previene los brotes tras una inundación. Sin ella, las epidemias se disparan.',
   },
   {
     tipo: 'alimentos',
@@ -59,10 +61,11 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 2,
     aporteVitalidad: 12,
     efectos: { confianza: 6, legitimidad: 4 },
+    mensual: { salud: 2, confianza: 1 },
     descripcion:
       'ERU de socorro: distribución imparcial — según la necesidad, nunca según el bando.',
     porque:
-      'Comida para todos sin distinción. Sostiene el retorno: sin alimentos cerca, las familias se vuelven a ir.',
+      'Comida para todos sin distinción. Sostiene el retorno y la Salud: sin alimentos cerca, las familias se vuelven a ir.',
   },
   {
     tipo: 'escuela',
@@ -73,6 +76,7 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 2,
     aporteVitalidad: 12,
     efectos: { legitimidad: 6, confianza: 4 },
+    mensual: { legitimidad: 1, seguridad: 1 },
     descripcion: 'Donde estudian juntos los hijos de todos los bandos.',
     porque:
       'Niñez con futuro y tardes ocupadas. Previene el reclutamiento juvenil de las disidencias.',
@@ -86,6 +90,7 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 1,
     aporteVitalidad: 10,
     efectos: { legitimidad: 4 },
+    mensual: { legitimidad: 1 },
     ingresoMensual: 10,
     descripcion:
       'Economía local: genera +10 fondos al mes y, al reactivar la comunidad, ' +
@@ -102,8 +107,9 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 1,
     aporteVitalidad: 6,
     efectos: { justicia: 12 },
+    mensual: { confianza: 1 },
     descripcion: 'Recordar para no repetir. Sin memoria no hay justicia.',
-    porque: 'Reconoce a las víctimas. Es lo que más sube la Justicia.',
+    porque: 'Reconoce a las víctimas: es lo que más sube la Justicia, y cada mes va cosiendo la Confianza.',
   },
   {
     tipo: 'emisora',
@@ -114,9 +120,10 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 3,
     aporteVitalidad: 5,
     efectos: { legitimidad: 8, confianza: 5 },
+    mensual: { confianza: 2 },
     descripcion: 'La voz del valle: pedagogía de paz contra el rumor. Alcance amplio.',
     porque:
-      'La voz del valle contra el rumor. Sube Legitimidad y Confianza, y su alcance es el más amplio (radio 3).',
+      'La voz del valle contra el rumor: sube la Confianza mes a mes y su alcance es el más amplio (radio 3). Pero una radio también puede usarse para incitar — el poder obliga.',
   },
   {
     tipo: 'cancha',
@@ -127,8 +134,9 @@ export const EDIFICIOS: DefEdificio[] = [
     radio: 1,
     aporteVitalidad: 8,
     efectos: { confianza: 6, seguridad: 3 },
+    mensual: { legitimidad: 1, salud: 1 },
     descripcion: 'Donde la juventud se encuentra en vez de reclutarse.',
-    porque: 'La más barata. Reúne a la juventud, sube la Confianza y ayuda a prevenir el reclutamiento.',
+    porque: 'La más barata. Reúne a la juventud, sube la Confianza y, cada mes, la Legitimidad y la Salud; ayuda a prevenir el reclutamiento.',
   },
 ];
 

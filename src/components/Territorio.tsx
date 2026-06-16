@@ -33,8 +33,12 @@ interface Props {
 
 const NIVEL = NIVEL_VALLE;
 
-/** Indicadores como "stat pods" de videojuego: icono + valor + barra. */
+/**
+ * Indicadores como "stat pods" de videojuego: icono + valor + barra.
+ * 'salud' es concreta y vive en estado.salud (no en estado.indicadores).
+ */
 const INDICADORES_HUD = [
+  { k: 'salud', emoji: '🩺', nombre: 'Salud' },
   { k: 'confianza', emoji: '🤝', nombre: 'Confianza' },
   { k: 'seguridad', emoji: '🛡️', nombre: 'Seguridad' },
   { k: 'justicia', emoji: '⚖️', nombre: 'Justicia' },
@@ -51,12 +55,23 @@ function efectosDeTip(tipo: Herramienta | null) {
     seguridad: 'Seguridad',
     justicia: 'Justicia',
     legitimidad: 'Legitimidad',
+    salud: 'Salud',
   };
   const chips = Object.entries(def.efectos).map(([k, v]) => (
     <span key={k} className={`tip-efecto ${k}`}>
       +{v} {nombres[k]}
     </span>
   ));
+  // Aporte mensual recurrente (el "sostén"): se muestra como "+N/mes".
+  if (def.mensual) {
+    for (const [k, v] of Object.entries(def.mensual)) {
+      if (v) chips.push(
+        <span key={`m-${k}`} className={`tip-efecto ${k}`}>
+          +{v} {nombres[k]}/mes
+        </span>,
+      );
+    }
+  }
   if (def.ingresoMensual) {
     chips.push(
       <span key="ing" className="tip-efecto ingreso">
@@ -65,6 +80,30 @@ function efectosDeTip(tipo: Herramienta | null) {
     );
   }
   return chips;
+}
+
+/** Hash estable de un id de evento (para variar el barajado entre eventos). */
+function hashId(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) | 0;
+  return h & 0x7fffffff;
+}
+
+/**
+ * Baraja determinista (Fisher-Yates con LCG sembrado): el orden depende de la
+ * semilla de la partida, el mes y el evento — así la primera opción NO es
+ * siempre la "ganadora", pero el orden es estable dentro de un mismo evento.
+ * Solo afecta la PRESENTACIÓN: el motor recibe el objeto opción, no su índice.
+ */
+function barajarSemilla<T>(arr: T[], semilla: number): T[] {
+  const out = arr.slice();
+  let s = (semilla & 0x7fffffff) || 1;
+  const next = () => (s = (Math.imul(s, 1103515245) + 12345) & 0x7fffffff);
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = next() % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 export function Territorio({ onVolverMenu }: Props) {
@@ -221,9 +260,21 @@ export function Territorio({ onVolverMenu }: Props) {
     return () => clearTimeout(id);
   }, [pop]);
 
-  // Salud del proceso 0–1: el valle se entibia a medida que sana.
+  // Salud del proceso 0–1: el valle se entibia a medida que sana (incluye el bienestar).
   const progreso =
-    (ind.confianza + ind.seguridad + ind.justicia + ind.legitimidad) / 400;
+    (ind.confianza + ind.seguridad + ind.justicia + ind.legitimidad + estado.salud) / 500;
+
+  // Opciones del evento en orden barajado (que la primera no sea siempre la buena).
+  const opcionesEvento = useMemo(
+    () =>
+      estado.eventoActivo
+        ? barajarSemilla(
+            estado.eventoActivo.opciones,
+            estado.semilla + estado.mes + hashId(estado.eventoActivo.id),
+          )
+        : [],
+    [estado.eventoActivo, estado.semilla, estado.mes],
+  );
 
   if (estado.fase === 'intro') {
     return (
@@ -392,7 +443,7 @@ export function Territorio({ onVolverMenu }: Props) {
       {/* indicadores gamificados (stat pods) */}
       <div className="cockpit-stats">
         {INDICADORES_HUD.map(({ k, emoji, nombre }) => {
-          const v = estado.indicadores[k];
+          const v = k === 'salud' ? estado.salud : estado.indicadores[k];
           return (
             <div key={k} className={`stat-pod ${k} ${v < 30 ? 'critico' : ''}`} title={nombre}>
               <span className="stat-emoji">{emoji}</span>
@@ -532,7 +583,7 @@ export function Territorio({ onVolverMenu }: Props) {
                 <h2 className="evento-titulo">{estado.eventoActivo.titulo}</h2>
                 <p className="nodo-texto">{estado.eventoActivo.texto}</p>
                 <div className="opciones">
-                  {estado.eventoActivo.opciones.map((opcion, i) => (
+                  {opcionesEvento.map((opcion, i) => (
                     <button
                       key={i}
                       className="opcion"

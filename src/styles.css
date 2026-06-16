@@ -20,6 +20,7 @@
   --seguridad: #7fb585;
   --justicia: #b48ec9;
   --legitimidad: #ecb24f;
+  --salud: #e0828a;
   --borde: #363c4d;
   --radio: 10px;
   --font-display: 'Poppins', system-ui, sans-serif;
@@ -1664,6 +1665,9 @@ button {
 .stat-pod.legitimidad {
   box-shadow: inset 3px 0 0 var(--legitimidad);
 }
+.stat-pod.salud {
+  box-shadow: inset 3px 0 0 var(--salud);
+}
 
 .stat-emoji {
   font-size: 1.4rem;
@@ -1714,6 +1718,9 @@ button {
 }
 .stat-pod.legitimidad .stat-relleno {
   background: var(--legitimidad);
+}
+.stat-pod.salud .stat-relleno {
+  background: var(--salud);
 }
 
 .stat-pod.critico {

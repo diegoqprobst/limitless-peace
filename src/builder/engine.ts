@@ -1,8 +1,9 @@
 import type { Indicadores } from '../engine/types';
-import { aplicarEfectos } from '../engine/types';
+import { aplicarEfectos, clamp } from '../engine/types';
 import type {
   Celda,
   ContextoEvento,
+  EfectoTerritorio,
   EfectoVisual,
   EventoTerritorio,
   Herramienta,
@@ -44,7 +45,16 @@ export interface EstadoTerritorio {
   dificultad: Dificultad;
   /** Semilla del azar (eventos aleatorios). Determinista para los tests, variable en partida real. */
   semilla: number;
+  /** Salud del valle (0–100): bienestar concreto. Motor que alimenta a los 4 indicadores. */
+  salud: number;
+  /** Cola de eventos forzados por una decisión previa (cadenas causales). Prioridad máxima. */
+  eventosForzados: string[];
 }
+
+/** Salud con la que arranca el valle (concreta, no es indicador de paz). */
+export const SALUD_INICIAL = 25;
+/** Bajo este umbral, la mala salud empieza a erosionar la confianza y la legitimidad. */
+export const UMBRAL_SALUD_BAJA = 30;
 
 /**
  * Generador congruencial lineal: avanza la semilla de forma determinista.
@@ -113,6 +123,8 @@ export function crearEstado(
     diario: ['Mes 1 · ⛺ El equipo humanitario instala su base en el valle.'],
     efectoVisual: null,
     semilla: semilla & 0x7fffffff,
+    salud: SALUD_INICIAL,
+    eventosForzados: [],
   };
 }
 
@@ -319,16 +331,91 @@ export function actuar(
   );
 }
 
+/** Suma dos efectos del Territorio (los 4 indicadores + salud). */
+function sumarEfecto(a: EfectoTerritorio, b: EfectoTerritorio): EfectoTerritorio {
+  return {
+    confianza: (a.confianza ?? 0) + (b.confianza ?? 0),
+    seguridad: (a.seguridad ?? 0) + (b.seguridad ?? 0),
+    justicia: (a.justicia ?? 0) + (b.justicia ?? 0),
+    legitimidad: (a.legitimidad ?? 0) + (b.legitimidad ?? 0),
+    salud: (a.salud ?? 0) + (b.salud ?? 0),
+  };
+}
+
 /**
- * Avanza un mes: ingresos + el evento que toque. Prioridad:
+ * Tick mensual del valle (el "sostén"): cada mes, los edificios producen
+ * bienestar y las necesidades sin cubrir lo erosionan. La salud concreta
+ * alimenta a los 4 indicadores: descuidar agua/alimentos/salud hunde la
+ * confianza y la legitimidad. Función pura.
+ */
+export function aplicarTickMensual(estado: EstadoTerritorio): {
+  indicadores: Indicadores;
+  salud: number;
+  carencias: string[];
+} {
+  const planas = estado.celdas.flat();
+
+  // 1) Producción: el efecto mensual de cada edificio presente.
+  let ef: EfectoTerritorio = {};
+  for (const c of planas) {
+    if (c.edificio && c.edificio !== 'base') {
+      const m = POR_TIPO[c.edificio].mensual;
+      if (m) ef = sumarEfecto(ef, m);
+    }
+  }
+  let salud = clamp(estado.salud + (ef.salud ?? 0));
+  let indicadores = aplicarEfectos(estado.indicadores, ef);
+
+  // 2) Necesidades: solo pesan cuando hay población que depende del valle.
+  const carencias: string[] = [];
+  const poblacion = contarFamilias(estado.celdas).pobladas;
+  if (poblacion > 0) {
+    const hayAgua = planas.some((c) => c.edificio === 'agua');
+    const hayAlimentos = planas.some((c) => c.edificio === 'alimentos');
+    let castigo: EfectoTerritorio = {};
+    if (!hayAgua) {
+      castigo = sumarEfecto(castigo, { salud: -3, confianza: -2 });
+      carencias.push('sin agua segura');
+    }
+    if (!hayAlimentos) {
+      castigo = sumarEfecto(castigo, { salud: -2, confianza: -2 });
+      carencias.push('sin alimentos');
+    }
+    if (salud < UMBRAL_SALUD_BAJA) {
+      castigo = sumarEfecto(castigo, { confianza: -2, legitimidad: -1 });
+      carencias.push('salud crítica');
+    }
+    salud = clamp(salud + (castigo.salud ?? 0));
+    indicadores = aplicarEfectos(indicadores, castigo);
+  }
+
+  return { indicadores, salud, carencias };
+}
+
+/** Busca un evento por id en cualquiera de los tres montones (para cadenas causales). */
+function buscarEventoPorId(nivel: NivelTerritorio, id: string): EventoTerritorio | null {
+  return (
+    nivel.eventos.find((e) => e.id === id) ??
+    nivel.eventosCondicionales.find((e) => e.id === id) ??
+    nivel.eventosAleatorios.find((e) => e.id === id) ??
+    null
+  );
+}
+
+/**
+ * Avanza un mes: tick de sostén (producción + necesidades) + el evento que toque.
+ * Prioridad de eventos:
+ *   0) evento FORZADO por una decisión previa (cadena causal "si X, además Y")
  *   1) evento fijo del mes  2) evento que el estado del valle provoca
  *   3) — si el mes quedó libre — un evento aleatorio del montón (la vida real).
- * Los aleatorios van al final para no pisar la tensión guionizada.
  */
 export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): EstadoTerritorio {
   if (estado.fase !== 'jugando' || estado.eventoActivo) return estado;
   const mes = estado.mes + 1;
   const fondos = Math.max(0, estado.fondos + ingresoMensual(nivel, estado.celdas, estado.dificultad));
+
+  // El valle respira: produce o se deteriora según cómo se le cuide.
+  const { indicadores, salud, carencias } = aplicarTickMensual(estado);
 
   const planas = estado.celdas.flat();
   const ctx: ContextoEvento = {
@@ -338,18 +425,35 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
     hayAgua: planas.some((c) => c.edificio === 'agua'),
     hayAlimentos: planas.some((c) => c.edificio === 'alimentos'),
     hayEducacion: planas.some((c) => c.edificio === 'escuela' || c.edificio === 'cancha'),
+    hayEmisora: planas.some((c) => c.edificio === 'emisora'),
     familias: contarFamilias(estado.celdas).pobladas,
+    poblacion: contarFamilias(estado.celdas).pobladas,
+    salud,
     vistos: estado.eventosVistos,
     umbralIncursion: DIFICULTADES[estado.dificultad].umbralIncursion,
   };
-  let evento: EventoTerritorio | null =
-    nivel.eventos.find((e) => e.mes === mes && !estado.eventosVistos.includes(e.id)) ??
-    nivel.eventosCondicionales.find(
-      (e) => !estado.eventosVistos.includes(e.id) && e.condicion(estado.indicadores, ctx),
-    ) ??
-    null;
 
-  // Mes libre: tira el azar a ver si la vida del valle interrumpe la calma.
+  // 0) Consecuencia encadenada por una decisión previa: máxima prioridad.
+  let eventosForzados = estado.eventosForzados;
+  let evento: EventoTerritorio | null = null;
+  while (eventosForzados.length && !evento) {
+    const [id, ...resto] = eventosForzados;
+    eventosForzados = resto;
+    const forzado = buscarEventoPorId(nivel, id);
+    if (forzado && !estado.eventosVistos.includes(forzado.id)) evento = forzado;
+  }
+
+  // 1) fijo del mes  ·  2) provocado por el estado del valle.
+  if (!evento) {
+    evento =
+      nivel.eventos.find((e) => e.mes === mes && !estado.eventosVistos.includes(e.id)) ??
+      nivel.eventosCondicionales.find(
+        (e) => !estado.eventosVistos.includes(e.id) && e.condicion(indicadores, ctx),
+      ) ??
+      null;
+  }
+
+  // 3) Mes libre: tira el azar a ver si la vida del valle interrumpe la calma.
   let semilla = estado.semilla;
   if (!evento) {
     semilla = siguienteSemilla(semilla);
@@ -364,17 +468,24 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
     }
   }
 
+  const diario = [...estado.diario];
+  if (carencias.length) {
+    diario.push(`Mes ${mes} · 🩺 La población resiente: ${carencias.join(', ')}.`);
+  }
+  if (evento) diario.push(`Mes ${mes} · ⚠️ ${evento.titulo}`);
+
   return {
     ...estado,
     mes,
     fondos,
     semilla,
+    indicadores,
+    salud,
+    eventosForzados,
     eventoActivo: evento,
     eventosVistos: evento ? [...estado.eventosVistos, evento.id] : estado.eventosVistos,
     mensaje: null,
-    diario: evento
-      ? [...estado.diario, `Mes ${mes} · ⚠️ ${evento.titulo}`]
-      : estado.diario,
+    diario,
     efectoVisual: evento?.visual === 'lluvia' ? { tipo: 'lluvia' } : null,
   };
 }
@@ -425,6 +536,7 @@ export function resolverEvento(estado: EstadoTerritorio, opcion: OpcionEvento): 
   let celdas = estado.celdas;
   let mensaje: string | null = null;
   let efectoVisual = estado.efectoVisual;
+  let salud = clamp(estado.salud + (opcion.salud ?? 0));
   const diario = [...estado.diario, `→ ${opcion.texto}`];
   if (opcion.efectoEspecial === 'destruir-edificio') {
     let celdaAtacada: [number, number] | null = null;
@@ -432,10 +544,22 @@ export function resolverEvento(estado: EstadoTerritorio, opcion: OpcionEvento): 
     if (mensaje) diario.push(`Mes ${estado.mes} · 💥 ${mensaje}`);
     if (celdaAtacada) efectoVisual = { tipo: 'ataque', f: celdaAtacada[0], c: celdaAtacada[1] };
   }
+  if (opcion.efectoEspecial === 'brote-salud') {
+    // La decisión desata una crisis sanitaria: la salud se desploma.
+    salud = clamp(salud - 25);
+    mensaje = 'Un brote se descontrola: la salud del valle se desploma.';
+    diario.push(`Mes ${estado.mes} · 🦠 ${mensaje}`);
+  }
+  // Cadena causal: encolar el evento que esta decisión desata para el próximo mes.
+  const eventosForzados = opcion.encadena
+    ? [...estado.eventosForzados, opcion.encadena]
+    : estado.eventosForzados;
   return {
     ...estado,
     celdas,
     indicadores: aplicarEfectos(estado.indicadores, opcion.efectos),
+    salud,
+    eventosForzados,
     fondos: Math.max(0, estado.fondos + (opcion.fondos ?? 0)),
     codexDescubierto: [...new Set([...estado.codexDescubierto, ...(opcion.codex ?? [])])],
     retroEvento: opcion,

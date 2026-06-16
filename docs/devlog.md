@@ -626,3 +626,49 @@ para vacunar). Reusan IDs de códex e historias ya existentes (sin inventar depe
 **Verificación:** build limpio; 27/27 tests (3 nuevos: pool ≥25, caen ≥5 por partida, sin
 repetición). Simulación de 4 semillas distintas: 10–13 aleatorios por partida de 24 meses, mezcla
 y orden distintos en cada una, ninguno repetido dentro de la misma partida.
+
+## 2026-06-16 · Modelo sistémico vivo: salud + tick mensual + decisiones causales
+
+Diego pidió complejizar el Territorio: que el valle sea un organismo ("si hago X pasa Y y
+además Z"), no una lista de compras. Su intuición: justicia/legitimidad son indicadores
+abstractos (se ganan con decisiones), mientras salud/confianza se construyen con infraestructura
+y cuidado sostenido. Decisiones acordadas: salud = motor concreto que alimenta a los 4 (vive
+solo en el Territorio, NO toca el tipo `Indicadores` compartido con el modo Mesa); hechos reales
+ficcionalizados + caso real en el Códex (sin nombrar Estados; nada de Qatar).
+
+**Dos capas acopladas:**
+- **Inversión (efecto único al construir):** se mantiene (memorial sigue siendo el gran motor de
+  justicia, +12).
+- **Sostén (efecto MENSUAL nuevo, `DefEdificio.mensual`):** cada mes, en `aplicarTickMensual`, los
+  edificios producen bienestar (salud: +4 puesto / +3 agua / +2 alimentos; emisora +2 confianza;
+  memorial +1 confianza; cancha +1 legitimidad/+1 salud; escuela +1 legitimidad/+1 seguridad;
+  mercado +1 legitimidad). Y si hay población retornada, las necesidades sin cubrir erosionan:
+  sin agua −3 salud/−2 confianza; sin alimentos −2/−2; salud<30 −2 confianza/−1 legitimidad.
+  Deltas pequeños, acotados [0,100]: se acumulan en ~24 meses sin espiral de muerte.
+
+**Salud (concreta, solo Territorio):** `EstadoTerritorio.salud` (inicia 25), 5.º pod en el HUD
+(🩺, color `--salud`), incluida en el `progreso` (calor del valle, /500). No es meta de victoria
+(siguen los 4), pero descuidarla hunde confianza y legitimidad.
+
+**Decisiones causales:** `OpcionEvento.salud` (delta inmediato), `OpcionEvento.encadena` (id de un
+evento que se fuerza el próximo mes, prioridad máxima en `avanzarMes` vía `eventosForzados`), y
+`efectoEspecial: 'brote-salud'` (desploma la salud). Generaliza el `destruir-edificio` que ya
+existía.
+
+**Barajar opciones:** en `Territorio.tsx`, las opciones se barajan en el render (Fisher-Yates
+sembrado con semilla+mes+hash del id) — la primera ya no es siempre la ganadora. Solo
+presentación: el motor recibe el objeto opción, no su índice; los tests (orden de datos) intactos.
+
+**Eventos nuevos (ficcionalizados + Códex):** `emisora-odio` (condicional, requiere emisora —
+rompe el "emisora=bueno"; ceder encadena `brote-violencia`; caso real RTLM/Ruanda 1994),
+`primavera` (Primavera Árabe), `dinero-que-arma` (tomarlo encadena `dinero-incursion`),
+`pozo-roto` (ejercita brote-salud). Las consecuencias `brote-violencia`/`dinero-incursion` son
+condicionales con `condicion:()=>false` (solo alcanzables por encadena). Códex nuevo:
+`medios-y-violencia`, `movilizacion-social`, `financiacion-conflicto`.
+
+**Verificación:** build limpio; 33/33 tests del motor (incl. nuevos: salud sube con
+salud+agua+alimentos 25→34, erosiona a 20 sin necesidades cubiertas, carencias reportadas,
+encadena fuerza brote-violencia, brote-salud desploma 50→25). Simulación de balance (4 semillas):
+cuidando el valle, salud→100 e indicadores cerca del máximo (justicia el cuello de botella, como
+se diseñó); descuidando, se estanca sin colapsar. Preview en vivo: el 5.º pod Salud renderiza
+junto a los 4, sin errores de consola.

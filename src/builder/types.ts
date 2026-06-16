@@ -27,6 +27,12 @@ export type TipoEdificio =
 /** Herramienta activa: un edificio para colocar, o una acción sobre la celda. */
 export type Herramienta = TipoEdificio | 'limpiar' | 'desminar';
 
+/**
+ * Efecto del Territorio: los 4 indicadores compartidos (Efecto) MÁS la salud,
+ * que es concreta y vive solo en este modo (no toca el tipo compartido Mesa).
+ */
+export type EfectoTerritorio = Efecto & { salud?: number };
+
 export interface DefEdificio {
   tipo: TipoEdificio;
   nombre: string;
@@ -38,8 +44,13 @@ export interface DefEdificio {
   radio: number;
   /** Vitalidad que aporta a cada celda dentro del radio. */
   aporteVitalidad: number;
-  /** Efecto único sobre los indicadores al construirse. */
+  /** Efecto único sobre los indicadores al construirse (la "inversión"). */
   efectos: Efecto;
+  /**
+   * Efecto recurrente cada mes mientras el edificio existe (el "sostén"):
+   * el valle cuidado produce bienestar. Puede incluir salud (concreta).
+   */
+  mensual?: EfectoTerritorio;
   /** Fondos que genera cada mes (mercados). */
   ingresoMensual?: number;
   descripcion: string;
@@ -60,11 +71,18 @@ export interface Celda {
 export interface OpcionEvento {
   texto: string;
   efectos: Efecto;
+  /** Delta inmediato de salud (consecuencia concreta de la decisión). */
+  salud?: number;
   fondos?: number;
   retro: string;
   codex?: string[];
   /** Consecuencia material sobre el mapa (la tensión se ve, no solo se resta). */
-  efectoEspecial?: 'destruir-edificio';
+  efectoEspecial?: 'destruir-edificio' | 'brote-salud';
+  /**
+   * Cadena causal: id de un evento que se fuerza el próximo mes como
+   * consecuencia de esta decisión ("si hago X, además se desata Y").
+   */
+  encadena?: string;
 }
 
 /** Eco histórico: la historia real que resuena con este momento del juego. */
@@ -104,8 +122,14 @@ export interface ContextoEvento {
   hayAlimentos: boolean;
   /** Hay escuela o cancha (cadena reclutamiento juvenil). */
   hayEducacion: boolean;
+  /** Hay emisora comunitaria (eventos de doble filo: une o incita). */
+  hayEmisora: boolean;
   /** Familias retornadas hasta ahora. */
   familias: number;
+  /** Población retornada (= familias): cuánta gente depende del valle. */
+  poblacion: number;
+  /** Salud del valle (0–100): bienestar concreto de la población. */
+  salud: number;
   /** Eventos ya ocurridos: permite encadenar consecuencias. */
   vistos: string[];
   /** Umbral de seguridad bajo el cual llega la incursión (según dificultad). */

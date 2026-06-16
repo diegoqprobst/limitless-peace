@@ -450,6 +450,67 @@ export const CODEX: EntradaCodex[] = [
       '¿Por qué es más fácil firmar la paz que cumplirla? ¿Qué puede hacer la ciudadanía durante los ' +
       '15 años de implementación?',
   },
+  {
+    id: 'medios-y-violencia',
+    titulo: 'Medios de comunicación: puente o arma',
+    categoria: 'Riesgos de la transición',
+    definicion:
+      'La misma radio que cose una comunidad puede usarse para incitarla a matar. Los medios son ' +
+      'infraestructura de paz — o de guerra: amplifican el rumor o lo desmienten, deshumanizan al ' +
+      '"otro" o le devuelven el rostro. Quien controla las ondas tiene un poder que obliga.',
+    enLaPractica:
+      'La pedagogía de paz protege el espacio mediático: ondas neutrales, verificación del rumor, ' +
+      'voces de todos los bandos, y líneas rojas claras contra el discurso de odio. Negar una emisora ' +
+      'a quien quiere usarla para señalar a un grupo no es censura: es prevención de atrocidades.',
+    casoReal:
+      'En Ruanda (1994), la Radio Television Libre des Mille Collines (RTLM) llamó "cucarachas" a los ' +
+      'tutsis y transmitió listas de personas a asesinar: la radio fue un instrumento del genocidio. ' +
+      'En contraste, emisoras comunitarias en posconflictos han servido para desmentir rumores y ' +
+      'reunir familias.',
+    paraReflexionar:
+      'Si una herramienta de paz puede volverse arma, ¿basta con construirla? ¿Quién debe vigilar ' +
+      'el uso de los medios sin caer en la censura?',
+  },
+  {
+    id: 'movilizacion-social',
+    titulo: 'Movilización social: la calle pide cambios',
+    categoria: 'Riesgos de la transición',
+    definicion:
+      'En toda transición llega el momento en que la población —sobre todo la juventud— exige que las ' +
+      'promesas se cumplan YA. Esa energía puede canalizarse en participación que legitima el proceso, ' +
+      'o reprimirse hasta estallar. Ignorarla no la apaga: la radicaliza.',
+    enLaPractica:
+      'Abrir cauces reales (consejos juveniles, presupuestos participativos, veedurías) convierte la ' +
+      'protesta en cogobierno y la frustración en pertenencia. Reprimir o prometer sin cumplir compra ' +
+      'una calma corta y siembra la próxima ola, más dura.',
+    casoReal:
+      'La Primavera Árabe (2011) mostró ambas caras: esperanza democrática inmensa y, donde las ' +
+      'transiciones se cerraron o militarizaron, recaídas en autoritarismo o guerra civil. Túnez, que ' +
+      'apostó por el diálogo nacional, fue la excepción que sostuvo (con dificultades) su transición.',
+    paraReflexionar:
+      '¿Cuándo la movilización fortalece una paz y cuándo la desborda? ¿Cómo se distingue escuchar ' +
+      'de ceder al miedo?',
+  },
+  {
+    id: 'financiacion-conflicto',
+    titulo: 'Financiar la paz… o la guerra',
+    categoria: 'Riesgos de la transición',
+    definicion:
+      'El dinero que entra "por la paz" no es neutro: según a quién llega y con qué condiciones, puede ' +
+      'sostener la reconstrucción o terminar armando al que la sabotea. La independencia financiera no ' +
+      'es un lujo del humanitario: es lo que evita comprar la guerra creyendo pagar la paz.',
+    enLaPractica:
+      'Trazabilidad de los fondos, condiciones transparentes, distribución por necesidad y no por ' +
+      'bando, y la disciplina de rechazar dinero que fortalezca a un actor armado — aunque haga falta. ' +
+      'Un rescate pagado, una "cuota" en un retén o un mecenas interesado pueden financiar al spoiler.',
+    casoReal:
+      'En varios conflictos, fondos externos canalizados sin control —de Estados, diásporas o ' +
+      'donantes privados— terminaron fortaleciendo a grupos armados o economías de guerra. La lección ' +
+      'es transversal: el origen y las condiciones del dinero deciden si construye o destruye.',
+    paraReflexionar:
+      '¿Es preferible un valle más pobre pero independiente, o más rico pero en deuda con quien pone ' +
+      'el dinero? ¿Quién audita la ayuda?',
+  },
 ];
 
 export function obtenerEntradaCodex(id: string): EntradaCodex | undefined {

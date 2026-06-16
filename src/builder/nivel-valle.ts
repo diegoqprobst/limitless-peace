@@ -366,6 +366,103 @@ export const NIVEL_VALLE: NivelTerritorio = {
         },
       ],
     },
+    {
+      // Doble filo: la emisora que une también puede incitar (Ruanda / RTLM).
+      // Solo aparece si el valle TIENE emisora — el poder de los medios obliga.
+      id: 'emisora-odio',
+      condicion: (_ind, ctx) => ctx.hayEmisora && ctx.mes >= 4,
+      titulo: 'La voz que puede envenenar',
+      texto:
+        'Un grupo presiona para usar la emisora del valle —la que tanto costó— y transmitir ' +
+        'mensajes que señalan a una comunidad como "el enemigo de adentro". Prometen que "es solo ' +
+        'para defendernos". La misma radio que cose el valle podría encender la mecha.',
+      opciones: [
+        {
+          texto: 'Proteger las ondas neutrales: ni odio ni señalamientos; verificar el rumor y dar voz a todos.',
+          efectos: { justicia: 4, legitimidad: 4, confianza: 2 },
+          retro:
+            'Una radio comunitaria es infraestructura de paz — o de guerra. Negarla a quien quiere ' +
+            'usarla para deshumanizar a un grupo no es censura: es prevención de atrocidades. La voz ' +
+            'del valle solo cose mientras no se convierte en arma de nadie.',
+          codex: ['medios-y-violencia', 'pedagogia-paz'],
+        },
+        {
+          texto: 'Cederla "solo esta vez": calmar al grupo fuerte para no tenerlo en contra.',
+          efectos: { legitimidad: 3, seguridad: -10, justicia: -8, confianza: -6 },
+          encadena: 'brote-violencia',
+          retro:
+            'La radio nombró a un grupo como enemigo y alguien escuchó. En Ruanda, la RTLM llamó ' +
+            '"cucarachas" a los tutsis y leyó listas de personas a matar: los medios fueron parte del ' +
+            'genocidio. "Solo esta vez" es como empieza siempre — el odio amplificado no vuelve a la ' +
+            'botella.',
+          codex: ['medios-y-violencia', 'spoilers'],
+        },
+      ],
+    },
+    {
+      // Consecuencia encadenada de ceder la emisora al odio (no aparece sola).
+      id: 'brote-violencia',
+      condicion: () => false,
+      titulo: 'La mecha encendida',
+      texto:
+        'Lo que se transmitió tuvo eco: hay ataques contra la comunidad señalada y familias que ' +
+        'huyen de nuevo. El valle se mira con miedo y sospecha. Tu equipo tiene horas para evitar ' +
+        'que esto se vuelva irreversible.',
+      opciones: [
+        {
+          texto: 'Mediación de urgencia y protección de la comunidad señalada, con garantes y presencia constante.',
+          efectos: { seguridad: 5, justicia: 4, confianza: 2 },
+          fondos: -20,
+          retro:
+            'Cuando el odio ya prendió, solo la presencia decidida —proteger a los señalados, mediar, ' +
+            'desmentir— evita que el rumor se vuelva masacre. Llegaste tarde, pero llegar a tiempo a la ' +
+            'contención todavía salva vidas. La neutralidad activa también es protección.',
+          codex: ['garantias-seguridad', 'medios-y-violencia'],
+        },
+        {
+          texto: 'Esperar a que los ánimos se enfríen solos para no echar más leña.',
+          efectos: { seguridad: -8, confianza: -6, justicia: -4 },
+          efectoEspecial: 'destruir-edificio',
+          retro:
+            'Los ánimos no se enfriaron solos: el vacío lo llenó la violencia. Ante una incitación en ' +
+            'marcha, "esperar" es permitir. Lo que el valle construyó con meses de trabajo se perdió en ' +
+            'una noche que se pudo haber frenado.',
+          codex: ['medios-y-violencia', 'garantias-seguridad'],
+        },
+      ],
+    },
+    {
+      // Consecuencia encadenada de aceptar el "dinero que arma" (no aparece sola).
+      id: 'dinero-incursion',
+      condicion: () => false,
+      titulo: 'El arma que pagaste sin saber',
+      texto:
+        'El dinero que entró "por la paz" tomó otro camino: el grupo que lo recibió aparece mejor ' +
+        'armado y entra al valle a cobrar lo que cree suyo. La factura de aquella decisión llegó, ' +
+        'y la paga el valle entero.',
+      opciones: [
+        {
+          texto: 'Activar protección comunitaria con el Estado y los garantes, y cortar de raíz el flujo de fondos.',
+          efectos: { seguridad: 6, legitimidad: 2 },
+          fondos: -25,
+          retro:
+            'Cerraste el grifo y reforzaste la protección — tarde, pero al fin. El dinero sin ' +
+            'trazabilidad financia al que sabotea la paz: por eso la independencia y el control de los ' +
+            'fondos no son burocracia, son seguridad. Comprar la guerra creyendo pagar la paz se cobra así.',
+          codex: ['financiacion-conflicto', 'garantias-seguridad'],
+        },
+        {
+          texto: 'Negociar con ellos para que se retiren: total, ya tienen el dinero.',
+          efectos: { seguridad: -8, legitimidad: -6, confianza: -4 },
+          efectoEspecial: 'destruir-edificio',
+          retro:
+            'Negociar desde la debilidad con quien tú mismo armaste solo sube el precio. El grupo ' +
+            'entendió que el valle paga, y volverá. La lección es cara y vieja: el origen y las ' +
+            'condiciones del dinero deciden si construye o destruye.',
+          codex: ['financiacion-conflicto', 'spoilers'],
+        },
+      ],
+    },
   ],
   // ── Montón de eventos aleatorios (la vida real del posconflicto) ──
   // Inspirados en la experiencia humanitaria de la Cruz Roja / Media Luna Roja:
@@ -1168,6 +1265,100 @@ export const NIVEL_VALLE: NivelTerritorio = {
             'lado más difícil — y desperdicia una de las pocas cosas en las que hasta los enemigos ' +
             'pueden, por una vez, estar de acuerdo.',
           codex: ['respuesta-humanitaria', 'cese-fuego'],
+        },
+      ],
+    },
+    {
+      id: 'primavera',
+      puede: (ctx) => ctx.mes >= 5,
+      titulo: 'La plaza se llena',
+      texto:
+        'La juventud del valle sale a la plaza: están cansados de promesas y exigen que los cambios ' +
+        'lleguen YA. La energía es enorme y puede ir hacia cualquier lado. Tu equipo puede abrirle ' +
+        'cauce o intentar que se disuelva.',
+      opciones: [
+        {
+          texto: 'Abrir cauces reales de participación: consejo juvenil, veeduría, presupuesto que deciden ellos.',
+          efectos: { legitimidad: 6, confianza: 4 },
+          fondos: -10,
+          retro:
+            'La movilización canalizada se vuelve cogobierno: la frustración se transforma en ' +
+            'pertenencia y la calle, en columna del proceso. La Primavera Árabe mostró que donde la ' +
+            'transición abrió diálogo (Túnez) la energía sostuvo la paz; donde se cerró, recayó en ' +
+            'autoritarismo o guerra. Escuchar a tiempo es barato; ignorar, carísimo.',
+          codex: ['movilizacion-social', 'participacion'],
+        },
+        {
+          texto: 'Contener la protesta y prometer que "todo llegará a su tiempo".',
+          efectos: { legitimidad: -7, confianza: -5 },
+          retro:
+            'La plaza se vació hoy y se llenará mañana, más dura. Reprimir o prometer sin cumplir ' +
+            'compra una calma corta y siembra la próxima ola. La energía de una transición no se ' +
+            'apaga ignorándola: se radicaliza. La paz que no escucha a su juventud la pierde.',
+          codex: ['movilizacion-social'],
+        },
+      ],
+    },
+    {
+      id: 'dinero-que-arma',
+      puede: (ctx) => ctx.mes >= 4,
+      titulo: 'El mecenas generoso',
+      texto:
+        'Un patrón externo ofrece una montaña de fondos "por la paz del valle". Pero todo indica que ' +
+        'parte de ese dinero terminaría en manos de un grupo armado de la zona. Con esa plata ' +
+        'avanzarías al doble. El origen, sin embargo, pesa.',
+      opciones: [
+        {
+          texto: 'Rechazar o condicionar con transparencia total: ni un peso que pueda fortalecer a un actor armado.',
+          efectos: { legitimidad: 6, confianza: 3 },
+          retro:
+            'Decir que no a dinero turbio duele cuando faltan fondos — y es lo que evita comprar la ' +
+            'guerra creyendo pagar la paz. La independencia y la trazabilidad no son burocracia: son ' +
+            'lo que impide que tu propio presupuesto arme al que sabotea el proceso.',
+          codex: ['financiacion-conflicto', 'principios-humanitarios'],
+        },
+        {
+          texto: 'Tomar el dinero: el valle necesita avanzar y el resto es problema de otros.',
+          efectos: { legitimidad: -4, confianza: -2 },
+          fondos: 35,
+          encadena: 'dinero-incursion',
+          retro:
+            'El cemento llegó — y también las armas que financiaste sin querer. El dinero sin control ' +
+            'no es neutro: sostiene a quien lo recibe, y aquí fortaleció justo al que vive de la guerra. ' +
+            'La factura de esa decisión no tarda en llegar al valle.',
+          codex: ['financiacion-conflicto', 'spoilers'],
+        },
+      ],
+    },
+    {
+      id: 'pozo-roto',
+      puede: (ctx) => ctx.mes >= 4,
+      titulo: 'El agua que sabe raro',
+      texto:
+        'El pozo del que bebe media comunidad amanece turbio: algo lo contaminó. Los primeros ' +
+        'malestares ya aparecen. Hay una ventana corta para actuar antes de que se vuelva un brote ' +
+        'en serio.',
+      opciones: [
+        {
+          texto: 'Cloración y reparación de urgencia + agua segura mientras tanto.',
+          efectos: { confianza: 3 },
+          salud: 6,
+          fondos: -15,
+          retro:
+            'Actuar en la ventana corta —cloro, reparación, agua segura de transición— corta la cadena ' +
+            'antes de que enferme medio valle. En agua y saneamiento, las horas valen vidas: por eso el ' +
+            'estándar es prevenir el brote, no tratarlo cuando ya estalló.',
+          codex: ['respuesta-humanitaria'],
+        },
+        {
+          texto: 'Hervir el agua y esperar: una intervención completa es cara.',
+          efectos: { confianza: -5 },
+          efectoEspecial: 'brote-salud',
+          retro:
+            'Hervir ayuda, pero no alcanza contra un pozo contaminado del que sigue bebiendo la ' +
+            'comunidad: el brote se descontroló. La salud del valle se desplomó por ahorrarse una ' +
+            'reparación. En saneamiento, lo barato sale carísimo.',
+          codex: ['respuesta-humanitaria'],
         },
       ],
     },

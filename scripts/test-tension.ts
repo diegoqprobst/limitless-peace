@@ -4,6 +4,7 @@
  */
 import {
   actuar,
+  aplicarTickMensual,
   avanzarMes,
   cerrarEvento,
   contarFamilias,
@@ -11,6 +12,7 @@ import {
   ingresoMensual,
   resolverEvento,
 } from '../src/builder/engine.ts';
+import type { OpcionEvento } from '../src/builder/types.ts';
 import { NIVEL_VALLE } from '../src/builder/nivel-valle.ts';
 
 let fallos = 0;
@@ -148,6 +150,51 @@ check('caen varios eventos aleatorios en una partida', aleatoriosVistos.length >
   `vistos=${aleatoriosVistos.length}`);
 check('ningún evento aleatorio se repite en la misma partida',
   aleatoriosVistos.length === new Set(aleatoriosVistos).size);
+
+// ── Salud: motor concreto (producción mensual + erosión por necesidades) ──
+// Producción: con puesto de salud, agua y alimentos, la salud sube cada mes.
+let eSalud = crearEstado(NIVEL_VALLE);
+eSalud = { ...eSalud, fase: 'jugando', fondos: 300 };
+eSalud = actuar({ ...eSalud, herramienta: 'salud' }, NIVEL_VALLE, 3, 4);
+eSalud = actuar({ ...eSalud, herramienta: 'agua' }, NIVEL_VALLE, 2, 2);
+eSalud = actuar({ ...eSalud, herramienta: 'alimentos' }, NIVEL_VALLE, 0, 0);
+const tickProd = aplicarTickMensual(eSalud);
+check('salud sube con salud+agua+alimentos', tickProd.salud > eSalud.salud,
+  `${eSalud.salud}→${tickProd.salud}`);
+
+// Erosión: con población retornada y SIN agua ni alimentos, salud y confianza caen.
+let eCarencia = crearEstado(NIVEL_VALLE);
+// forzar una casa poblada
+const celdasPobl = eCarencia.celdas.map((fila) =>
+  fila.map((c) => (c.tipo === 'casa' ? { ...c, poblada: true } : c)),
+);
+eCarencia = { ...eCarencia, fase: 'jugando', celdas: celdasPobl, salud: 25 };
+const confAntes = eCarencia.indicadores.confianza;
+const tickEros = aplicarTickMensual(eCarencia);
+check('sin agua/alimentos la salud se erosiona', tickEros.salud < 25, `salud=${tickEros.salud}`);
+check('sin agua/alimentos la confianza se erosiona', tickEros.indicadores.confianza < confAntes,
+  `${confAntes}→${tickEros.indicadores.confianza}`);
+check('el tick reporta las carencias', tickEros.carencias.length >= 2,
+  tickEros.carencias.join(', '));
+
+// ── Cadena causal: encadena fuerza el evento de consecuencia el mes siguiente ──
+const evEmisora = NIVEL_VALLE.eventosCondicionales.find((e) => e.id === 'emisora-odio')!;
+const opCeder = evEmisora.opciones.find((o: OpcionEvento) => o.encadena === 'brote-violencia')!;
+let eCad = crearEstado(NIVEL_VALLE);
+eCad = { ...eCad, fase: 'jugando', eventoActivo: evEmisora };
+eCad = resolverEvento(eCad, opCeder);
+eCad = cerrarEvento(eCad, NIVEL_VALLE);
+eCad = avanzarMes(eCad, NIVEL_VALLE);
+check('encadena fuerza el evento de consecuencia (brote-violencia)',
+  eCad.eventoActivo?.id === 'brote-violencia', `evento=${eCad.eventoActivo?.id ?? 'ninguno'}`);
+
+// ── efectoEspecial brote-salud: desploma la salud ──
+const evPozo = NIVEL_VALLE.eventosAleatorios.find((e) => e.id === 'pozo-roto')!;
+const opBrote = evPozo.opciones.find((o: OpcionEvento) => o.efectoEspecial === 'brote-salud')!;
+let ePozo = crearEstado(NIVEL_VALLE);
+ePozo = { ...ePozo, fase: 'jugando', eventoActivo: evPozo, salud: 50 };
+ePozo = resolverEvento(ePozo, opBrote);
+check('brote-salud desploma la salud', ePozo.salud === 25, `salud=${ePozo.salud}`);
 
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);
