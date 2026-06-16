@@ -2136,6 +2136,25 @@ body:has(.cockpit) .boton-reporte {
   margin: 0 auto 1rem;
   text-wrap: balance;
 }
+/* Ilustración de la escena: viñeta editorial que se funde con la noche del papel */
+.escena-imagen {
+  margin: 0 auto 1.5rem;
+  max-width: 560px;
+  border-radius: var(--radio);
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45), var(--halo-opcion);
+  /* el borde inferior se desvanece hacia el fondo para integrarse a la escena */
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+}
+.escena-imagen img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .escena-texto {
   font-size: 1.05rem;
   line-height: 1.62;

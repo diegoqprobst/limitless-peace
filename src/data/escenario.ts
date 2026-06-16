@@ -67,6 +67,7 @@ export const NODOS: Nodo[] = [
     id: 'canal-secreto',
     fase: 0,
     titulo: 'El primer contacto',
+    imagen: 'escenas/canal-secreto.svg',
     texto:
       'Un emisario del FIM hace llegar una carta: están dispuestos a hablar, pero ' +
       'temen que el Gobierno use el anuncio para humillarlos públicamente. El ' +

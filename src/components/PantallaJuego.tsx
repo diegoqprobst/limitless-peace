@@ -54,6 +54,11 @@ export function PantallaJuego({
         <section className="escena" key={nodo.id}>
           <p className="escena-fase eyebrow">{ui.faseLabel(nodo.fase, fase?.nombre ?? '')}</p>
           <h2 className="display escena-titulo">{nodo.titulo}</h2>
+          {nodo.imagen && (
+            <figure className="escena-imagen">
+              <img src={`/${nodo.imagen}`} alt="" loading="lazy" />
+            </figure>
+          )}
           <p className="escena-texto">{nodo.texto}</p>
           <div className="opciones">
             {nodo.opciones.map((opcion, i) => (

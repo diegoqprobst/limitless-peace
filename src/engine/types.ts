@@ -43,6 +43,8 @@ export interface Nodo {
   fase: number;
   titulo: string;
   texto: string;
+  /** Ilustración de la escena (ruta bajo /public, p. ej. 'escenas/canal-secreto.webp'). */
+  imagen?: string;
   opciones: Opcion[];
   /**
    * Siguiente nodo. Puede depender del estado de los indicadores

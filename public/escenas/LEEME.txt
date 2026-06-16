@@ -1,0 +1,2 @@
+Ilustraciones de las escenas de La Mesa (una por nodo, nombrada por su id).
+Formato: webp o jpg, 16:9 horizontal. Ej: canal-secreto.webp

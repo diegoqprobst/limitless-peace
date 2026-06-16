@@ -724,3 +724,25 @@ tras el refactor de luces), el reloj aparece (☀️ 08:30) y bien posicionado, 
 consola. El avance continuo del ciclo no se puede ver en el preview headless (un probe confirmó
 que `requestAnimationFrame` está pausado con la pestaña oculta — mismo límite WebGL de todo el
 proyecto); corre en Chrome real.
+
+## 2026-06-16 · Ilustraciones por escena en La Mesa (plomería + muestra)
+
+Diego quiere imágenes en las escenas de decisión (modo La Mesa). Firefly texto→imagen no está
+disponible en mi entorno; él las generará en su propio Firefly (tiene Pro) y yo las integro.
+Plomería lista para que sea enchufar y listo:
+- `Nodo.imagen?: string` (ruta bajo /public). El overlay EN ya lo preserva (solo sobrescribe
+  título/texto/opciones).
+- `PantallaJuego`: `<figure className="escena-imagen">` entre el título y el texto, solo si el
+  nodo trae `imagen`.
+- CSS `.escena-imagen`: viñeta editorial (borde, halo de vela, fundido inferior con mask para
+  integrarse a la noche del papel), `aspect-ratio: 16/9`, object-fit cover.
+- `public/escenas/` (Vite la sirve en la raíz). Convención: un archivo por nodo, nombrado por su
+  id (canal-secreto, garantes, agenda, acuerdo-humanitario, cese-fuego, violacion-cese,
+  crisis-confianza, victimas, justicia, verdad, ddr, genero, spoilers-nodo, refrendacion-nodo,
+  pedagogia-nodo, implementacion-nodo, proteccion).
+- Muestra SVG "Vela y Tinta" para `canal-secreto` (carta lacrada + vela) como referencia de
+  estilo y para verificar el render.
+
+**Verificación:** build limpio; preview en vivo: la ilustración aparece en "El primer contacto",
+bien posicionada y estilizada (carta + vela, glow ámbar, fundido). Pendiente: las 16 imágenes
+restantes que generará Diego en su Firefly.
