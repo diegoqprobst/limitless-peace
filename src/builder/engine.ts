@@ -51,8 +51,6 @@ export interface EstadoTerritorio {
   eventosForzados: string[];
 }
 
-/** Salud con la que arranca el valle (concreta, no es indicador de paz). */
-export const SALUD_INICIAL = 25;
 /** Bajo este umbral, la mala salud empieza a erosionar la confianza y la legitimidad. */
 export const UMBRAL_SALUD_BAJA = 30;
 
@@ -123,7 +121,7 @@ export function crearEstado(
     diario: ['Mes 1 · ⛺ El equipo humanitario instala su base en el valle.'],
     efectoVisual: null,
     semilla: semilla & 0x7fffffff,
-    salud: SALUD_INICIAL,
+    salud: DIFICULTADES[dificultad].saludInicial,
     eventosForzados: [],
   };
 }
@@ -342,6 +340,17 @@ function sumarEfecto(a: EfectoTerritorio, b: EfectoTerritorio): EfectoTerritorio
   };
 }
 
+/** Escala un efecto por un factor de dificultad (redondeando: los deltas son pequeños). */
+function escalarEfecto(ef: EfectoTerritorio, mult: number): EfectoTerritorio {
+  return {
+    confianza: Math.round((ef.confianza ?? 0) * mult),
+    seguridad: Math.round((ef.seguridad ?? 0) * mult),
+    justicia: Math.round((ef.justicia ?? 0) * mult),
+    legitimidad: Math.round((ef.legitimidad ?? 0) * mult),
+    salud: Math.round((ef.salud ?? 0) * mult),
+  };
+}
+
 /**
  * Tick mensual del valle (el "sostén"): cada mes, los edificios producen
  * bienestar y las necesidades sin cubrir lo erosionan. La salud concreta
@@ -354,8 +363,9 @@ export function aplicarTickMensual(estado: EstadoTerritorio): {
   carencias: string[];
 } {
   const planas = estado.celdas.flat();
+  const cfg = DIFICULTADES[estado.dificultad];
 
-  // 1) Producción: el efecto mensual de cada edificio presente.
+  // 1) Producción: el efecto mensual de cada edificio presente (escalado por dificultad).
   let ef: EfectoTerritorio = {};
   for (const c of planas) {
     if (c.edificio && c.edificio !== 'base') {
@@ -363,10 +373,12 @@ export function aplicarTickMensual(estado: EstadoTerritorio): {
       if (m) ef = sumarEfecto(ef, m);
     }
   }
+  ef = escalarEfecto(ef, cfg.multProduccion);
   let salud = clamp(estado.salud + (ef.salud ?? 0));
   let indicadores = aplicarEfectos(estado.indicadores, ef);
 
   // 2) Necesidades: solo pesan cuando hay población que depende del valle.
+  // La erosión escala con la dificultad: principiante perdona, difícil cobra caro.
   const carencias: string[] = [];
   const poblacion = contarFamilias(estado.celdas).pobladas;
   if (poblacion > 0) {
@@ -385,6 +397,7 @@ export function aplicarTickMensual(estado: EstadoTerritorio): {
       castigo = sumarEfecto(castigo, { confianza: -2, legitimidad: -1 });
       carencias.push('salud crítica');
     }
+    castigo = escalarEfecto(castigo, cfg.multErosion);
     salud = clamp(salud + (castigo.salud ?? 0));
     indicadores = aplicarEfectos(indicadores, castigo);
   }

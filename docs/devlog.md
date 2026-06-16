@@ -672,3 +672,21 @@ encadena fuerza brote-violencia, brote-salud desploma 50→25). Simulación de b
 cuidando el valle, salud→100 e indicadores cerca del máximo (justicia el cuello de botella, como
 se diseñó); descuidando, se estanca sin colapsar. Preview en vivo: el 5.º pod Salud renderiza
 junto a los 4, sin errores de consola.
+
+## 2026-06-16 · La dificultad ahora escala el sistema de salud/necesidades
+
+A pedido de Diego: más exigente en libre y difícil, más indulgente en principiante. El tick
+mensual (producción + erosión por necesidades) ahora escala por dificultad, además de los fondos
+y umbrales que ya variaban:
+
+- `ConfigDificultad` gana `saludInicial`, `multProduccion` y `multErosion`.
+  - principiante: salud inicial 40, producción ×1.25, erosión ×0.5 (el valle perdona).
+  - libre: salud 25, producción ×1.0, erosión ×1.3 (cobra el descuido).
+  - difícil: salud 18, producción ×0.85, erosión ×1.7 (frágil y sin margen).
+- `crearEstado` usa `saludInicial` de la dificultad; `aplicarTickMensual` escala producción y
+  erosión con `escalarEfecto(ef, mult)` (redondeo, deltas pequeños).
+
+**Verificación:** build limpio; 33/33 tests. Simulación del gradiente — mismo descuido (1 familia,
+sin agua ni alimentos, 6 meses): principiante salud 40→28 / confianza 30→23; libre 25→0 / 30→5;
+difícil 18→0 / 30→5. Cuidando el valle (agua+alimentos+salud, 8 meses): salud final 100 / 97 / 50.
+Preview en vivo: principiante arranca con salud 40 y 170 fondos (correcto), sin errores de consola.
