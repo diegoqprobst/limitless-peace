@@ -1,9 +1,18 @@
 import { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import type { Celda, EfectoVisual, Herramienta, TipoEdificio } from '../builder/types';
 import { POR_TIPO } from '../builder/catalogo';
+
+/** Pop flotante "+N Indicador" sobre la celda donde se acaba de construir. */
+export interface PopEfecto {
+  f: number;
+  c: number;
+  efectos: Partial<Record<'confianza' | 'seguridad' | 'justicia' | 'legitimidad', number>>;
+  /** Cambia cada vez para reiniciar la animación. */
+  clave: number;
+}
 
 /**
  * Tablero 3D del modo Territorio: escena isométrica low-poly (estética
@@ -17,7 +26,24 @@ interface Props {
   onCelda: (f: number, c: number) => void;
   /** Efecto ambiental activo: lluvia sobre el valle, humo tras un ataque. */
   efecto?: EfectoVisual | null;
+  /** Salud del proceso 0–1: el valle se ilumina cálido cuando va bien. */
+  progreso?: number;
+  /** Pop "+N Indicador" sobre la celda recién construida. */
+  pop?: PopEfecto | null;
 }
+
+const IND_COLOR: Record<string, string> = {
+  confianza: '#6ba3c7',
+  seguridad: '#7fb585',
+  justicia: '#b48ec9',
+  legitimidad: '#ecb24f',
+};
+const IND_NOMBRE: Record<string, string> = {
+  confianza: 'Confianza',
+  seguridad: 'Seguridad',
+  justicia: 'Justicia',
+  legitimidad: 'Legitimidad',
+};
 
 /** Pseudo-aleatorio determinista por celda (sin Math.random: estable entre renders). */
 function hash(f: number, c: number, k: number): number {
@@ -783,13 +809,26 @@ function Entorno({ cols, filas }: { cols: number; filas: number }) {
   );
 }
 
-export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
+/** Mezcla dos colores hex (t de 0 a 1). */
+function lerpHex(a: string, b: string, t: number): string {
+  return '#' + new THREE.Color(a).lerp(new THREE.Color(b), t).getHexString();
+}
+
+export function Tablero3D({ celdas, herramienta, onCelda, efecto, progreso = 0, pop }: Props) {
   const [hovered, setHovered] = useState<[number, number] | null>(null);
   const filas = celdas.length;
   const cols = celdas[0].length;
 
   const esEdificio = herramienta && herramienta !== 'limpiar' && herramienta !== 'desminar';
   const radioAura = esEdificio ? POR_TIPO[herramienta as TipoEdificio].radio : 0;
+
+  // El valle se entibia a medida que sana: de la noche fría de la guerra al
+  // amanecer cálido de la paz (recompensa visual atada al progreso real).
+  const t = Math.max(0, Math.min(1, progreso));
+  const fondo = lerpHex('#11141d', '#1e1722', t);
+  const ambColor = lerpHex('#9aa6c0', '#ffe0ad', t);
+  const cieloHemi = lerpHex('#aab8d4', '#ffd9a8', t);
+  const solColor = lerpHex('#dfe6f2', '#ffd29a', t);
 
   return (
     <div className="tablero3d">
@@ -799,14 +838,15 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
         camera={{ position: [6.5, 8.5, 9.5], fov: 38 }}
         onPointerMissed={() => setHovered(null)}
       >
-        <color attach="background" args={['#11141d']} />
-        <fog attach="fog" args={['#11141d', 24, 88]} />
-        <ambientLight intensity={0.75} />
-        <hemisphereLight args={['#aab8d4', '#4a4438', 0.55]} />
+        <color attach="background" args={[fondo]} />
+        <fog attach="fog" args={[fondo, 24, 88]} />
+        <ambientLight intensity={0.72 + t * 0.15} color={ambColor} />
+        <hemisphereLight args={[cieloHemi, '#4a4438', 0.55]} />
         <directionalLight
           castShadow
           position={[7, 11, 5]}
           intensity={1.6}
+          color={solColor}
           shadow-mapSize={[1024, 1024]}
           shadow-camera-left={-9}
           shadow-camera-right={9}
@@ -858,6 +898,32 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto }: Props) {
             <planeGeometry args={[radioAura * 2 + 0.96, radioAura * 2 + 0.96]} />
             <meshBasicMaterial color="#e8b04b" transparent opacity={0.13} depthWrite={false} />
           </mesh>
+        )}
+
+        {/* pop "+N Indicador" flotante sobre la celda recién construida */}
+        {pop && (
+          <Html
+            key={pop.clave}
+            position={[
+              pop.c - (cols - 1) / 2,
+              (celdas[pop.f]?.[pop.c]?.elevacion ?? 0) * ESCALON + 1,
+              pop.f - (filas - 1) / 2,
+            ]}
+            center
+            distanceFactor={9}
+            pointerEvents="none"
+            zIndexRange={[20, 0]}
+          >
+            <div className="pop-efecto">
+              {Object.entries(pop.efectos)
+                .filter(([, v]) => v)
+                .map(([k, v]) => (
+                  <span key={k} style={{ color: IND_COLOR[k] }}>
+                    +{v} {IND_NOMBRE[k]}
+                  </span>
+                ))}
+            </div>
+          </Html>
         )}
 
         <OrbitControls

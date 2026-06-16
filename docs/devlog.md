@@ -573,3 +573,27 @@ conceptos) NO se tocó: el real es más rico.
 
 **Verificación (Chrome real):** mercado construido con figura de persona al lado; tierra
 muerta en ocre quemado; sin errores de consola; build limpio; 24/24 tests del motor.
+
+## 2026-06-15 · Atmósfera que se entibia + pops "+N indicador" al construir
+
+Diego pidió activar las dos opcionales que en el handoff 4 dejé fuera, ahora
+reinterpretadas para encajar en la mecánica por meses (no tiempo real):
+
+- **El valle se entibia según el progreso:** `progreso = (confianza+seguridad+justicia+
+  legitimidad)/400` (0–1) se pasa a `Tablero3D`, que interpola fondo, niebla, luz ambiente,
+  hemisférica y sol de un crepúsculo frío (#11141d / #9aa6c0 / #dfe6f2) a una luz dorada
+  cálida (#1e1722 / #ffe0ad / #ffd29a). NO es un reloj día-noche real (eso chocaría con el
+  loop por meses): es un premio visual — el valle literalmente se ilumina a medida que sana.
+  Helper `lerpHex` con `THREE.Color.lerp`.
+- **Pop flotante al construir:** al colocar un edificio se dispara un `<Html>` de drei anclado
+  a la celda 3D que muestra "+N Confianza / +N Seguridad…" con el color de cada indicador,
+  subiendo y desvaneciéndose (`.pop-efecto`, animación `pop-sube` 1.7s). Feedback inmediato
+  de por qué ese edificio importa. Se dispara en ambos caminos (herramienta directa y menú de
+  celda), sólo cuando de verdad aparece un edificio nuevo y tiene efectos (guarda contra
+  limpiar/desminar y `efectos:{}`). Auto-limpieza por `setTimeout`/`useEffect`.
+
+**Verificación:** build limpio; 24/24 tests del motor; sin errores de consola al cargar ni al
+entrar al Territorio; `progreso` se calcula de indicadores vivos (0.275 en partida nueva) y se
+pasa como prop. La animación del pop y el calentamiento del valle son render WebGL — sólo se
+ven en Chrome real (el compositor del preview pinta el canvas en negro y no propaga el raycast
+3D de los clicks sintéticos), como todos los visuales 3D de este proyecto.

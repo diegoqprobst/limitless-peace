@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Herramienta } from '../builder/types';
+import type { PopEfecto } from './Tablero3D';
 import { lazy, Suspense } from 'react';
 import { CONSTRUIBLES, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
 import { DIFICULTADES, type Dificultad } from '../builder/dificultad';
@@ -93,10 +94,34 @@ export function Territorio({ onVolverMenu }: Props) {
   const elegirHerramienta = (h: Herramienta) =>
     setEstado((e) => ({ ...e, herramienta: e.herramienta === h ? null : h, mensaje: null }));
 
+  // ── Pop "+N Indicador" flotante al construir (feedback inmediato) ──
+  const [pop, setPop] = useState<PopEfecto | null>(null);
+  const popClave = useRef(0);
+  const mostrarPopSiConstruyo = (
+    herr: Herramienta,
+    f: number,
+    c: number,
+    prev: EstadoTerritorio,
+    siguiente: EstadoTerritorio,
+  ) => {
+    if (herr === 'limpiar' || herr === 'desminar') return;
+    const antes = prev.celdas[f][c].edificio;
+    const ahora = siguiente.celdas[f][c].edificio;
+    if (ahora && ahora !== antes) {
+      const def = CONSTRUIBLES.find((d) => d.tipo === herr);
+      if (def && Object.keys(def.efectos).length) {
+        setPop({ f, c, efectos: def.efectos, clave: ++popClave.current });
+      }
+    }
+  };
+
   // ── Tocar una celda: si hay herramienta, construye; si no, abre el menú ──
   const tocarCelda = (f: number, c: number) => {
     if (estado.herramienta) {
-      setEstado((e) => actuar(e, NIVEL, f, c));
+      const herr = estado.herramienta;
+      const siguiente = actuar(estado, NIVEL, f, c);
+      setEstado(siguiente);
+      mostrarPopSiConstruyo(herr, f, c, estado, siguiente);
       return;
     }
     const celda = estado.celdas[f][c];
@@ -130,7 +155,10 @@ export function Territorio({ onVolverMenu }: Props) {
   const confirmarMenu = () => {
     if (!menuCelda || !seleccionMenu) return;
     const { f, c } = menuCelda;
-    setEstado((e) => ({ ...actuar({ ...e, herramienta: seleccionMenu }, NIVEL, f, c), herramienta: null }));
+    const herr = seleccionMenu;
+    const siguiente = { ...actuar({ ...estado, herramienta: herr }, NIVEL, f, c), herramienta: null };
+    setEstado(siguiente);
+    mostrarPopSiConstruyo(herr, f, c, estado, siguiente);
     cerrarMenu();
   };
 
@@ -185,6 +213,17 @@ export function Territorio({ onVolverMenu }: Props) {
     if (!tutorialVisto && estado.mes > 1 && construidos > 0) saltarTutorial();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado.mes, construidos]);
+
+  // El pop flotante se desvanece solo tras unos segundos.
+  useEffect(() => {
+    if (!pop) return;
+    const id = setTimeout(() => setPop(null), 1700);
+    return () => clearTimeout(id);
+  }, [pop]);
+
+  // Salud del proceso 0–1: el valle se entibia a medida que sana.
+  const progreso =
+    (ind.confianza + ind.seguridad + ind.justicia + ind.legitimidad) / 400;
 
   if (estado.fase === 'intro') {
     return (
@@ -377,6 +416,8 @@ export function Territorio({ onVolverMenu }: Props) {
               herramienta={estado.herramienta}
               onCelda={tocarCelda}
               efecto={estado.efectoVisual}
+              progreso={progreso}
+              pop={pop}
             />
           </Suspense>
 

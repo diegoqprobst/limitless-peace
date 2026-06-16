@@ -2348,3 +2348,24 @@ body:has(.cockpit) .boton-reporte {
 .pantalla-final.mesa-escenario .titulo-final {
   font-size: clamp(2rem, 5vw, 3.2rem);
 }
+
+/* ── Pop "+N Indicador" flotante al construir (Tablero3D / drei Html) ── */
+.pop-efecto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  animation: pop-sube 1.7s ease-out forwards;
+}
+@keyframes pop-sube {
+  0% { opacity: 0; transform: translateY(6px) scale(0.85); }
+  18% { opacity: 1; transform: translateY(0) scale(1); }
+  78% { opacity: 1; transform: translateY(-10px); }
+  100% { opacity: 0; transform: translateY(-22px); }
+}
