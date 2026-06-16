@@ -129,5 +129,25 @@ const ingresoConMercado = ingresoMensual(NIVEL_VALLE, e8.celdas, 'libre');
 check('mercado da bono comunitario 1.5×', ingresoConMercado === Math.round((20 + 10 - 2) * 1.5),
   `sin=${ingresoSinMercado} con=${ingresoConMercado}`);
 
+// ── Eventos aleatorios: el pool existe, caen en partida y no se repiten ──
+check('hay al menos 25 eventos aleatorios en el pool', NIVEL_VALLE.eventosAleatorios.length >= 25,
+  `pool=${NIVEL_VALLE.eventosAleatorios.length}`);
+const idsAleatorios = new Set(NIVEL_VALLE.eventosAleatorios.map((ev) => ev.id));
+let e9 = crearEstado(NIVEL_VALLE, 'libre', 12345);
+e9 = { ...e9, fase: 'jugando' };
+const aleatoriosVistos: string[] = [];
+for (let i = 0; i < 24 && e9.fase === 'jugando'; i++) {
+  e9 = avanzarMes(e9, NIVEL_VALLE);
+  if (e9.eventoActivo) {
+    if (idsAleatorios.has(e9.eventoActivo.id)) aleatoriosVistos.push(e9.eventoActivo.id);
+    e9 = resolverEvento(e9, e9.eventoActivo.opciones[0]);
+    e9 = cerrarEvento(e9, NIVEL_VALLE);
+  }
+}
+check('caen varios eventos aleatorios en una partida', aleatoriosVistos.length >= 5,
+  `vistos=${aleatoriosVistos.length}`);
+check('ningún evento aleatorio se repite en la misma partida',
+  aleatoriosVistos.length === new Set(aleatoriosVistos).size);
+
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);

@@ -117,6 +117,17 @@ export interface EventoCondicional extends EventoTerritorio {
   condicion: (ind: Indicadores, ctx: ContextoEvento) => boolean;
 }
 
+/**
+ * Evento aleatorio: no lo provoca el estado ni un mes fijo. En un mes "libre"
+ * (sin evento guionizado ni condicional pendiente) puede aparecer uno del montón,
+ * elegido al azar — la vida real del posconflicto, que llega cuando menos se espera.
+ * Inspirados en la experiencia humanitaria de la Cruz Roja / Media Luna Roja.
+ */
+export interface EventoAleatorio extends EventoTerritorio {
+  /** Filtro opcional: solo elegible si el contexto lo permite (p. ej. un mes mínimo). */
+  puede?: (ctx: ContextoEvento) => boolean;
+}
+
 export interface NivelTerritorio {
   id: string;
   nombre: string;
@@ -139,6 +150,8 @@ export interface NivelTerritorio {
   eventos: EventoFijo[];
   /** Eventos que el propio estado del valle provoca (la fuente de tensión). */
   eventosCondicionales: EventoCondicional[];
+  /** Montón de eventos que pueden caer al azar en los meses libres. */
+  eventosAleatorios: EventoAleatorio[];
   /** Fracción de casas que deben repoblarse para ganar (0–1). */
   metaFamilias: number;
   /** Valor mínimo que deben alcanzar TODOS los indicadores para ganar. */

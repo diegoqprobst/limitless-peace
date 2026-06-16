@@ -597,3 +597,32 @@ entrar al Territorio; `progreso` se calcula de indicadores vivos (0.275 en parti
 pasa como prop. La animación del pop y el calentamiento del valle son render WebGL — sólo se
 ven en Chrome real (el compositor del preview pinta el canvas en negro y no propaga el raycast
 3D de los clicks sintéticos), como todos los visuales 3D de este proyecto.
+
+## 2026-06-16 · 25 eventos aleatorios estilo Cruz Roja (azar reproducible)
+
+Diego pidió más eventos como el del deslave/secuestros — al menos 25 — que aparezcan al azar,
+basados en la experiencia humanitaria de la Cruz Roja / Media Luna Roja.
+
+**Motor (engine + types):** nuevo tipo `EventoAleatorio` y campo `eventosAleatorios` en el nivel.
+En `avanzarMes`, si un mes queda "libre" (sin evento fijo ni condicional pendiente), se tira un
+azar: con `PROB_EVENTO_ALEATORIO = 70%` cae uno del montón, elegido entre los elegibles no vistos.
+Los aleatorios van SIEMPRE al final de la prioridad (fijo → condicional → aleatorio) para no pisar
+la tensión guionizada — por eso los 24 tests previos siguen pasando intactos. El azar usa una
+semilla LCG (`siguienteSemilla`, `Math.imul`) guardada en el estado: determinista para los tests
+(semilla por defecto 1) y variable en partida real (la UI siembra con `Date.now()` al pulsar
+"Comenzar"). Cada evento aleatorio puede tener un filtro `puede(ctx)` (p. ej. mes mínimo).
+
+**Contenido (nivel-valle):** 25 eventos inspirados en el mandato humanitario real, cada uno con
+dos opciones (la decisión con principios vs. el atajo) y su retro pedagógica enlazada al códex:
+secuestro (intermediación neutral), visita a detenidos, deslave (visual lluvia + destruye edificio
+si no evacúas), desaparecidos/forense (eco La Habana), restablecimiento del contacto familiar,
+misión médica protegida, financiación condicionada, retén/acceso humanitario, epidemia y campaña
+de vacunación, desplazados en tránsito, violencia de género, niños no acompañados, apoyo
+psicosocial, ayuda en efectivo vs. especie, entierro digno, sequía/clima, difusión del DIH,
+desinformación, voluntario herido, disputa de tierras, cooptación política, restos explosivos
+junto a la escuela, medios de vida, brigada de primeros auxilios y "días de tranquilidad" (tregua
+para vacunar). Reusan IDs de códex e historias ya existentes (sin inventar dependencias).
+
+**Verificación:** build limpio; 27/27 tests (3 nuevos: pool ≥25, caen ≥5 por partida, sin
+repetición). Simulación de 4 semillas distintas: 10–13 aleatorios por partida de 24 meses, mezcla
+y orden distintos en cada una, ninguno repetido dentro de la misma partida.

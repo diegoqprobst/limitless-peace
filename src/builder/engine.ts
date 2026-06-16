@@ -42,7 +42,21 @@ export interface EstadoTerritorio {
   /** Efecto ambiental activo sobre el tablero 3D (lluvia, ataque). */
   efectoVisual: EfectoVisual | null;
   dificultad: Dificultad;
+  /** Semilla del azar (eventos aleatorios). Determinista para los tests, variable en partida real. */
+  semilla: number;
 }
+
+/**
+ * Generador congruencial lineal: avanza la semilla de forma determinista.
+ * No usamos Math.random para que el motor siga siendo puro y reproducible;
+ * la variabilidad real entre partidas viene de la semilla que pasa la UI.
+ */
+function siguienteSemilla(s: number): number {
+  return (Math.imul(s, 1103515245) + 12345) & 0x7fffffff;
+}
+
+/** Probabilidad (0–100) de que un mes libre traiga un evento aleatorio. */
+const PROB_EVENTO_ALEATORIO = 70;
 
 const TIPO_POR_CARACTER: Record<string, TipoCelda> = {
   T: 'tierra',
@@ -67,6 +81,7 @@ function relieve(f: number, c: number, tipo: Celda['tipo']): number {
 export function crearEstado(
   nivel: NivelTerritorio,
   dificultad: Dificultad = 'libre',
+  semilla = 1,
 ): EstadoTerritorio {
   const celdas: Celda[][] = nivel.mapa.map((fila, f) =>
     fila.split('').map((c, col) => {
@@ -97,6 +112,7 @@ export function crearEstado(
     mensaje: null,
     diario: ['Mes 1 · ⛺ El equipo humanitario instala su base en el valle.'],
     efectoVisual: null,
+    semilla: semilla & 0x7fffffff,
   };
 }
 
@@ -303,7 +319,12 @@ export function actuar(
   );
 }
 
-/** Avanza un mes: ingresos + evento fijo del mes, o evento provocado por el estado del valle. */
+/**
+ * Avanza un mes: ingresos + el evento que toque. Prioridad:
+ *   1) evento fijo del mes  2) evento que el estado del valle provoca
+ *   3) — si el mes quedó libre — un evento aleatorio del montón (la vida real).
+ * Los aleatorios van al final para no pisar la tensión guionizada.
+ */
 export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): EstadoTerritorio {
   if (estado.fase !== 'jugando' || estado.eventoActivo) return estado;
   const mes = estado.mes + 1;
@@ -321,17 +342,33 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
     vistos: estado.eventosVistos,
     umbralIncursion: DIFICULTADES[estado.dificultad].umbralIncursion,
   };
-  const evento: EventoTerritorio | null =
+  let evento: EventoTerritorio | null =
     nivel.eventos.find((e) => e.mes === mes && !estado.eventosVistos.includes(e.id)) ??
     nivel.eventosCondicionales.find(
       (e) => !estado.eventosVistos.includes(e.id) && e.condicion(estado.indicadores, ctx),
     ) ??
     null;
 
+  // Mes libre: tira el azar a ver si la vida del valle interrumpe la calma.
+  let semilla = estado.semilla;
+  if (!evento) {
+    semilla = siguienteSemilla(semilla);
+    if (semilla % 100 < PROB_EVENTO_ALEATORIO) {
+      const elegibles = nivel.eventosAleatorios.filter(
+        (e) => !estado.eventosVistos.includes(e.id) && (!e.puede || e.puede(ctx)),
+      );
+      if (elegibles.length) {
+        semilla = siguienteSemilla(semilla);
+        evento = elegibles[semilla % elegibles.length];
+      }
+    }
+  }
+
   return {
     ...estado,
     mes,
     fondos,
+    semilla,
     eventoActivo: evento,
     eventosVistos: evento ? [...estado.eventosVistos, evento.id] : estado.eventosVistos,
     mensaje: null,

@@ -268,7 +268,10 @@ export function Territorio({ onVolverMenu }: Props) {
         <div className="acciones-finales">
           <button
             className="boton-principal"
-            onClick={() => setEstado({ ...crearEstado(NIVEL, dificultad), fase: 'jugando' })}
+            onClick={() =>
+              // Semilla variable: cada partida recibe una mezcla distinta de eventos aleatorios.
+              setEstado({ ...crearEstado(NIVEL, dificultad, Date.now()), fase: 'jugando' })
+            }
           >
             Comenzar la reconstrucción →
           </button>
