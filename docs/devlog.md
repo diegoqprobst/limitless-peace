@@ -690,3 +690,37 @@ y umbrales que ya variaban:
 sin agua ni alimentos, 6 meses): principiante salud 40→28 / confianza 30→23; libre 25→0 / 30→5;
 difícil 18→0 / 30→5. Cuidando el valle (agua+alimentos+salud, 8 meses): salud final 100 / 97 / 50.
 Preview en vivo: principiante arranca con salud 40 y 170 fondos (correcto), sin errores de consola.
+
+## 2026-06-16 · Reloj + ciclo día/noche en el Territorio (handoff de diseño)
+
+Diego pidió implementar el handoff del diseñador (escena principiante de referencia), cuya
+pieza central es un **reloj con ciclo día/noche a 3 min/día**. El diseñador lo construyó como
+escena ejecutable aparte (`territorio-principiante.js`) pero nunca lo portó al juego real; varias
+de las "otras mejoras" del handoff ya estaban implementadas de handoffs previos (pop al construir,
+tooltip de hover, contraste tierra muerta→viva, humo de chimenea, figuras, base integrada, agua
+animada, ventanas que laten).
+
+**Lo portado a `Tablero3D.tsx`:**
+- `AtmosferaDiaNoche` (componente con `useFrame`): un día del valle dura `DIA_SEGUNDOS = 180`
+  (3 min, como pidió Diego). Paleta `CIELO` de 10 keyframes por hora → interpola cielo/niebla,
+  intensidad de sol/ambiente/hemisférica y opacidad de estrellas. El sol orbita según la hora;
+  las estrellas asoman de noche. Reemplaza la atmósfera estática anterior.
+- **Reconciliación con el `progreso`:** las dos capas conviven — la HORA da la luz (amanecer→
+  mediodía→atardecer→noche) y el PROGRESO (guerra→paz) tiñe el cielo hacia el ámbar y sube el
+  piso de luz. Así el arco de sanación se lee a cualquier hora. La noche conserva un piso de luz
+  para no perder el tablero (jugabilidad).
+- **Luces del pueblo gratis:** los materiales emisivos que ya existían (bandera de la escuela,
+  orbe del encuentro, esfera del agua, ventanas que laten) resaltan solos al oscurecer la escena
+  → el valle se enciende al anochecer sin geometría nueva.
+- `RelojValle` (DOM, hermano del Canvas): lee la hora ambiental vía rAF y pinta HH:MM + glifo
+  sol/luna, refrescando cada ~5 min simulados. CSS `.reloj-valle` (píldora arriba a la derecha).
+
+**Decisión de diseño:** el reloj es **ambiente**, no toca la mecánica. El juego sigue siendo por
+MESES (botón "Avanzar mes"); el reloj corre en tiempo real como atmósfera viva (el propio
+diseñador lo hizo decorativo). Conectarlo a consecuencias habría chocado con el bucle por turnos.
+
+**Verificación:** build limpio. Preview en vivo: la escena renderiza bien iluminada (sin negro
+tras el refactor de luces), el reloj aparece (☀️ 08:30) y bien posicionado, sin errores de
+consola. El avance continuo del ciclo no se puede ver en el preview headless (un probe confirmó
+que `requestAnimationFrame` está pausado con la pestaña oculta — mismo límite WebGL de todo el
+proyecto); corre en Chrome real.

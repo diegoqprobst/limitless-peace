@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import type { Celda, EfectoVisual, Herramienta, TipoEdificio } from '../builder/types';
@@ -812,8 +812,170 @@ function Entorno({ cols, filas }: { cols: number; filas: number }) {
 }
 
 /** Mezcla dos colores hex (t de 0 a 1). */
-function lerpHex(a: string, b: string, t: number): string {
-  return '#' + new THREE.Color(a).lerp(new THREE.Color(b), t).getHexString();
+// ── Ciclo día/noche: un día del valle dura 3 min reales (como pidió el diseño) ──
+const DIA_SEGUNDOS = 180;
+const HORA_INICIO = 8.5;
+
+/** Paleta del cielo por hora (0–24). La noche conserva un piso de luz para no perder el tablero. */
+const CIELO = [
+  { h: 0, cielo: '#0c1018', sol: 0.1, amb: 0.34, hemi: 0.2, estr: 0.9 },
+  { h: 5, cielo: '#1a2030', sol: 0.2, amb: 0.4, hemi: 0.32, estr: 0.6 },
+  { h: 6.5, cielo: '#c8743f', sol: 0.95, amb: 0.56, hemi: 0.55, estr: 0.0 },
+  { h: 9, cielo: '#9cc0e0', sol: 1.55, amb: 0.64, hemi: 0.7, estr: 0.0 },
+  { h: 13, cielo: '#aed2ef', sol: 1.7, amb: 0.68, hemi: 0.74, estr: 0.0 },
+  { h: 17, cielo: '#9cc0e0', sol: 1.45, amb: 0.62, hemi: 0.66, estr: 0.0 },
+  { h: 18.5, cielo: '#e9863c', sol: 0.95, amb: 0.56, hemi: 0.55, estr: 0.0 },
+  { h: 19.5, cielo: '#b85a3e', sol: 0.5, amb: 0.48, hemi: 0.44, estr: 0.15 },
+  { h: 20.5, cielo: '#34304a', sol: 0.22, amb: 0.4, hemi: 0.32, estr: 0.5 },
+  { h: 24, cielo: '#0c1018', sol: 0.1, amb: 0.34, hemi: 0.2, estr: 0.9 },
+];
+
+// Colores reutilizables (evitan asignaciones por frame).
+const C_AMBAR = new THREE.Color('#caa07a');
+const C_AMB_FRIO = new THREE.Color('#9aa6c0');
+const C_AMB_CALIDO = new THREE.Color('#ffe0ad');
+const C_SOL_DIA = new THREE.Color('#fff4e0');
+const C_SOL_ALBA = new THREE.Color('#ff9d5c');
+const C_SOL_PAZ = new THREE.Color('#ffd29a');
+
+function muestreaCielo(h: number) {
+  let a = CIELO[0];
+  let b = CIELO[CIELO.length - 1];
+  for (let i = 0; i < CIELO.length - 1; i++) {
+    if (h >= CIELO[i].h && h <= CIELO[i + 1].h) {
+      a = CIELO[i];
+      b = CIELO[i + 1];
+      break;
+    }
+  }
+  const t = (h - a.h) / (b.h - a.h || 1);
+  return {
+    cielo: new THREE.Color(a.cielo).lerp(new THREE.Color(b.cielo), t),
+    sol: a.sol + (b.sol - a.sol) * t,
+    amb: a.amb + (b.amb - a.amb) * t,
+    hemi: a.hemi + (b.hemi - a.hemi) * t,
+    estr: a.estr + (b.estr - a.estr) * t,
+  };
+}
+
+/**
+ * Atmósfera viva: el valle recorre amanecer → mediodía → atardecer → noche en
+ * tiempo real (3 min/día), con sol que orbita y estrellas que asoman de noche.
+ * Encima, el `progreso` lo tiñe del frío de la guerra al ámbar de la paz: las
+ * dos capas conviven (la hora da la luz; sanar da la calidez). El reloj es
+ * ambiente — la mecánica del juego sigue siendo por meses.
+ */
+function AtmosferaDiaNoche({
+  progreso,
+  horaRef,
+}: {
+  progreso: number;
+  horaRef: React.MutableRefObject<number>;
+}) {
+  const { scene } = useThree();
+  const amb = useRef<THREE.AmbientLight>(null!);
+  const hemi = useRef<THREE.HemisphereLight>(null!);
+  const sol = useRef<THREE.DirectionalLight>(null!);
+  const estrellas = useRef<THREE.Points>(null!);
+  const tiempo = useRef((HORA_INICIO / 24) * DIA_SEGUNDOS);
+  const bg = useRef(new THREE.Color('#1a2030'));
+
+  const estrGeo = useMemo(() => {
+    const n = 260;
+    const arr = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      const s = (i + 1) * 12.9898;
+      const r = 60 + (Math.sin(s) * 0.5 + 0.5) * 40;
+      const th = (Math.sin(s * 1.3) * 0.5 + 0.5) * Math.PI * 2;
+      const ph = (Math.sin(s * 2.1) * 0.5 + 0.5) * Math.PI * 0.5;
+      arr[i * 3] = Math.cos(th) * Math.sin(ph) * r;
+      arr[i * 3 + 1] = Math.cos(ph) * r * 0.8 + 8;
+      arr[i * 3 + 2] = Math.sin(th) * Math.sin(ph) * r;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+    return g;
+  }, []);
+
+  useFrame((_, delta) => {
+    tiempo.current = (tiempo.current + Math.min(delta, 0.1)) % DIA_SEGUNDOS;
+    const h = (tiempo.current / DIA_SEGUNDOS) * 24;
+    horaRef.current = h;
+    const p = Math.max(0, Math.min(1, progreso));
+    const m = muestreaCielo(h);
+
+    // El cielo (y la niebla) se entibian hacia el ámbar a medida que el valle sana.
+    bg.current.copy(m.cielo).lerp(C_AMBAR, p * 0.26);
+    scene.background = bg.current;
+    if (scene.fog) (scene.fog as THREE.Fog).color.copy(bg.current);
+
+    if (amb.current) {
+      amb.current.intensity = m.amb + p * 0.12;
+      amb.current.color.copy(C_AMB_FRIO).lerp(C_AMB_CALIDO, p);
+    }
+    if (hemi.current) hemi.current.intensity = m.hemi;
+    if (sol.current) {
+      sol.current.intensity = m.sol;
+      const albaOcaso = h < 7.5 || h > 18;
+      sol.current.color.copy(albaOcaso ? C_SOL_ALBA : C_SOL_DIA).lerp(C_SOL_PAZ, p * 0.5);
+      const ang = (h / 24) * Math.PI * 2 - Math.PI / 2;
+      sol.current.position.set(Math.cos(ang) * 8, Math.max(1.5, Math.sin(ang) * 10 + 3), 5);
+    }
+    if (estrellas.current) {
+      (estrellas.current.material as THREE.PointsMaterial).opacity = m.estr;
+    }
+  });
+
+  return (
+    <>
+      <ambientLight ref={amb} intensity={0.6} />
+      <hemisphereLight ref={hemi} args={['#aab8d4', '#4a4438', 0.5]} />
+      <directionalLight
+        ref={sol}
+        castShadow
+        position={[7, 11, 5]}
+        intensity={1.6}
+        shadow-mapSize={[1024, 1024]}
+        shadow-camera-left={-9}
+        shadow-camera-right={9}
+        shadow-camera-top={9}
+        shadow-camera-bottom={-9}
+      />
+      <points ref={estrellas} geometry={estrGeo}>
+        <pointsMaterial color="#dfe6ff" size={0.5} transparent opacity={0} depthWrite={false} />
+      </points>
+    </>
+  );
+}
+
+/** Reloj del valle: lee la hora ambiental y la pinta (HH:MM + sol/luna). Decorativo. */
+function RelojValle({ horaRef }: { horaRef: React.MutableRefObject<number> }) {
+  const [hhmm, setHhmm] = useState('08:30');
+  const [glifo, setGlifo] = useState('☀️');
+  useEffect(() => {
+    let raf = 0;
+    let ultimo = -1;
+    const tick = () => {
+      const h = horaRef.current;
+      const hh = Math.floor(h);
+      const mm = Math.floor((h - hh) * 60);
+      const paso = Math.floor((hh * 60 + mm) / 5); // refresca cada ~5 min simulados
+      if (paso !== ultimo) {
+        ultimo = paso;
+        setHhmm(`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`);
+        setGlifo(h < 5 || h >= 20 ? '🌙' : h < 6.5 ? '🌅' : h < 18 ? '☀️' : h < 19.5 ? '🌇' : '🌙');
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [horaRef]);
+  return (
+    <div className="reloj-valle" aria-hidden="true">
+      <span className="reloj-glifo">{glifo}</span>
+      <span className="reloj-hora">{hhmm}</span>
+    </div>
+  );
 }
 
 export function Tablero3D({ celdas, herramienta, onCelda, efecto, progreso = 0, pop }: Props) {
@@ -824,13 +986,8 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto, progreso = 0, 
   const esEdificio = herramienta && herramienta !== 'limpiar' && herramienta !== 'desminar';
   const radioAura = esEdificio ? POR_TIPO[herramienta as TipoEdificio].radio : 0;
 
-  // El valle se entibia a medida que sana: de la noche fría de la guerra al
-  // amanecer cálido de la paz (recompensa visual atada al progreso real).
-  const t = Math.max(0, Math.min(1, progreso));
-  const fondo = lerpHex('#11141d', '#1e1722', t);
-  const ambColor = lerpHex('#9aa6c0', '#ffe0ad', t);
-  const cieloHemi = lerpHex('#aab8d4', '#ffd9a8', t);
-  const solColor = lerpHex('#dfe6f2', '#ffd29a', t);
+  // Hora ambiental del valle (0–24), escrita por la atmósfera y leída por el reloj.
+  const horaRef = useRef(HORA_INICIO);
 
   return (
     <div className="tablero3d">
@@ -840,21 +997,11 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto, progreso = 0, 
         camera={{ position: [6.5, 8.5, 9.5], fov: 38 }}
         onPointerMissed={() => setHovered(null)}
       >
-        <color attach="background" args={[fondo]} />
-        <fog attach="fog" args={[fondo, 24, 88]} />
-        <ambientLight intensity={0.72 + t * 0.15} color={ambColor} />
-        <hemisphereLight args={[cieloHemi, '#4a4438', 0.55]} />
-        <directionalLight
-          castShadow
-          position={[7, 11, 5]}
-          intensity={1.6}
-          color={solColor}
-          shadow-mapSize={[1024, 1024]}
-          shadow-camera-left={-9}
-          shadow-camera-right={9}
-          shadow-camera-top={9}
-          shadow-camera-bottom={-9}
-        />
+        <color attach="background" args={['#1a2030']} />
+        <fog attach="fog" args={['#1a2030', 24, 88]} />
+
+        {/* ciclo día/noche + luz, teñido por el progreso (guerra→paz) */}
+        <AtmosferaDiaNoche progreso={progreso} horaRef={horaRef} />
 
         {/* el mundo alrededor del valle (diorama sobre pedestal) */}
         <Entorno cols={cols} filas={filas} />
@@ -939,6 +1086,7 @@ export function Tablero3D({ celdas, herramienta, onCelda, efecto, progreso = 0, 
           target={[0, 0, 0]}
         />
       </Canvas>
+      <RelojValle horaRef={horaRef} />
     </div>
   );
 }

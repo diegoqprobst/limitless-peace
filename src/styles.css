@@ -743,6 +743,7 @@ button {
 }
 
 .tablero3d {
+  position: relative;
   flex: 1;
   height: 480px;
   min-width: 0;
@@ -2375,4 +2376,34 @@ body:has(.cockpit) .boton-reporte {
   18% { opacity: 1; transform: translateY(0) scale(1); }
   78% { opacity: 1; transform: translateY(-10px); }
   100% { opacity: 0; transform: translateY(-22px); }
+}
+
+/* ── Reloj del valle: hora ambiental sobre el tablero 3D (decorativo) ── */
+.reloj-valle {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.6rem;
+  background: rgba(17, 20, 29, 0.55);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 4;
+  font-family: var(--font-display);
+  box-shadow: var(--halo-opcion);
+}
+.reloj-glifo {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.reloj-hora {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
 }
