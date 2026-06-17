@@ -612,6 +612,7 @@ export const NODOS: Nodo[] = [
     id: 'refrendacion-nodo',
     fase: 3,
     titulo: 'Sellar el pacto',
+    imagen: 'escenas/refrendacion-nodo.jpg',
     texto:
       'El texto final está listo: 280 páginas que tocan justicia, armas, víctimas y participación. ' +
       'Ahora hay que decidir cómo se aprueba. El Gobierno quiere un plebiscito para "blindarlo con ' +

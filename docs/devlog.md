@@ -762,3 +762,9 @@ Integradas 16 de 17 (falta `refrendacion-nodo`, "Sellar el pacto"):
 ilustración aparece bien posicionada en la escena (carta lacrada + vela en "El primer contacto").
 Pendiente: `refrendacion-nodo` (Diego la genera) y, opcional, revisar `canal-secreto` (Firefly le
 añadió un abrecartas + lacre rojo que podría leerse algo duro).
+
+## 2026-06-16 · Última ilustración: refrendacion-nodo (17/17 completas)
+
+Diego generó y subió la imagen que faltaba ("Sellar el pacto": documento con pluma, sello de
+lacre y vela). Optimizada a 1280px/q82 (172K), renombrada a refrendacion-nodo.jpg y campo imagen
+seteado. Las 17 escenas de La Mesa ya tienen ilustración. Total carpeta: 2.7 MB. Build limpio.
