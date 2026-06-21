@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Limitless Peace — Póster</title>
+    <meta name="hz:slide-selector" content=".poster" />
+    <meta name="hz:canvas-width" content="1080" />
+    <meta name="hz:canvas-height" content="1080" />
+    <link rel="stylesheet" href="https://use.typekit.net/rko0ufl.css" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #2a2230;
+      }
+      .poster {
+        position: relative;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(120% 70% at 50% 30%, #1e1a26 0%, #131119 45%, #0d0c12 100%);
+        font-family: "source-sans-3", sans-serif;
+      }
+      /* Ilustración del valle al amanecer, anclada abajo, fundida hacia la noche */
+      .bg {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 560px;
+        background-image: url("escenas/implementacion-nodo.jpg");
+        background-size: cover;
+        background-position: center 60%;
+        -webkit-mask-image: linear-gradient(to top, #000 38%, transparent 95%);
+        mask-image: linear-gradient(to top, #000 38%, transparent 95%);
+      }
+      /* scrim inferior para legibilidad del pie */
+      .scrim {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 300px;
+        background: linear-gradient(to top, rgba(8,8,12,0.92) 8%, rgba(8,8,12,0.55) 50%, transparent 100%);
+      }
+      /* halo cálido de vela tras el título */
+      .glow {
+        position: absolute;
+        top: 250px; left: 50%;
+        width: 760px; height: 520px;
+        transform: translateX(-50%);
+        background: radial-gradient(50% 50% at 50% 50%, rgba(236,178,79,0.22) 0%, rgba(236,178,79,0) 70%);
+      }
+      .content { position: absolute; inset: 0; padding: 78px 80px; }
+
+      .eyebrow {
+        text-align: center;
+        font-family: "source-sans-3", sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: #c89a4e;
+      }
+      .eyebrow .dot { color: #6b6657; margin: 0 10px; }
+
+      .dove {
+        display: block;
+        margin: 70px auto 18px;
+        width: 78px; height: 78px;
+        filter: drop-shadow(0 0 16px rgba(236,178,79,0.45));
+      }
+
+      .title {
+        text-align: center;
+        font-family: "source-serif-4", serif;
+        font-weight: 900;
+        line-height: 0.96;
+        letter-spacing: -0.5px;
+        color: #efe9da;
+        text-shadow: 0 0 48px rgba(236,178,79,0.28);
+      }
+      .title .l1 { display: block; font-size: 142px; }
+      .title .l2 { display: block; font-size: 142px; color: #ecb24f; }
+
+      .tagline {
+        text-align: center;
+        font-family: "source-serif-4", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 32px;
+        line-height: 1.42;
+        color: #cdbfa2;
+        max-width: 880px;
+        margin: 34px auto 0;
+        text-wrap: balance;
+      }
+
+      .modes {
+        position: absolute;
+        left: 0; right: 0;
+        bottom: 318px;
+        text-align: center;
+        font-family: "source-sans-3", sans-serif;
+        font-weight: 600;
+        font-size: 19px;
+        letter-spacing: 0.04em;
+        color: #d7cdbb;
+      }
+      .modes .sep { color: #ecb24f; margin: 0 12px; font-weight: 700; }
+
+      /* pie: autor, región, enlace */
+      .footer {
+        position: absolute;
+        left: 80px; right: 80px; bottom: 74px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+      .who .name {
+        font-family: "source-serif-4", serif;
+        font-weight: 600;
+        font-size: 36px;
+        color: #f1ecdf;
+        line-height: 1.05;
+      }
+      .who .region {
+        font-family: "source-sans-3", sans-serif;
+        font-weight: 400;
+        font-size: 21px;
+        letter-spacing: 0.04em;
+        color: #b3a98f;
+        margin-top: 6px;
+      }
+      .url {
+        font-family: "source-sans-3", sans-serif;
+        font-weight: 600;
+        font-size: 23px;
+        letter-spacing: 0.02em;
+        color: #0e0c10;
+        background: #ecb24f;
+        padding: 12px 20px;
+        border-radius: 999px;
+        box-shadow: 0 0 26px rgba(236,178,79,0.35);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="poster" data-canvas-width="1080" data-canvas-height="1080">
+      <div class="bg"></div>
+      <div class="scrim"></div>
+      <div class="glow"></div>
+
+      <div class="content">
+        <p class="eyebrow">IFRC<span class="dot">·</span>Limitless Peace<span class="dot">·</span>Youth Innovation Academy</p>
+
+        <svg class="dove" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M6 33c15 5 27 0 35-11 3-4 6-7 11-7 5 0 9 3 11 8-2-1-4-1-6 0 2 2 3 4 2 7-2-2-4-3-7-3 2 2 3 5 1 8-6-7-12-4-18 2-7 8-18 12-30 9-4-1-7-4-9-8 3 2 6 2 9 1-4-2-7-6-8-10 3 3 7 4 10 4-3-3-5-6-6-10 4 4 9 6 14 6-5-1-10-3-14-6Z" fill="#efe9da"/>
+          <circle cx="51" cy="24" r="1.5" fill="#0e0c10"/>
+        </svg>
+
+        <h1 class="title"><span class="l1">Limitless</span><span class="l2">Peace</span></h1>
+
+        <p class="tagline">Un juego sobre cómo se construye — y se pierde — la paz.</p>
+      </div>
+
+      <p class="modes">La Mesa <span class="sep">·</span> El Territorio <span class="sep">·</span> La Memoria <span class="sep">·</span> El Expediente</p>
+
+      <div class="footer">
+        <div class="who">
+          <div class="name">Diego Quinde</div>
+          <div class="region">Santo Domingo · Ecuador</div>
+        </div>
+        <div class="url">peace.diegoquinde.com</div>
+      </div>
+    </div>
+  </body>
+</html>
