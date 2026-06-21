@@ -234,6 +234,18 @@ button {
   transform: translateY(-1px);
 }
 
+/* Subtítulo dentro de un botón (p. ej. "Continuar · Mes 9"). */
+.boton-sub {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.78;
+  margin-top: 2px;
+}
+.boton-nueva {
+  margin-top: 0.6rem;
+}
+
 .boton-secundario {
   display: block;
   margin: 0 auto;

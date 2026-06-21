@@ -797,3 +797,25 @@ Soporte PWA con vite-plugin-pwa para que en el pitch se pueda decir "instálala 
 
 Verificado: build genera manifest.webmanifest + sw.js + registerSW.js; el `<head>` inyecta manifest
 y registro del SW; dev sigue corriendo sin errores (el SW solo se activa en producción).
+
+## 2026-06-21 · Auto-guardado local del progreso (sin cuentas)
+
+Diego: el juego es largo y no quiere que se pierda el avance. En vez de registro de usuarios
+(backend + privacidad de menores), auto-guardado local — cubre la necesidad con cost 0 y cero
+riesgo de datos.
+- `src/persistencia.ts`: helper guardar/cargar/borrar en localStorage, versionado (los guardados
+  de una versión vieja del estado se ignoran en vez de romper) y try/catch (si el almacenamiento
+  falla, el juego sigue sin guardar).
+- **La Mesa** (`App.tsx`): acción `cargar` en el reducer; captura la partida guardada al entrar;
+  `useEffect` guarda en cada cambio (menos en la pantalla de inicio); `PantallaInicio` muestra
+  "▶ Continuar · decisión N" + "Empezar de nuevo" si hay guardado.
+- **El Territorio**: captura el valle guardado; `useEffect` guarda en cada cambio (menos en la
+  intro); la intro ofrece "▶ Continuar tu valle · Mes N" + "Empezar de nuevo".
+- CSS: `.boton-sub` (subtítulo del botón) + `.boton-nueva`.
+
+Pendiente (mismo patrón, modos cortos): El Expediente (15 min) y, si se quiere, marcar historias
+leídas en La Memoria.
+
+**Verificado en preview:** Territorio guarda (mes 2, fase jugando), sale al menú, reentra y
+ofrece "Continuar tu valle · Mes 2" que reanuda en el tablero. La Mesa igual: "Continuar ·
+decisión 2" reanuda en la escena. Build limpio, sin errores de consola.

@@ -1,5 +1,6 @@
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import type { Indicadores, Opcion } from './engine/types';
+import { cargarProgreso, guardarProgreso } from './persistencia';
 import { aplicarEfectos } from './engine/types';
 import { LanguageProvider, useLang } from './i18n/LanguageContext';
 import { IDIOMAS } from './i18n/lang';
@@ -39,6 +40,7 @@ type Accion =
   | { tipo: 'comenzar'; nodoInicial: string; indicadoresIniciales: Indicadores }
   | { tipo: 'elegir'; opcion: Opcion }
   | { tipo: 'continuar'; siguienteId: string | undefined }
+  | { tipo: 'cargar'; estado: EstadoJuego }
   | { tipo: 'reiniciar'; nodoInicial: string; indicadoresIniciales: Indicadores };
 
 function crearEstadoInicial(nodoInicial: string, indicadores: Indicadores): EstadoJuego {
@@ -82,6 +84,8 @@ function reducer(estado: EstadoJuego, accion: Accion): EstadoJuego {
       }
       return { ...estado, retroPendiente: null, nodoId: accion.siguienteId };
     }
+    case 'cargar':
+      return accion.estado;
     case 'reiniciar':
       return crearEstadoInicial(accion.nodoInicial, accion.indicadoresIniciales);
   }
@@ -94,6 +98,15 @@ function Juego({ onVolverMenu }: { onVolverMenu: () => void }) {
     crearEstadoInicial(content.nodoInicial, content.indicadoresIniciales),
   );
   const [codexAbierto, setCodexAbierto] = useState(false);
+
+  // Partida guardada (capturada al entrar): si hay una a medio jugar, se reanuda.
+  const guardado = useRef(cargarProgreso<EstadoJuego>('mesa'));
+  const hayGuardado = guardado.current?.pantalla === 'juego';
+
+  // Auto-guardado: persistir el progreso en cada cambio (menos la pantalla de inicio).
+  useEffect(() => {
+    if (estado.pantalla !== 'inicio') guardarProgreso('mesa', estado);
+  }, [estado]);
 
   const reiniciar = () =>
     dispatch({
@@ -143,6 +156,12 @@ function Juego({ onVolverMenu }: { onVolverMenu: () => void }) {
               indicadoresIniciales: content.indicadoresIniciales,
             })
           }
+          onContinuar={
+            hayGuardado
+              ? () => dispatch({ tipo: 'cargar', estado: guardado.current! })
+              : undefined
+          }
+          decisionesGuardadas={guardado.current?.decisionesTomadas}
         />
       )}
 

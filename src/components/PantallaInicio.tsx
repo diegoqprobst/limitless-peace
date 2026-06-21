@@ -3,9 +3,13 @@ import { useLang } from '../i18n/LanguageContext';
 interface Props {
   contexto: { titulo: string; resumen: string };
   onComenzar: () => void;
+  /** Si hay una partida guardada, reanudarla. */
+  onContinuar?: () => void;
+  /** Nº de decisiones de la partida guardada (para el botón Continuar). */
+  decisionesGuardadas?: number;
 }
 
-export function PantallaInicio({ contexto, onComenzar }: Props) {
+export function PantallaInicio({ contexto, onComenzar, onContinuar, decisionesGuardadas }: Props) {
   const { lang, ui } = useLang();
   const es = lang === 'es';
 
@@ -20,9 +24,27 @@ export function PantallaInicio({ contexto, onComenzar }: Props) {
           : 'Thirty-two years of war. A secret table. You advise the mediation team — and every decision is drawn from real peace processes.'}
       </p>
 
-      <button className="boton-principal" onClick={onComenzar}>
-        {ui.inicioComenzar}
-      </button>
+      {onContinuar ? (
+        <>
+          <button className="boton-principal" onClick={onContinuar}>
+            {es ? '▶ Continuar' : '▶ Continue'}
+            {decisionesGuardadas ? (
+              <span className="boton-sub">
+                {es
+                  ? `decisión ${decisionesGuardadas + 1}`
+                  : `decision ${decisionesGuardadas + 1}`}
+              </span>
+            ) : null}
+          </button>
+          <button className="boton-secundario boton-nueva" onClick={onComenzar}>
+            {es ? 'Empezar de nuevo' : 'Start over'}
+          </button>
+        </>
+      ) : (
+        <button className="boton-principal" onClick={onComenzar}>
+          {ui.inicioComenzar}
+        </button>
+      )}
 
       <details className="como-jugar">
         <summary>{es ? '¿Cómo se juega? · la historia completa' : 'How to play · the full story'}</summary>

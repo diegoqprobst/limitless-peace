@@ -22,6 +22,7 @@ import {
   type EstadoTerritorio,
 } from '../builder/engine';
 import { HISTORIAS } from '../data/historias';
+import { cargarProgreso, guardarProgreso } from '../persistencia';
 import { useLang } from '../i18n/LanguageContext';
 import { PanelIndicadores } from './PanelIndicadores';
 import { Codex } from './Codex';
@@ -109,12 +110,20 @@ function barajarSemilla<T>(arr: T[], semilla: number): T[] {
 export function Territorio({ onVolverMenu }: Props) {
   const { content } = useLang();
   const [estado, setEstado] = useState<EstadoTerritorio>(() => crearEstado(NIVEL));
+  // Partida guardada capturada al entrar (para ofrecer "Continuar" en la intro).
+  const guardado = useRef(cargarProgreso<EstadoTerritorio>('territorio'));
+  const hayGuardado = guardado.current != null && guardado.current.fase !== 'intro';
   const [dificultad, setDificultad] = useState<Dificultad>('libre');
   const [codexAbierto, setCodexAbierto] = useState(false);
   const [historiaAbierta, setHistoriaAbierta] = useState<string | null>(null);
   const [menuCelda, setMenuCelda] = useState<{ f: number; c: number } | null>(null);
   const [seleccionMenu, setSeleccionMenu] = useState<Herramienta | null>(null);
   const [tip, setTip] = useState<Herramienta | null>(null);
+
+  // Auto-guardado del progreso: persistir el valle en cada cambio (menos en la intro).
+  useEffect(() => {
+    if (estado.fase !== 'intro') guardarProgreso('territorio', estado);
+  }, [estado]);
 
   const { pobladas, total } = useMemo(() => contarFamilias(estado.celdas), [estado.celdas]);
   const ingreso = useMemo(() => ingresoMensual(NIVEL, estado.celdas, estado.dificultad), [estado.celdas, estado.dificultad]);
@@ -317,14 +326,20 @@ export function Territorio({ onVolverMenu }: Props) {
         </div>
 
         <div className="acciones-finales">
+          {hayGuardado && (
+            <button className="boton-principal" onClick={() => setEstado(guardado.current!)}>
+              ▶ Continuar tu valle
+              <span className="boton-sub">Mes {guardado.current!.mes}</span>
+            </button>
+          )}
           <button
-            className="boton-principal"
+            className={hayGuardado ? 'boton-secundario boton-nueva' : 'boton-principal'}
             onClick={() =>
               // Semilla variable: cada partida recibe una mezcla distinta de eventos aleatorios.
               setEstado({ ...crearEstado(NIVEL, dificultad, Date.now()), fase: 'jugando' })
             }
           >
-            Comenzar la reconstrucción →
+            {hayGuardado ? 'Empezar de nuevo' : 'Comenzar la reconstrucción →'}
           </button>
           <button className="boton-secundario" onClick={onVolverMenu}>
             ← Volver al menú
