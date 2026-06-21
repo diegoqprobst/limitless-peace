@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="44%" r="62%">
+      <stop offset="0%" stop-color="#2a2016"/>
+      <stop offset="42%" stop-color="#171520"/>
+      <stop offset="100%" stop-color="#0d0c12"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ecb24f" stop-opacity="0.5"/>
+      <stop offset="60%" stop-color="#ecb24f" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ecb24f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="238" r="180" fill="url(#halo)"/>
+
+  <!-- paloma estilizada (cuerpo + cola bifurcada + ala alzada + cabeza) -->
+  <g fill="#efe9da">
+    <!-- cuerpo + cola -->
+    <path d="M150 268
+             C 185 248 245 246 292 268
+             C 312 277 320 298 306 318
+             C 274 338 214 338 176 320
+             L 112 330 L 158 292 L 112 256 Z"/>
+    <!-- ala alzada -->
+    <path d="M236 274
+             C 258 206 318 158 372 156
+             C 344 200 320 244 286 274
+             C 270 288 250 286 236 274 Z"/>
+    <!-- cabeza -->
+    <circle cx="300" cy="248" r="27"/>
+    <!-- pico -->
+    <path d="M326 242 L 352 251 L 326 260 Z" fill="#ecb24f"/>
+  </g>
+  <!-- ojo -->
+  <circle cx="309" cy="243" r="4.5" fill="#0e0c10"/>
+</svg>

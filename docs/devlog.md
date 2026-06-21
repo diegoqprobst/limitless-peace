@@ -784,3 +784,16 @@ Revisión completa en viewport de teléfono (390×844). Todos los modos corren b
 buen tap target), El Territorio (3D renderiza el valle con día/noche; barra con scroll y pista),
 La Memoria y El Expediente — sin roturas de layout. El canvas WebGL a veces sale negro en el
 compositor del preview pero renderiza en navegador real (confirmado en varias capturas).
+
+## 2026-06-21 · PWA: el juego es instalable como app (pitch / camino a iOS)
+
+Soporte PWA con vite-plugin-pwa para que en el pitch se pueda decir "instálala en tu teléfono":
+- `vite.config.ts`: VitePWA (registerType autoUpdate) con manifest (name, standalone, portrait,
+  theme/bg #11141d, íconos 192/512 any + 512 maskable) y workbox precache de js/css/html/svg/png/
+  jpg/woff2 (34 entradas, ~4.3MB → app completa offline) + runtime caching de Google Fonts.
+- Íconos "Vela y Tinta": `public/icon.svg` (paloma cream + glow ámbar sobre noche), rasterizado con
+  qlmanage a `icon-512/192.png` y `apple-touch-icon.png` (180).
+- `index.html`: meta theme-color, apple-touch-icon, apple-mobile-web-app-capable/status-bar/title.
+
+Verificado: build genera manifest.webmanifest + sw.js + registerSW.js; el `<head>` inyecta manifest
+y registro del SW; dev sigue corriendo sin errores (el SW solo se activa en producción).
