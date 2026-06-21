@@ -768,3 +768,19 @@ añadió un abrecartas + lacre rojo que podría leerse algo duro).
 Diego generó y subió la imagen que faltaba ("Sellar el pacto": documento con pluma, sello de
 lacre y vela). Optimizada a 1280px/q82 (172K), renombrada a refrendacion-nodo.jpg y campo imagen
 seteado. Las 17 escenas de La Mesa ya tienen ilustración. Total carpeta: 2.7 MB. Build limpio.
+
+## 2026-06-21 · Pulido móvil (de cara al pitch / futura app iOS)
+
+Revisión completa en viewport de teléfono (390×844). Todos los modos corren bien; arreglos:
+- **Barra de construcción del Territorio**: era scrollable pero sin pista → en móvil nadie
+  descubría los 11 edificios. Añadido degradado de máscara en el borde derecho ("hay más →
+  desliza"), `scroll-snap-type: x proximity` + momentum táctil, y botón "Avanzar mes" más
+  compacto en móvil para dar ancho a los chips. Verificado: scroll llega hasta Limpiar/Desminar.
+- **Hint del tablero**: "rueda para acercar" → "pellizca o rueda para acercar" (táctil).
+- **Cabecera compacta < 480px**: el wordmark "Limitless Peace" se partía en 2 líneas y el toggle
+  "EN" se cortaba; ahora `white-space: nowrap` + tamaños/gaps reducidos → todo en una línea.
+
+**Verificado en preview móvil:** Menú, La Mesa (ilustraciones a todo ancho, opciones A/B/C con
+buen tap target), El Territorio (3D renderiza el valle con día/noche; barra con scroll y pista),
+La Memoria y El Expediente — sin roturas de layout. El canvas WebGL a veces sale negro en el
+compositor del preview pero renderiza en navegador real (confirmado en varias capturas).

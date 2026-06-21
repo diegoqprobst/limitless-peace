@@ -1856,6 +1856,7 @@ button {
 
 .cockpit-chips {
   flex: 1;
+  min-width: 0;
   display: flex;
   gap: 0.4rem;
   align-items: center;
@@ -1866,10 +1867,17 @@ button {
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   scrollbar-width: thin;
+  /* desplazamiento táctil suave + snap, y degradado en el borde derecho
+     que avisa "hay más edificios → desliza" (clave en móvil) */
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 26px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - 26px), transparent 100%);
 }
 
 .cockpit-chips .chip-construir {
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 .boton-mes-cockpit {
@@ -1910,7 +1918,38 @@ body:has(.cockpit) .boton-reporte {
     display: none;
   }
   .boton-mes-cockpit {
-    padding: 0.5rem 0.9rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+  }
+  /* en móvil los chips llevan la voz cantante: un poco más de aire para tocar */
+  .cockpit-chips {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  .cockpit-chips .chip-construir {
+    padding: 0.45rem 0.6rem;
+  }
+}
+
+/* ── Teléfonos: cabecera compacta (que el wordmark no se parta en 2 líneas) ── */
+@media (max-width: 480px) {
+  .cabecera {
+    padding: 0.7rem 0;
+  }
+  .logo {
+    white-space: nowrap;
+    font-size: 0.92rem;
+  }
+  .cabecera-acciones {
+    gap: 0.35rem;
+  }
+  .boton-codex {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.88rem;
+  }
+  .opcion-idioma {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.78rem;
   }
 }
 

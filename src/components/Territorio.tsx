@@ -499,7 +499,7 @@ export function Territorio({ onVolverMenu }: Props) {
             {estado.mensaje ??
               (herramientaActiva
                 ? `${herramientaActiva.emoji} ${herramientaActiva.nombre} — toca una celda`
-                : '👆 Toca una celda para construir · 🖐 arrastra para girar · rueda para acercar')}
+                : '👆 Toca una celda para construir · 🖐 arrastra para girar · pellizca o rueda para acercar')}
           </p>
         </div>
 
