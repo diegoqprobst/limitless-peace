@@ -19,6 +19,7 @@ import {
   UMBRAL_RETORNO,
 } from './catalogo';
 import { DIFICULTADES, type Dificultad } from './dificultad';
+import { HITOS, HITOS_REQUERIDOS } from './hitos';
 
 /**
  * Motor del modo Territorio: funciones puras sobre un estado inmutable.
@@ -49,6 +50,15 @@ export interface EstadoTerritorio {
   salud: number;
   /** Cola de eventos forzados por una decisión previa (cadenas causales). Prioridad máxima. */
   eventosForzados: string[];
+  /**
+   * Etapa narrativa (estilo Terra Nil):
+   *  - 'reconstruccion': cubrir necesidades, que vuelvan las primeras familias.
+   *  - 'vida': que la sociedad reviva — descubrir hitos combinando factores.
+   *  - 'retirada': el equipo se va poco a poco; la comunidad sostiene el valle.
+   */
+  etapa: 'reconstruccion' | 'vida' | 'retirada';
+  /** Hitos de "vida que vuelve" ya descubiertos (ids de HITOS). Permanentes. */
+  hitos: string[];
 }
 
 /** Bajo este umbral, la mala salud empieza a erosionar la confianza y la legitimidad. */
@@ -123,6 +133,8 @@ export function crearEstado(
     semilla: semilla & 0x7fffffff,
     salud: DIFICULTADES[dificultad].saludInicial,
     eventosForzados: [],
+    etapa: 'reconstruccion',
+    hitos: [],
   };
 }
 
@@ -150,7 +162,9 @@ export function recomputarVitalidad(celdas: Celda[][]): Celda[][] {
 
   const resultado = celdas.map((fila, f) =>
     fila.map((celda, c) => {
-      const v = Math.min(100, vitalidad[f][c]);
+      // El piso "comunitario" (lo internalizado al retirar edificios) sostiene
+      // la vitalidad aunque ya no haya aura: por eso el valle no colapsa al irte.
+      const v = Math.min(100, Math.max(vitalidad[f][c], celda.comunitaria ?? 0));
       return {
         ...celda,
         vitalidad: v,
@@ -230,16 +244,61 @@ export function contarMinas(celdas: Celda[][]): number {
   return celdas.flat().filter((c) => c.tipo === 'minado').length;
 }
 
+/** Edificios que aún son del equipo humanitario (incluida la base). */
+function edificiosDelEquipo(estado: EstadoTerritorio): number {
+  return estado.celdas.flat().filter((c) => c.edificio).length;
+}
+
+/**
+ * La victoria ya no es "llegar a la meta": es la RETIRADA completa.
+ * Te has ido (no queda nada del equipo) y el valle sigue vivo por sí mismo.
+ */
 function comprobarVictoria(estado: EstadoTerritorio, nivel: NivelTerritorio): EstadoTerritorio {
   const { pobladas, total } = contarFamilias(estado.celdas);
   const familiasOk = total > 0 && pobladas >= Math.ceil(total * nivel.metaFamilias);
-  const ind = estado.indicadores;
-  const indicadoresOk =
-    Math.min(ind.confianza, ind.seguridad, ind.justicia, ind.legitimidad) >= nivel.metaIndicador;
-  if (familiasOk && indicadoresOk) {
+  if (estado.etapa === 'retirada' && edificiosDelEquipo(estado) === 0 && familiasOk) {
     return { ...estado, fase: 'victoria', herramienta: null, mensaje: null };
   }
   return estado;
+}
+
+/**
+ * Tras cada cambio: avanza la etapa (reconstrucción → vida → retirada),
+ * descubre hitos por combinación (permanentes) y comprueba la victoria.
+ */
+function actualizarFase(estado: EstadoTerritorio, nivel: NivelTerritorio): EstadoTerritorio {
+  if (estado.fase !== 'jugando') return estado;
+  let etapa = estado.etapa;
+  let hitos = estado.hitos;
+  const diario = [...estado.diario];
+
+  // Reconstrucción → Vida: cuando vuelve la primera familia.
+  if (etapa === 'reconstruccion' && contarFamilias(estado.celdas).pobladas >= 1) {
+    etapa = 'vida';
+    diario.push(`Mes ${estado.mes} · 🌱 Vuelve la vida: el valle empieza a respirar.`);
+  }
+
+  // Vida: descubrir hitos por combinación (son permanentes).
+  if (etapa === 'vida') {
+    const conEtapa = { ...estado, etapa, hitos };
+    for (const h of HITOS) {
+      if (!hitos.includes(h.id) && h.cumple(conEtapa)) {
+        hitos = [...hitos, h.id];
+        diario.push(`Mes ${estado.mes} · ${h.emoji} Hito: ${h.titulo}.`);
+      }
+    }
+    // Los 4 hitos + el valle repoblado (familias) → habilita la retirada.
+    const { pobladas, total } = contarFamilias(estado.celdas);
+    const familiasOk = total > 0 && pobladas >= Math.ceil(total * nivel.metaFamilias);
+    if (hitos.length >= HITOS_REQUERIDOS && familiasOk) {
+      etapa = 'retirada';
+      diario.push(
+        `Mes ${estado.mes} · 🕊️ El valle revive. Es hora de retirarse: entrega lo construido a la comunidad.`,
+      );
+    }
+  }
+
+  return comprobarVictoria({ ...estado, etapa, hitos, diario }, nivel);
 }
 
 /** Aplica la herramienta activa sobre la celda (fila, col). */
@@ -261,7 +320,7 @@ export function actuar(
     const celdas = estado.celdas.map((fila, i) =>
       fila.map((cel, j) => (i === f && j === c ? { ...cel, tipo: 'tierra' as TipoCelda } : cel)),
     );
-    return comprobarVictoria(
+    return actualizarFase(
       {
         ...estado,
         celdas: recomputarVitalidad(celdas),
@@ -279,7 +338,7 @@ export function actuar(
     const celdas = estado.celdas.map((fila, i) =>
       fila.map((cel, j) => (i === f && j === c ? { ...cel, tipo: 'tierra' as TipoCelda } : cel)),
     );
-    return comprobarVictoria(
+    return actualizarFase(
       {
         ...estado,
         celdas: recomputarVitalidad(celdas),
@@ -287,6 +346,33 @@ export function actuar(
         indicadores: aplicarEfectos(estado.indicadores, { seguridad: 5 }),
         mensaje: null,
         diario: [...estado.diario, `Mes ${estado.mes} · ⛏️ Campo desminado: la tierra vuelve a ser tierra.`],
+      },
+      nivel,
+    );
+  }
+
+  // ── Retirada: entregar un edificio a la comunidad (su vitalidad se queda) ──
+  if (herramienta === 'retirar') {
+    if (estado.etapa !== 'retirada')
+      return conMensaje('Aún no es momento de retirarse: que el valle reviva primero.');
+    if (!celda.edificio) return conMensaje('Ahí no hay nada del equipo que retirar.');
+    const def0 = POR_TIPO[celda.edificio];
+    // Hornear la vitalidad actual del radio como piso comunitario, y quitar el edificio.
+    const celdas = estado.celdas.map((fila, i) =>
+      fila.map((cel, j) => {
+        const dentro = Math.max(Math.abs(i - f), Math.abs(j - c)) <= def0.radio;
+        const sinEdif = i === f && j === c ? { ...cel, edificio: undefined } : cel;
+        return dentro
+          ? { ...sinEdif, comunitaria: Math.max(sinEdif.comunitaria ?? 0, sinEdif.vitalidad) }
+          : sinEdif;
+      }),
+    );
+    return actualizarFase(
+      {
+        ...estado,
+        celdas: recomputarVitalidad(celdas),
+        mensaje: null,
+        diario: [...estado.diario, `Mes ${estado.mes} · 🤝 Entregado a la comunidad: ${def0.nombre}.`],
       },
       nivel,
     );
@@ -316,7 +402,7 @@ export function actuar(
       `Mes ${estado.mes} · 🏠 ${despues - antes === 1 ? 'Una familia retornó' : `${despues - antes} familias retornaron`} al valle.`,
     );
   }
-  return comprobarVictoria(
+  return actualizarFase(
     {
       ...estado,
       celdas,
@@ -362,6 +448,10 @@ export function aplicarTickMensual(estado: EstadoTerritorio): {
   salud: number;
   carencias: string[];
 } {
+  // En la retirada el valle se sostiene solo: ni producción ni erosión (queda congelado).
+  if (estado.etapa === 'retirada') {
+    return { indicadores: estado.indicadores, salud: estado.salud, carencias: [] };
+  }
   const planas = estado.celdas.flat();
   const cfg = DIFICULTADES[estado.dificultad];
 
@@ -487,20 +577,23 @@ export function avanzarMes(estado: EstadoTerritorio, nivel: NivelTerritorio): Es
   }
   if (evento) diario.push(`Mes ${mes} · ⚠️ ${evento.titulo}`);
 
-  return {
-    ...estado,
-    mes,
-    fondos,
-    semilla,
-    indicadores,
-    salud,
-    eventosForzados,
-    eventoActivo: evento,
-    eventosVistos: evento ? [...estado.eventosVistos, evento.id] : estado.eventosVistos,
-    mensaje: null,
-    diario,
-    efectoVisual: evento?.visual === 'lluvia' ? { tipo: 'lluvia' } : null,
-  };
+  return actualizarFase(
+    {
+      ...estado,
+      mes,
+      fondos,
+      semilla,
+      indicadores,
+      salud,
+      eventosForzados,
+      eventoActivo: evento,
+      eventosVistos: evento ? [...estado.eventosVistos, evento.id] : estado.eventosVistos,
+      mensaje: null,
+      diario,
+      efectoVisual: evento?.visual === 'lluvia' ? { tipo: 'lluvia' } : null,
+    },
+    nivel,
+  );
 }
 
 /** El ataque destruye el edificio más valioso (nunca la base): la tensión se ve en el mapa. */
@@ -596,7 +689,7 @@ export function cerrarEvento(estado: EstadoTerritorio, nivel: NivelTerritorio): 
       efectoVisual: null,
     };
   }
-  return comprobarVictoria(
+  return actualizarFase(
     { ...estado, eventoActivo: null, retroEvento: null, efectoVisual: null },
     nivel,
   );

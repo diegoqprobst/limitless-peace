@@ -25,7 +25,7 @@ export type TipoEdificio =
   | 'base';
 
 /** Herramienta activa: un edificio para colocar, o una acción sobre la celda. */
-export type Herramienta = TipoEdificio | 'limpiar' | 'desminar';
+export type Herramienta = TipoEdificio | 'limpiar' | 'desminar' | 'retirar';
 
 /**
  * Efecto del Territorio: los 4 indicadores compartidos (Efecto) MÁS la salud,
@@ -66,6 +66,12 @@ export interface Celda {
   poblada: boolean;
   /** Relieve del terreno (0 valle … 3 colina): visual, da carácter al mapa. */
   elevacion: number;
+  /**
+   * Vitalidad "comunitaria": al retirar un edificio en la etapa final, su aura
+   * se hornea aquí — la comunidad sostiene lo logrado, así el valle no colapsa
+   * cuando el equipo se va. Funciona como un piso permanente de vitalidad.
+   */
+  comunitaria?: number;
 }
 
 export interface OpcionEvento {

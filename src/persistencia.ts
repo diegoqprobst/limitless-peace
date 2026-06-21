@@ -5,7 +5,8 @@
  * (el jugador empieza limpio) en vez de romper el juego.
  */
 const PREFIJO = 'lp-save:';
-const VERSION = 1;
+// v2: el Territorio añadió etapas/hitos/tejido comunitario — invalida saves previos.
+const VERSION = 2;
 
 export function guardarProgreso<T>(clave: string, datos: T): void {
   try {

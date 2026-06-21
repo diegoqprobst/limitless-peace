@@ -819,3 +819,29 @@ leídas en La Memoria.
 **Verificado en preview:** Territorio guarda (mes 2, fase jugando), sale al menú, reentra y
 ofrece "Continuar tu valle · Mes 2" que reanuda en el tablero. La Mesa igual: "Continuar ·
 decisión 2" reanuda en la escena. Build limpio, sin errores de consola.
+
+## 2026-06-21 · Etapas estilo Terra Nil: hitos por combinación + la retirada
+
+Idea de Diego: en Terra Nil hay fases — para terminar tienes que "traer la vida de vuelta"
+combinando factores, y el clímax es retirarte sin dejar rastro. Es literalmente la filosofía
+IFRC ("que no te necesiten"). Aplicado al Territorio:
+
+**Motor:**
+- `EstadoTerritorio.etapa` ('reconstruccion' | 'vida' | 'retirada') + `hitos[]`; `Celda.comunitaria`
+  (piso de vitalidad que la comunidad sostiene). Herramienta `'retirar'`.
+- `src/builder/hitos.ts`: 4 hitos por COMBINACIÓN (no edificio suelto): 🧒 aulas (escuela+seguridad
+  +familias), 📻 voz (emisora+confianza), 🕯️ memoria (memorial+justicia), 💧 valle sano (agua+
+  alimentos+salud).
+- `actualizarFase()` (tras cada cambio): reconstrucción→vida (1ª familia), descubre hitos
+  (permanentes), vida→retirada (4 hitos + 80% familias). `comprobarVictoria` ahora = retirada
+  completa: 0 edificios del equipo + familias intactas → "te retiraste, el valle vive sin ti".
+- Al `retirar` un edificio, su vitalidad se hornea como `comunitaria` en el radio → el valle no
+  colapsa al irte. En retirada el tick se congela (ni producción ni erosión).
+
+**UI (Territorio.tsx):** rastreador de fases (Reconstruir ▸ Que vuelva la vida ▸ La retirada) con
+los 4 hitos que se encienden; en retirada, la barra muestra "🤝 Entregar a la comunidad", marco
+ámbar, hint propio; pantalla de victoria reescrita (entrega gradual + desmonte del campamento).
+`persistencia` v2 (invalida saves previos sin etapa).
+
+**Verificado:** build limpio; 40/40 tests (7 nuevos del flujo completo); simulación llega a
+victoria con familias 6→6; preview: rastreador y UI de retirada correctos (capturas).

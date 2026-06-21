@@ -196,5 +196,51 @@ ePozo = { ...ePozo, fase: 'jugando', eventoActivo: evPozo, salud: 50 };
 ePozo = resolverEvento(ePozo, opBrote);
 check('brote-salud desploma la salud', ePozo.salud === 25, `salud=${ePozo.salud}`);
 
+// ── Etapas (Terra Nil): reconstrucción → vida → retirada → victoria ──
+let eF = crearEstado(NIVEL_VALLE, 'principiante', 777);
+check('arranca en etapa reconstrucción', eF.etapa === 'reconstruccion' && eF.hitos.length === 0);
+eF = { ...eF, fase: 'jugando', fondos: 99999 };
+// llenar toda la tierra para reverdecer el valle entero
+const rotF = ['salud', 'agua', 'alimentos', 'escuela', 'memorial', 'emisora', 'cancha', 'mercado'];
+let kF = 0;
+for (let f = 0; f < eF.celdas.length; f++) {
+  for (let c = 0; c < eF.celdas[0].length; c++) {
+    if (eF.celdas[f][c].tipo === 'tierra' && !eF.celdas[f][c].edificio) {
+      eF = actuar({ ...eF, herramienta: rotF[kF++ % rotF.length] as never, fondos: 99999 }, NIVEL_VALLE, f, c);
+    }
+  }
+}
+for (let i = 0; i < 20 && eF.fase === 'jugando' && eF.etapa !== 'retirada'; i++) {
+  eF = { ...eF, fondos: 99999 };
+  eF = avanzarMes(eF, NIVEL_VALLE);
+  if (eF.eventoActivo) {
+    eF = resolverEvento(eF, eF.eventoActivo.opciones[0]);
+    eF = cerrarEvento(eF, NIVEL_VALLE);
+  }
+}
+check('descubre los 4 hitos combinando factores', eF.hitos.length === 4, `hitos=${eF.hitos.join(',')}`);
+check('con 4 hitos + valle repoblado entra en retirada', eF.etapa === 'retirada', `etapa=${eF.etapa}`);
+
+// retirar antes de la retirada se rechaza
+const eAntes = crearEstado(NIVEL_VALLE);
+const eRechazo = actuar({ ...eAntes, fase: 'jugando', herramienta: 'retirar' }, NIVEL_VALLE, 3, 5);
+check('no se puede retirar fuera de la etapa retirada', eRechazo.etapa !== 'retirada' && eRechazo.celdas[3][5].edificio === 'base');
+
+// en retirada: entregar TODOS los edificios → victoria, con las familias intactas
+if (eF.etapa === 'retirada') {
+  const famAntes = contarFamilias(eF.celdas).pobladas;
+  let guard = 0;
+  while (eF.fase === 'jugando' && guard++ < 120) {
+    let pos: [number, number] | null = null;
+    eF.celdas.forEach((fila, f) => fila.forEach((cel, c) => { if (cel.edificio && !pos) pos = [f, c]; }));
+    if (!pos) break;
+    eF = actuar({ ...eF, herramienta: 'retirar' }, NIVEL_VALLE, pos[0], pos[1]);
+  }
+  check('retirar todo deja 0 edificios del equipo', eF.celdas.flat().filter((c) => c.edificio).length === 0);
+  check('la retirada completa = victoria', eF.fase === 'victoria', `fase=${eF.fase}`);
+  check('las familias se quedan tras la retirada (tejido comunitario)',
+    contarFamilias(eF.celdas).pobladas >= famAntes, `${famAntes}→${contarFamilias(eF.celdas).pobladas}`);
+}
+
 console.log(fallos === 0 ? '\nTodo pasó ✓' : `\n${fallos} fallos ✗`);
 process.exit(fallos === 0 ? 0 : 1);

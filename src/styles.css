@@ -1647,6 +1647,77 @@ button {
 }
 
 /* ── Indicadores gamificados (stat pods) ── */
+/* ── Rastreador de fases (estilo Terra Nil): reconstruir → vida → retirada ── */
+.cockpit-fase {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.5rem;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  flex-wrap: wrap;
+}
+.cockpit-fase.etapa-retirada {
+  border-color: var(--acento);
+  box-shadow: var(--halo-opcion);
+}
+.fase-camino {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.fase-paso {
+  color: var(--tinta-suave);
+  opacity: 0.45;
+}
+.fase-paso::after {
+  content: '▸';
+  margin-left: 0.35rem;
+  color: var(--borde);
+}
+.fase-paso:last-child::after {
+  content: '';
+}
+.fase-paso.hecha {
+  opacity: 0.85;
+  color: var(--paz);
+}
+.fase-paso.activa {
+  opacity: 1;
+  color: var(--acento);
+  font-weight: 700;
+}
+.fase-hitos {
+  display: flex;
+  gap: 0.35rem;
+}
+.fase-hitos .hito {
+  font-size: 1.05rem;
+  line-height: 1;
+  filter: grayscale(1);
+  opacity: 0.4;
+  transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+.fase-hitos .hito.logrado {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.12);
+  text-shadow: 0 0 10px rgba(236, 178, 79, 0.6);
+}
+.chip-construir.chip-retirar {
+  background: var(--acento);
+  color: var(--fondo);
+  border-color: var(--acento-suave);
+  font-weight: 700;
+}
+
 .cockpit-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

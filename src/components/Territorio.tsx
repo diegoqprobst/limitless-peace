@@ -3,6 +3,7 @@ import type { Herramienta } from '../builder/types';
 import type { PopEfecto } from './Tablero3D';
 import { lazy, Suspense } from 'react';
 import { CONSTRUIBLES, ACCIONES, UMBRAL_RETORNO } from '../builder/catalogo';
+import { HITOS } from '../builder/hitos';
 import { DIFICULTADES, type Dificultad } from '../builder/dificultad';
 
 /** El tablero 3D (Three.js, ~300 KB gzip) se descarga solo al entrar a este modo. */
@@ -389,10 +390,11 @@ export function Territorio({ onVolverMenu }: Props) {
         <h1 className="titulo-final paz-sostenible">El valle respira</h1>
         <section className="tarjeta">
           <p className="final-descripcion">
-            Las {pobladas} familias volvieron. El mercado suena, la escuela está llena y el memorial
-            tiene flores frescas. Esta mañana, tu equipo desmontó el campamento y devolvió las
-            llaves: <strong>la señal del éxito humanitario es poder irse</strong>. El valle ya no
-            los necesita — y esa es la victoria más grande que existe en este trabajo.
+            Las {pobladas} familias volvieron. El mercado suena, las aulas están llenas y el
+            memorial tiene flores frescas. Entregaste —uno a uno— la escuela, la clínica y la
+            emisora a la comunidad, y esta mañana desmontaste el campamento:{' '}
+            <strong>la señal del éxito humanitario es poder irse</strong>. El valle se sostiene
+            solo, sin ti — y esa es la victoria más grande que existe en este trabajo.
           </p>
           <hr />
           <p className="etiqueta-retro">Estado final</p>
@@ -455,6 +457,38 @@ export function Territorio({ onVolverMenu }: Props) {
         </button>
       </div>
 
+      {/* rastreador de fases (estilo Terra Nil): reconstrucción → vida → retirada */}
+      <div className={`cockpit-fase etapa-${estado.etapa}`}>
+        <div className="fase-camino">
+          <span
+            className={`fase-paso ${estado.etapa === 'reconstruccion' ? 'activa' : 'hecha'}`}
+          >
+            Reconstruir
+          </span>
+          <span
+            className={`fase-paso ${
+              estado.etapa === 'vida' ? 'activa' : estado.etapa === 'retirada' ? 'hecha' : ''
+            }`}
+          >
+            Que vuelva la vida
+          </span>
+          <span className={`fase-paso ${estado.etapa === 'retirada' ? 'activa' : ''}`}>
+            La retirada
+          </span>
+        </div>
+        <div className="fase-hitos" title="Señales de que la sociedad revive (combinaciones)">
+          {HITOS.map((h) => (
+            <span
+              key={h.id}
+              className={`hito ${estado.hitos.includes(h.id) ? 'logrado' : ''}`}
+              title={`${h.titulo} — ${h.pista}`}
+            >
+              {h.emoji}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* indicadores gamificados (stat pods) */}
       <div className="cockpit-stats">
         {INDICADORES_HUD.map(({ k, emoji, nombre }) => {
@@ -512,7 +546,11 @@ export function Territorio({ onVolverMenu }: Props) {
 
           <p className={`overlay-hint ${estado.mensaje ? 'visible' : ''}`}>
             {estado.mensaje ??
-              (herramientaActiva
+              (estado.herramienta === 'retirar'
+                ? '🤝 Toca tus edificios para entregarlos a la comunidad'
+                : estado.etapa === 'retirada'
+                ? '🕊️ El valle revive solo. Retira a tu equipo: entrega cada edificio a la comunidad.'
+                : herramientaActiva
                 ? `${herramientaActiva.emoji} ${herramientaActiva.nombre} — toca una celda`
                 : '👆 Toca una celda para construir · 🖐 arrastra para girar · pellizca o rueda para acercar')}
           </p>
@@ -546,37 +584,51 @@ export function Territorio({ onVolverMenu }: Props) {
       {/* footer de construcción: chips (scroll) + avanzar mes */}
       <div className="cockpit-footer">
         <div className="cockpit-chips">
-          {CONSTRUIBLES.map((e) => (
+          {estado.etapa === 'retirada' ? (
             <button
-              key={e.tipo}
-              className={`chip-construir ${estado.herramienta === e.tipo ? 'activa' : ''} ${
-                estado.fondos < e.costo ? 'sin-fondos' : ''
+              className={`chip-construir chip-retirar ${
+                estado.herramienta === 'retirar' ? 'activa' : ''
               }`}
-              onClick={() => elegirHerramienta(e.tipo)}
-              onMouseEnter={() => setTip(e.tipo)}
-              onMouseLeave={() => setTip((t) => (t === e.tipo ? null : t))}
+              onClick={() => elegirHerramienta('retirar')}
             >
-              <span>{e.emoji}</span>
-              <span className="chip-nombre">{e.corto}</span>
-              <span className="paleta-costo">{e.costo}</span>
+              <span>🤝</span>
+              <span className="chip-nombre">Entregar a la comunidad · toca tus edificios</span>
             </button>
-          ))}
-          <span className="barra-sep" />
-          {(['limpiar', 'desminar'] as const).map((a) => (
-            <button
-              key={a}
-              className={`chip-construir ${estado.herramienta === a ? 'activa' : ''} ${
-                estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
-              }`}
-              onClick={() => elegirHerramienta(a)}
-              onMouseEnter={() => setTip(a)}
-              onMouseLeave={() => setTip((t) => (t === a ? null : t))}
-            >
-              <span>{ACCIONES[a].emoji}</span>
-              <span className="chip-nombre">{ACCIONES[a].corto}</span>
-              <span className="paleta-costo">{ACCIONES[a].costo}</span>
-            </button>
-          ))}
+          ) : (
+            <>
+              {CONSTRUIBLES.map((e) => (
+                <button
+                  key={e.tipo}
+                  className={`chip-construir ${estado.herramienta === e.tipo ? 'activa' : ''} ${
+                    estado.fondos < e.costo ? 'sin-fondos' : ''
+                  }`}
+                  onClick={() => elegirHerramienta(e.tipo)}
+                  onMouseEnter={() => setTip(e.tipo)}
+                  onMouseLeave={() => setTip((t) => (t === e.tipo ? null : t))}
+                >
+                  <span>{e.emoji}</span>
+                  <span className="chip-nombre">{e.corto}</span>
+                  <span className="paleta-costo">{e.costo}</span>
+                </button>
+              ))}
+              <span className="barra-sep" />
+              {(['limpiar', 'desminar'] as const).map((a) => (
+                <button
+                  key={a}
+                  className={`chip-construir ${estado.herramienta === a ? 'activa' : ''} ${
+                    estado.fondos < ACCIONES[a].costo ? 'sin-fondos' : ''
+                  }`}
+                  onClick={() => elegirHerramienta(a)}
+                  onMouseEnter={() => setTip(a)}
+                  onMouseLeave={() => setTip((t) => (t === a ? null : t))}
+                >
+                  <span>{ACCIONES[a].emoji}</span>
+                  <span className="chip-nombre">{ACCIONES[a].corto}</span>
+                  <span className="paleta-costo">{ACCIONES[a].costo}</span>
+                </button>
+              ))}
+            </>
+          )}
         </div>
         <button
           className="boton-mes-cockpit"
